@@ -1,0 +1,20 @@
+---
+title: How do I access the AceMQ Knowledge Base API?
+description: API access for AceMQ Tanzu RabbitMQ Knowledge Base.
+---
+
+## Overview
+
+You need an API token to query the AceMQ Knowledge Base endpoints.
+
+## Steps to Get Access
+
+1. Visit `https://acemq.com/dashboard/api`
+2. Click **Generate API Token**
+3. Copy token and keep it secure
+
+## Example Usage
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_TOKEN" https://api.acemq.com/v1/docs/search
+```

@@ -1,0 +1,30 @@
+---
+title: Cannot Connect to RabbitMQ Cluster
+description: Quick fixes if you can't connect to your AceMQ Tanzu RabbitMQ deployment.
+---
+
+## Symptoms
+- Connection refused
+- Timeout errors in client logs
+
+## Common Causes
+- Incorrect hostname or port
+- Firewall blocking port 5672
+
+## Quick Fix
+
+<Steps>
+  <Step title="Ping the server">
+    ````bash
+    ping your-rabbitmq-host.acemq.com
+    ````
+  </Step>
+  <Step title="Test port access">
+    ````bash
+    telnet your-rabbitmq-host.acemq.com 5672
+    ````
+  </Step>
+  <Step title="Check credentials">
+    Ensure username/password are correct in your client config.
+  </Step>
+</Steps>

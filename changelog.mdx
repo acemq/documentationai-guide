@@ -1,0 +1,139 @@
+---
+title: Changelog
+description: Version history of the AceMQ Tanzu RabbitMQ Knowledge Base with details on recent updates and improvements.
+---
+
+## Overview
+
+Track all changes to the AceMQ Tanzu RabbitMQ Knowledge Base. We release updates regularly to add new guides, improve documentation clarity, and address community feedback. Review the sections below for details on new features, improvements, bug fixes, and any breaking changes.
+
+<Callout kind="info">
+  Subscribe to our RSS feed or join the AceMQ Discord for instant notifications on new releases.
+</Callout>
+
+## Recent Releases
+
+<Update label="2024-12-05" description="v1.3.0" tags={["feature", "improvement"]}>
+## New Features
+
+- Added comprehensive guide for RabbitMQ Streams on Tanzu RabbitMQ, including high-throughput messaging patterns.
+- Introduced troubleshooting section for federation and shovels in multi-cluster Tanzu environments.
+- New monitoring dashboard templates using Prometheus and Grafana for Tanzu RabbitMQ metrics.
+
+## Improvements
+
+- Enhanced clustering guide with step-by-step Kubernetes operator configurations for Tanzu RabbitMQ 1.3.x.
+- Updated all diagrams to reflect latest Tanzu RabbitMQ operator versions.
+- Improved search functionality with better indexing for Tanzu-specific terms.
+
+</Update>
+
+<Update label="2024-11-18" description="v1.2.0" tags={["feature", "bugfix", "security"]}>
+## New Features
+
+- Full documentation for RabbitMQ quorum queues on Tanzu, optimized for Kubernetes storage classes.
+- Added deployment guides for Tanzu RabbitMQ with persistent volumes and automatic failover.
+- New section on integrating RabbitMQ with VMware Aria Operations for advanced observability.
+
+## Bug Fixes
+
+- Corrected YAML examples in Tanzu RabbitMQ operator installation guide (fixed indentation issues).
+- Resolved broken links to external VMware Tanzu documentation.
+- Fixed inaccuracies in high availability setup descriptions.
+
+## Security Updates
+
+- Documented best practices for securing RabbitMQ management UI with Tanzu network policies.
+
+</Update>
+
+<Update label="2024-10-22" description="v1.1.0" tags={["breaking", "feature"]}>
+## Breaking Changes
+
+- Restructured navigation: Tanzu-specific guides moved under a dedicated "Tanzu RabbitMQ" section. Update your bookmarks.
+
+## New Features
+
+- Initial Tanzu RabbitMQ operator installation and upgrade guides.
+- Coverage of RabbitMQ classic vs. quorum queues in Tanzu environments.
+- Basic troubleshooting for common Tanzu RabbitMQ errors like pod evictions.
+
+## Improvements
+
+- Added code snippets for `rabbitmqctl` commands tailored to Tanzu pods.
+- Introduced version compatibility matrix for Tanzu RabbitMQ and Kubernetes.
+
+</Update>
+
+## Upgrading Your Knowledge Base
+
+Follow these steps to apply the latest updates to your local or deployed documentation site.
+
+<Steps>
+  <Step title="Backup Current Site" icon="database">
+    Create a backup of your current documentation repository.
+  </Step>
+  <Step title="Pull Latest Changes" icon="git-pull-request">
+````bash
+git pull origin main
+npm install
+````
+  </Step>
+  <Step title="Verify Configurations" icon="settings">
+    Check `rabbitmq.conf` for any deprecated settings from the changelog.
+  </Step>
+  <Step title="Deploy Updates" icon="rocket">
+    Build and redeploy your static site or Tanzu-hosted docs.
+  </Step>
+</Steps>
+
+For configuration migrations between versions, see the examples below.
+
+<CodeGroup tabs="Tanzu RabbitMQ 1.2,Tanzu RabbitMQ 1.3">
+````yaml
+# Tanzu RabbitMQ 1.2 Operator Config
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: prod-cluster
+spec:
+  replicas: 3
+  rabbitmq:
+    additionalConfig: |
+      quorum_queue.default = true
+````
+````yaml
+# Tanzu RabbitMQ 1.3 Operator Config (Updated)
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: prod-cluster
+spec:
+  replicas: 3
+  rabbitmq:
+    additionalConfig: |
+      quorum_queue.default = true
+      stream.enabled = true
+````
+</CodeGroup>
+
+## Upcoming Roadmap
+
+View our planned enhancements for future releases.
+
+<Board title="Release Roadmap">
+  <BoardColumn title="Planned" color="0" icon="calendar">
+    <BoardCard title="Multi-tenancy Guide" description="Namespace isolation in Tanzu RabbitMQ" icon="users" dueDate="2025-01-15" />
+    <BoardCard title="CI/CD Integration" description="Helm charts and GitOps workflows" icon="git-branch" dueDate="2025-02-01" />
+  </BoardColumn>
+  <BoardColumn title="In Progress" color="1" icon="loader-2">
+    <BoardCard title="Advanced Federation" description="Cross-cluster shovels with Tanzu" icon="network" author="AceMQ Team" />
+  </BoardColumn>
+  <BoardColumn title="Next Minor" color="2" icon="package">
+    <BoardCard title="v1.3.1 Patch" description="Hotfix for operator compatibility" createdAt="2024-12-10" />
+  </BoardColumn>
+</Board>
+
+<Callout kind="tip">
+  Found an issue? Submit a pull request or contact support@acemq.com for assistance.
+</Callout>

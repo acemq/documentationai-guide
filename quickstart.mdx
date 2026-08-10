@@ -1,0 +1,249 @@
+---
+title: Quickstart: Deploy Tanzu RabbitMQ
+description: Step-by-step guide to deploy your first Tanzu RabbitMQ instance using VMware Tanzu and connect to it quickly.
+---
+
+## Prerequisites
+
+Before deploying Tanzu RabbitMQ, ensure you have the following:
+
+<Callout kind="info">
+
+- Kubernetes cluster version `1.21+` with VMware Tanzu RabbitMQ Cluster Operator installed
+- `kubectl` CLI configured to access your cluster
+- Access to create namespaces and custom resources
+- Basic knowledge of YAML manifests
+
+Verify your setup:
+
+````bash
+kubectl version --short
+```
+````
+
+</Callout>
+
+## Deploy RabbitMQ Cluster
+
+Follow these steps to create a RabbitMQ cluster in your Kubernetes namespace.
+
+<Steps>
+  <Step title="Create Namespace" icon="package">
+
+    Create a dedicated namespace for RabbitMQ:
+
+    ````bash
+    kubectl create namespace rabbitmq-system
+    ```
+    ````
+
+  </Step>
+
+  <Step title="Install RabbitMQ Cluster Operator" icon="download">
+
+    Apply the operator manifest (download from VMware Tanzu documentation):
+
+    ````bash
+    kubectl apply -f https://github.com/rabbitmq/cluster-operator/releases/latest/download/cluster-operator.yml
+    ```
+    ````
+
+    Wait for the operator to be ready:
+
+    ````bash
+    kubectl wait --namespace rabbitmq-system \
+      --for=condition=Available deployment=rabbitmq-cluster-operator --timeout=300s
+    ```
+    ````
+
+  </Step>
+
+  <Step title="Deploy RabbitMQ Cluster" icon="rocket">
+
+    Create a `RabbitmqCluster` custom resource:
+
+    <CodeGroup tabs="YAML">
+
+    ````yaml
+    apiVersion: rabbitmq.com/v1beta1
+    kind: RabbitmqCluster
+    metadata:
+      name: production
+      namespace: rabbitmq-system
+    spec:
+      replicas: 3
+      rabbitmq:
+        additionalConfig: |
+          default_user = admin
+          default_pass = changeme
+    ```
+    ````
+
+    </CodeGroup>
+
+    Apply it:
+
+    ````bash
+    kubectl apply -f rabbitmq-cluster.yaml
+    ```
+    ````
+
+  </Step>
+
+  <Step title="Verify Deployment" icon="check-circle">
+
+    Check the status:
+
+    ````bash
+    kubectl get rabbitmqcluster -n rabbitmq-system
+    ```
+    ````
+
+    Monitor pods:
+
+    ````bash
+    kubectl get pods -n rabbitmq-system -l app.kubernetes.io/name=rabbitmq
+    ```
+    ````
+
+  </Step>
+</Steps>
+
+## Access Management UI
+
+Port-forward to access the RabbitMQ management interface.
+
+<Callout kind="tip">
+
+Run this command and open `http://localhost:15672` in your browser. Use credentials: `admin` / `changeme`.
+
+</Callout>
+
+````bash
+kubectl port-forward -n rabbitmq-system svc/production 15672:15672
+```
+````
+
+## Send and Receive Your First Message
+
+Connect to RabbitMQ and publish a message using client libraries.
+
+<Tabs>
+  <Tab title="Node.js" icon="nodejs">
+
+    Install the client:
+
+    ````bash
+    npm init -y
+    npm install amqplib
+    ```
+    ````
+
+    Create `producer.js`:
+
+    <CodeGroup tabs="Producer,Consumer">
+
+    ````javascript
+    const amqp = require('amqplib');
+
+    async function sendMessage() {
+      const connection = await amqp.connect('amqp://admin:changeme@localhost:5672');
+      const channel = await connection.createChannel();
+      await channel.assertQueue('hello');
+      channel.sendToQueue('hello', Buffer.from('Hello Tanzu RabbitMQ!'));
+      console.log('Message sent');
+      setTimeout(() => connection.close(), 500);
+    }
+
+    sendMessage();
+    ```
+    ````
+
+    ````javascript
+    const amqp = require('amqplib');
+
+    async function receiveMessage() {
+      const connection = await amqp.connect('amqp://admin:changeme@localhost:5672');
+      const channel = await connection.createChannel();
+      await channel.assertQueue('hello');
+      channel.consume('hello', (msg) => {
+        console.log('Received:', msg.content.toString());
+        channel.ack(msg);
+      });
+    }
+
+    receiveMessage();
+    ```
+    ````
+
+    </CodeGroup>
+
+    Run:
+
+    ````bash
+    node producer.js
+    node consumer.js
+    ```
+    ````
+
+  </Tab>
+
+  <Tab title="Python" icon="python">
+
+    Install the client:
+
+    ````bash
+    pip install pika
+    ```
+    ````
+
+    Create `producer.py`:
+
+    ````python
+    import pika
+
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+    channel.queue_declare(queue='hello')
+
+    channel.basic_publish(exchange='', routing_key='hello', body='Hello Tanzu RabbitMQ!')
+    print('Message sent')
+    connection.close()
+    ```
+    ````
+
+    Run:
+
+    ````bash
+    python producer.py
+    ```
+    ````
+
+  </Tab>
+</Tabs>
+
+## Next Steps
+
+<Columns cols={2}>
+  <Card title="Enable Authentication" icon="shield" href="/authentication">
+    Secure your cluster with TLS and user management.
+  </Card>
+
+  <Card title="High Availability" icon="users" href="/guides">
+    Scale and configure HA for production workloads.
+  </Card>
+
+  <Card title="Monitoring" icon="activity" href="/configuration">
+    Integrate Prometheus and Grafana.
+  </Card>
+
+  <Card title="AceMQ Support" icon="headphones" href="https://acemq.com/contact-us/" target="_blank">
+    Get expert help from RabbitMQ specialists.
+  </Card>
+</Columns>
+
+<Callout kind="success">
+
+Your Tanzu RabbitMQ cluster is ready! Customize the `rabbitmq-cluster.yaml` for production use, such as persistent storage and secrets.
+
+</Callout>
