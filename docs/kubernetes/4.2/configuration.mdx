@@ -1,0 +1,16 @@
+---
+title: Kubernetes 4.2 Configuration
+description: Configuring the RabbitmqCluster CRD on Kubernetes 4.2.
+---
+
+Configuration is the same shape as [Kubernetes 4.3 → Configuration](/docs/kubernetes/4.3/configuration) — broker settings via `spec.rabbitmq.additionalConfig`, TLS via `spec.tls`, resources and affinity under `spec.resources`/`spec.affinity`.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Set pod anti-affinity on every production cluster — without it, Kubernetes has no reason not to schedule two replicas on the same node, silently turning a 3-node HA cluster into a single point of failure.
+
+</Callout>
+
+For Warm Standby Replication on 4.2, configure it directly on the `RabbitmqCluster` CRD — see [Warm Standby Replication](/docs/features/warm-standby-replication).

@@ -1,0 +1,20 @@
+---
+title: Upgrade to Kubernetes 4.2
+description: Upgrading to Tanzu RabbitMQ for Kubernetes 4.2, and upgrading onward to 4.3.
+---
+
+<Callout kind="warning">
+
+Upgrades are forward-only — no rollback. See [Version Upgrades](/migrations/version-upgrades) before you start.
+
+</Callout>
+
+Upgrade steps are the same pattern as [Kubernetes 4.3 → Upgrade](/docs/kubernetes/4.3/upgrade) — upgrade the operator bundle via Helm or Carvel, then update `spec.image` on the `RabbitmqCluster` resource and apply for a rolling broker upgrade.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+If you're planning to eventually move to 4.3, a licensed Tanzu build supports jump upgrades — you don't have to stop at every intermediate patch. Confirm with AceMQ support before a multi-version jump.
+
+</Callout>

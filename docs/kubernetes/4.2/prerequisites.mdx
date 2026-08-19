@@ -1,0 +1,10 @@
+---
+title: Kubernetes 4.2 Prerequisites & Platforms
+description: Supported platforms and requirements for Tanzu RabbitMQ on Kubernetes 4.2.
+---
+
+Same supported-platform list as [Kubernetes 4.3](/docs/kubernetes/4.3/prerequisites) — OpenShift, TKG, VKS, standard upstream Kubernetes, and RKE2 (verified in production by AceMQ customers, though not on Broadcom's explicit list).
+
+Cluster requirements are the same: `cert-manager` for webhook TLS (default), a `StorageClass` supporting `ReadWriteOnce`, and adequate resource headroom for both operators and the broker.
+
+Confirm your JFrog access and token are working before you start — see [Your JFrog Account](/access/jfrog-account).

@@ -1,0 +1,24 @@
+---
+title: Kubernetes 4.2 Overview
+description: Tanzu RabbitMQ on Kubernetes 4.2 — AceMQ's recommended LTS stream.
+---
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+**4.2 is AceMQ's recommended LTS stream for new production deployments.** It has the longest remaining commercial support window of any active stream — through 30 June 2030 — and is several patches mature. See [Version Support Matrix](/start-here/version-support-matrix).
+
+</Callout>
+
+## What's in 4.2
+
+- Groundwork for the redesigned distributed Shovel (fully realized as Distributed Shovels in [4.3](/docs/kubernetes/4.3/overview))
+- Improved Raft handling for quorum queues
+- SQL filter expressions for Streams
+- Warm Standby Replication configured on the `RabbitmqCluster` CRD directly — the older standalone Standby Replication Operator was removed as of this stream
+- OAuth 2.0 forward proxy support, LDAP runtime config
+
+Installed the same way as [Kubernetes 4.3](/docs/kubernetes/4.3/install) — the same operator bundle (`tanzu-rabbitmq-operators`), the same three components (Cluster Operator, Messaging Topology Operator, Default User Credential Updater).
+
+See [Get the Kubernetes Package](/packages/kubernetes) for pulling the chart and images from AceMQ.

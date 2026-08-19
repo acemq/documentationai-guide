@@ -1,0 +1,17 @@
+---
+title: Kubernetes 4.2 Known Issues
+description: Known issues and limitations for Tanzu RabbitMQ on Kubernetes 4.2.
+---
+
+- New required feature flags were introduced starting with 4.2.0 — review feature-flag status on any cluster being upgraded onto 4.2.
+- The Standby Replication Operator was removed as of 4.2 — Warm Standby Replication moved to CRD-based configuration. If you're referencing older documentation that describes a separate operator, it doesn't apply to 4.2+.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Check feature flags before upgrading, not during the maintenance window — this is the step most likely to turn a planned upgrade into an incident.
+
+</Callout>
+
+For Erlang/OTP compatibility on 4.2, see [Version & Support Policy](/support/version-policy) — OTP 28 is only partially supported and only for brand-new clusters.

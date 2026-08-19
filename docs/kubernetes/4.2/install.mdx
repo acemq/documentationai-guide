@@ -1,0 +1,37 @@
+---
+title: Install Kubernetes 4.2
+description: Install the Tanzu RabbitMQ operators and deploy your first cluster on Kubernetes 4.2.
+---
+
+Install steps are identical to [Kubernetes 4.3 → Install](/docs/kubernetes/4.3/install) — substitute `4.2.x` for the chart and image versions:
+
+```bash
+helm install rabbitmq-operators \
+  oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators \
+  --version 4.2.6 \
+  --namespace rabbitmq-system --create-namespace
+```
+
+```yaml
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: production
+  namespace: rabbitmq-system
+spec:
+  replicas: 3
+  image: acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6
+  imagePullSecrets:
+    - name: acemq-jfrog-pull
+  persistence:
+    storageClassName: <your-storage-class>
+    storage: 20Gi
+```
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Declare durable topology (vhosts, queues, exchanges, bindings, policies) as Messaging Topology Operator custom resources under GitOps, not in application code — same guidance as 4.3. See [Kubernetes 4.3 → Install](/docs/kubernetes/4.3/install) for the full explanation.
+
+</Callout>
