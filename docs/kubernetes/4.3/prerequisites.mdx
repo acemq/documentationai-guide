@@ -1,0 +1,34 @@
+---
+title: Kubernetes 4.3 Prerequisites & Platforms
+description: Supported Kubernetes platforms, cluster requirements, and prerequisites for Tanzu RabbitMQ 4.3.
+---
+
+## Supported platforms
+
+Tanzu RabbitMQ for Kubernetes 4.3 is built and tested against:
+
+- OpenShift
+- VMware Tanzu Kubernetes Grid (TKG)
+- VMware vSphere Kubernetes Service (VKS)
+- Standard upstream Kubernetes (EKS, GKE, AKS, kubeadm-based clusters)
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+RKE2 also works and is in production at multiple AceMQ customers, despite not being explicitly listed by Broadcom. If you're on a distribution not listed above, contact AceMQ before assuming it isn't supported — the certified list is conservative.
+
+</Callout>
+
+## Cluster requirements
+
+- Kubernetes 1.26+ (check the release notes for the exact minimum tested against 4.3)
+- `cert-manager` if you're deploying the webhook components with TLS managed automatically (`useCertManager: true` is the default)
+- A `StorageClass` supporting `ReadWriteOnce` persistent volumes for the broker's data directory
+- Sufficient CPU/memory headroom — the default Cluster Operator resource requests are modest (200m CPU / 500Mi memory) but the broker itself should be sized per your workload
+
+## Before you install
+
+- Confirm your JFrog access and token are working — see [Your JFrog Account](/access/jfrog-account) and [Generate a Token](/access/generate-token)
+- Decide whether you're installing via Helm (recommended, covered here) — see [Install](/docs/kubernetes/4.3/install)
+- If you're migrating an existing cluster, read [Migrating Between Formats](/migrations/between-formats) first — this is a new deployment, not an in-place conversion

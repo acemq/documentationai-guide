@@ -1,0 +1,85 @@
+---
+title: Kubernetes 4.3 Configuration
+description: Configuring the RabbitmqCluster CRD, TLS, resource limits, and topology-as-code on Kubernetes 4.3.
+---
+
+## Broker configuration
+
+Set `rabbitmq.conf`-equivalent settings under `spec.rabbitmq.additionalConfig` on the `RabbitmqCluster` resource:
+
+```yaml
+spec:
+  rabbitmq:
+    additionalConfig: |
+      default_user = admin
+      default_pass = changeme
+      cluster_partition_handling = pause_minority
+```
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Don't leave `default_pass` as a literal value in a committed manifest. Reference a Kubernetes Secret instead, and rotate it — the Default User Credential Updater operator exists specifically to automate this. AceMQ has seen more than one customer's default admin credentials sitting in plaintext in a Git repo because this step was skipped during a quick test deployment that later became production.
+
+</Callout>
+
+## TLS
+
+Mount certificates via `spec.tls`:
+
+```yaml
+spec:
+  tls:
+    secretName: rabbitmq-server-certs
+    caSecretName: rabbitmq-ca-cert
+```
+
+`cert-manager` (enabled by default, `useCertManager: true`) can issue these automatically if you have an `Issuer` configured.
+
+## Resource sizing and affinity
+
+```yaml
+spec:
+  resources:
+    requests:
+      cpu: 2
+      memory: 4Gi
+    limits:
+      cpu: 4
+      memory: 8Gi
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: production
+          topologyKey: kubernetes.io/hostname
+```
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Set pod anti-affinity on every production cluster. Without it, Kubernetes has no reason not to schedule two RabbitMQ replicas on the same node — which quietly turns a 3-node HA cluster into a single point of failure the first time that node is drained or fails.
+
+</Callout>
+
+## Topology as code
+
+Declare durable objects as Messaging Topology Operator custom resources, not in application code:
+
+```yaml
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: orders
+spec:
+  name: orders
+  vhost: /
+  type: quorum
+  rabbitmqClusterReference:
+    name: production
+```
+
+See [Exclusive Features](/docs/features/availability-matrix) for feature-specific configuration — Warm Standby Replication, Delayed Queues, and others each have their own reference page.

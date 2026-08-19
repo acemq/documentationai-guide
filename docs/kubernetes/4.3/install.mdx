@@ -1,0 +1,70 @@
+---
+title: Install Kubernetes 4.3
+description: Install the Tanzu RabbitMQ operators and deploy your first cluster on Kubernetes 4.3.
+---
+
+<Steps>
+  <Step title="Pull the chart" icon="download">
+
+See [Get the Kubernetes Package](/packages/kubernetes) for the exact `acemq.jfrog.io` login and pull commands — this page assumes you already have the chart.
+
+  </Step>
+  <Step title="Install the operator bundle" icon="rocket">
+
+```bash
+helm install rabbitmq-operators \
+  oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators \
+  --version 4.3.0 \
+  --namespace rabbitmq-system --create-namespace
+```
+
+This installs the Cluster Operator, Messaging Topology Operator, and Default User Credential Updater together.
+
+  </Step>
+  <Step title="Verify the operators are running" icon="check">
+
+```bash
+kubectl get pods -n rabbitmq-system
+kubectl get crds | grep rabbitmq.com
+```
+
+You should see `RabbitmqCluster`, `Queue`, `Exchange`, `Binding`, `Policy`, `User`, `Permission`, `Vhost`, and related CRDs registered.
+
+  </Step>
+  <Step title="Deploy a cluster" icon="server">
+
+```yaml
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: production
+  namespace: rabbitmq-system
+spec:
+  replicas: 3
+  image: acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.3.0
+  imagePullSecrets:
+    - name: acemq-jfrog-pull
+  persistence:
+    storageClassName: <your-storage-class>
+    storage: 20Gi
+```
+
+```bash
+kubectl apply -f rabbitmq-cluster.yaml
+kubectl get rabbitmqcluster -n rabbitmq-system
+```
+
+See [Get Access → Discover Versions](/access/discover-versions) for how the `imagePullSecret` referenced here (`acemq-jfrog-pull`) gets created.
+
+  </Step>
+</Steps>
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Declare durable topology — vhosts, queues, exchanges, bindings, policies, dead-letter exchanges — as Messaging Topology Operator custom resources under GitOps. Applications should only declare their own private or ephemeral queues at runtime. Embedding durable topology in Helm values or leaving it to application code means it lives outside Kubernetes' own reconciliation loop, and it's the single most common source of "my queues disappeared after a redeploy" tickets AceMQ sees.
+
+</Callout>
+
+For configuration beyond first deploy — TLS, resource tuning, affinity — see [Configuration](/docs/kubernetes/4.3/configuration).

@@ -1,0 +1,57 @@
+---
+title: Upgrade to Kubernetes 4.3
+description: Upgrading Tanzu RabbitMQ for Kubernetes to 4.3, via Helm or Carvel, and from earlier 3.13.x/4.x streams.
+---
+
+<Callout kind="warning">
+
+**Upgrades are forward-only.** There is no supported RabbitMQ version rollback. Test any upgrade in a lower environment with a known-good backup before touching production. See [Version Upgrades](/migrations/version-upgrades) for the licensing-and-access side of planning an upgrade.
+
+</Callout>
+
+## Upgrading the operators
+
+<Tabs>
+  <Tab title="Helm">
+
+```bash
+helm upgrade rabbitmq-operators \
+  oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators \
+  --version 4.3.0 \
+  --namespace rabbitmq-system
+```
+
+  </Tab>
+  <Tab title="Carvel">
+
+```bash
+kctrl package install -i rabbitmq-operators \
+  -p tanzu-rabbitmq-operators.acemq.jfrog.io \
+  -v 4.3.0 -n rabbitmq-system
+```
+
+  </Tab>
+</Tabs>
+
+## Upgrading the broker
+
+Update `spec.image` on the `RabbitmqCluster` resource to the new version's image path (see [Get the Kubernetes Package](/packages/kubernetes)) and apply. The Cluster Operator performs a rolling upgrade of the StatefulSet.
+
+```bash
+kubectl apply -f rabbitmq-cluster.yaml
+kubectl rollout status statefulset/production -n rabbitmq-system
+```
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+A licensed Tanzu build supports jump upgrades — skipping intermediate versions — in situations the community edition cannot. If you're moving from 3.13 straight to 4.3, confirm with AceMQ support before you start; feature flags and mixed-version cluster compatibility need to be checked for your specific starting point. Don't assume a multi-version jump behaves like a chain of single-version upgrades.
+
+</Callout>
+
+## Mixed-version clusters
+
+During a rolling upgrade, the cluster briefly runs mixed versions across nodes. This is expected and supported for the duration of the rollout, but is not a state to leave a cluster in indefinitely.
+
+See [Known Issues](/docs/kubernetes/4.3/known-issues) for issues specific to upgrading onto 4.3.

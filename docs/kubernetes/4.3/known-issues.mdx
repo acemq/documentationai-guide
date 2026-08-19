@@ -1,0 +1,36 @@
+---
+title: Kubernetes 4.3 Known Issues
+description: Known issues, limitations, and breaking changes to be aware of on Tanzu RabbitMQ for Kubernetes 4.3.
+---
+
+## Breaking changes and compatibility notes
+
+- **Khepri is enabled by default for new clusters.** Existing clusters on the older Mnesia-based metadata store are not automatically migrated — this is a deliberate opt-in for existing deployments.
+- **Default value changed for the AMQP 1.0 `durable` field.**
+- **The `mandatory` flag now applies to Direct Reply-To.**
+- **Rarely used `*.cacerts` settings were removed from `rabbitmq.conf`** — if you had these set, they no longer take effect.
+- **Quorum queue metric changes** — dashboards built against 4.2 metric names may need updating.
+
+## New required feature flags
+
+4.2.0 and later introduced new required feature flags for some functionality. Check the feature-flag status of an existing cluster before upgrading:
+
+```bash
+kubectl exec production-server-0 -n rabbitmq-system -- rabbitmqctl list_feature_flags
+```
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+If you're upgrading from 3.13 or 4.0/4.1, budget time to review feature flags and the mixed-version cluster compatibility notes before you start — not during the maintenance window. This is the step most likely to turn a planned upgrade into an incident.
+
+</Callout>
+
+## Recommended post-upgrade procedures
+
+- Verify all feature flags are enabled on all nodes once the rollout completes
+- Re-run your dashboard/alerting validation if you rely on quorum queue metrics
+- Confirm Warm Standby Replication links (if configured) reconnected cleanly — see [Warm Standby Replication](/docs/features/warm-standby-replication)
+
+For active troubleshooting during or after an upgrade, see [Troubleshooting](/docs/kubernetes/4.3/troubleshooting).

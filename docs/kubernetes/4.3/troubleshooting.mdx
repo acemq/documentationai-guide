@@ -1,0 +1,37 @@
+---
+title: Kubernetes 4.3 Troubleshooting
+description: Common issues and fixes when running Tanzu RabbitMQ on Kubernetes 4.3.
+---
+
+## Image pull failures
+
+See [Access Troubleshooting](/support/access-troubleshooting) first — most `ErrImagePull`/`ImagePullBackOff` failures trace back to a JFrog permission or `imagePullSecret` issue, not a Kubernetes problem.
+
+```bash
+kubectl describe pod <pod-name> -n rabbitmq-system
+# check the Events section for the underlying registry error
+```
+
+Confirm the `imagePullSecret` exists in the same namespace as the pod and is referenced correctly in the `RabbitmqCluster` spec.
+
+## Cluster won't form
+
+- Check that all nodes can resolve each other via the headless service — `kubectl exec <pod> -- nslookup <other-pod>.<service>`
+- Check the Erlang cookie is consistent across nodes (the Cluster Operator manages this automatically; a manually edited secret can break it)
+- Check `cluster_partition_handling` is set appropriately for your topology (`pause_minority` is a common production default)
+
+## Queues missing after redeploy
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+This is almost always a topology-as-code gap. If queues were declared by application code at connect time rather than as Messaging Topology Operator custom resources, they don't survive a full cluster redeploy the way CRD-declared topology does. See [Configuration → Topology as code](/docs/kubernetes/4.3/configuration).
+
+</Callout>
+
+## Rolling upgrade stuck
+
+Check `kubectl rollout status statefulset/<name> -n rabbitmq-system` and pod events. A stuck rollout is commonly a readiness probe failing due to insufficient resources during the upgrade window — temporarily raising resource requests can unstick it.
+
+For anything not covered here, see [Getting Help](/support/getting-help).

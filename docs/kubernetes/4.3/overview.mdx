@@ -1,0 +1,45 @@
+---
+title: Kubernetes 4.3 Overview
+description: What Tanzu RabbitMQ on Kubernetes 4.3 is, how it's packaged, and how it differs from open-source RabbitMQ on Kubernetes.
+---
+
+Tanzu RabbitMQ on Kubernetes packages the RabbitMQ Cluster Operator and Messaging Topology Operator as a certified, commercially supported distribution, installed together through the `tanzu-rabbitmq-operators` Helm chart.
+
+| Operator | Manages |
+|---|---|
+| **Cluster Operator** | The broker itself — the `RabbitmqCluster` CRD. StatefulSet, PVCs, services, the Erlang cookie, peer discovery, rolling upgrades. |
+| **Messaging Topology Operator** | What lives inside the broker — `Queue`, `Exchange`, `Binding`, `Policy`, `User`, `Permission`, `Vhost`, `Shovel`, `Federation`, `SchemaReplication` custom resources. |
+| **Default User Credential Updater** | Rotates the default broker user's credentials into a Kubernetes Secret on a schedule, so they aren't left static. |
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+All three components ship as one bundle, `tanzu-rabbitmq-operators`. Don't try to pin or upgrade them independently — install and upgrade them as the Helm chart provides. Tanzu does not repackage or wrap the open-source Cluster/Topology operators; it ships its own certified operator set pulled from AceMQ's JFrog repository. If you're moving from a community/Bitnami Kubernetes deployment, treat it as a new deployment, not an in-place upgrade — see [Migrating Between Formats](/migrations/between-formats).
+
+</Callout>
+
+## What's new in 4.3
+
+- Distributed Shovels (see [Distributed Shovels](/docs/features/distributed-shovels))
+- Delayed and scheduled messaging generally available
+- OAuth 2.0 opaque token support
+- SQL filter expression for Streams
+- Direct Reply-To for AMQP 1.0
+- Tooling for automated blue-green migrations from 3.13.x clusters to 4.x
+- Incoming and outgoing message interceptors for native protocols (AMQP 1.0, AMQP 0-9-1, MQTTv3, MQTTv5)
+- Local shovels, WebSocket optimization
+
+## Platform support
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+RKE2 is fully supported for Tanzu RabbitMQ, even though some upstream documentation lists only OpenShift and VKS explicitly. AceMQ runs multiple commercial customers on RKE2 without issue.
+
+</Callout>
+
+See [Prerequisites & Platforms](/docs/kubernetes/4.3/prerequisites) for the full supported-platform list, and [Install](/docs/kubernetes/4.3/install) to get running.
+
+For how to obtain the images and Helm chart from AceMQ, see [Get the Kubernetes Package](/packages/kubernetes) — that page has the exact `acemq.jfrog.io` paths.
