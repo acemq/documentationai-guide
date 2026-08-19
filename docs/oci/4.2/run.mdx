@@ -1,0 +1,17 @@
+---
+title: Run the OCI 4.2 Image
+description: Running the Tanzu RabbitMQ 4.2 container image.
+---
+
+Same run pattern as [OCI 4.3 → Run](/docs/oci/4.3/run) — substitute the `4.2.6` tag:
+
+```bash
+docker run -d --name rabbitmq \
+  -p 4369:4369 -p 5672:5672 -p 15672:15672 -p 25672:25672 \
+  -v /data/rabbitmq/data:/var/lib/rabbitmq/ \
+  -e RABBITMQ_ERLANG_COOKIE=<your-cookie> \
+  -h rmq1 \
+  acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6
+```
+
+See [OCI 4.3 → Run](/docs/oci/4.3/run) for the full port table and volume-mount explanations, which are unchanged on 4.2.
