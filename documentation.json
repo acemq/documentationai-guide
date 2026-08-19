@@ -1,123 +1,77 @@
 {
-  "name": "AceMQ Tanzu RabbitMQ Knowledge Base",
+  "name": "AceMQ Tanzu RabbitMQ Licensing",
+  "initialRoute": "start-here/introduction",
   "colors": {
-    "light": {
-      "brand": "#3B82F6"
-    },
-    "dark": {
-      "brand": "#87B1F6"
-    }
+    "light": { "brand": "#3B82F6" },
+    "dark": { "brand": "#87B1F6" }
   },
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
-        "icon": "book",
+        "tab": "Tanzu RabbitMQ Licensing",
+        "icon": "key",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Start Here",
             "icon": "rocket",
             "pages": [
-              {
-                "title": "Introduction",
-                "path": "introduction",
-                "icon": "home"
-              },
-              {
-                "title": "Quick Start",
-                "path": "quickstart",
-                "icon": "zap"
-              }
+              { "title": "Introduction", "path": "start-here/introduction" },
+              { "title": "What's Included", "path": "start-here/whats-included" },
+              { "title": "Choose a Format", "path": "start-here/choose-a-format" },
+              { "title": "Version Support Matrix", "path": "start-here/version-support-matrix" },
+              { "title": "What Is Tanzu?", "path": "start-here/what-is-tanzu" }
             ]
           },
           {
-            "group": "Core Concepts",
-            "icon": "layers",
+            "group": "Get Access",
+            "icon": "unlock",
             "pages": [
-              {
-                "title": "Concepts",
-                "path": "concepts",
-                "icon": "file-text"
-              }
+              { "title": "Onboarding", "path": "access/onboarding" },
+              { "title": "Your JFrog Account", "path": "access/jfrog-account" },
+              { "title": "Generate a Token", "path": "access/generate-token" },
+              { "title": "Navigating JFrog", "path": "access/navigating-jfrog" },
+              { "title": "Discover Versions", "path": "access/discover-versions" },
+              { "title": "Re-host in Your Registry", "path": "access/rehost-in-your-registry" },
+              { "title": "Pin by Digest", "path": "access/pin-by-digest" },
+              { "title": "Network Requirements", "path": "access/network-requirements" },
+              { "title": "Licensing", "path": "access/licensing" }
             ]
           },
           {
-            "group": "Guides",
-            "icon": "compass",
+            "group": "Get Your Packages",
+            "icon": "download",
             "pages": [
-              {
-                "title": "Authentication",
-                "path": "authentication",
-                "icon": "lock"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
-        "icon": "code",
-        "groups": [
-          {
-            "group": "Endpoints",
-            "icon": "terminal",
-            "openapi": "api-reference/openapi.yaml",
-            "pages": []
-          }
-        ]
-      },
-      {
-        "tab": "Help Center",
-        "icon": "help-circle",
-        "pages": [
-          {
-            "title": "Help Center",
-            "path": "help-center",
-            "icon": "home"
-          },
-          {
-            "group": "FAQs",
-            "icon": "help-circle",
-            "expandable": false,
-            "pages": [
-              {
-                "title": "Getting API Access",
-                "path": "help-center/faq/getting-api-access"
-              }
+              { "title": "OCI / Containers", "path": "packages/oci" },
+              { "title": "Choose a Variant", "path": "packages/choose-a-variant" },
+              { "title": "RPM", "path": "packages/rpm" },
+              { "title": "OVA", "path": "packages/ova" },
+              { "title": "Kubernetes", "path": "packages/kubernetes" },
+              { "title": "Open Source RabbitMQ", "path": "packages/open-source" },
+              { "title": "Air-Gapped Environments", "path": "packages/air-gapped" }
             ]
           },
           {
-            "group": "Troubleshooting",
-            "icon": "alert-circle",
-            "expandable": false,
+            "group": "Migrations",
+            "icon": "shuffle",
             "pages": [
-              {
-                "title": "Cannot Connect",
-                "path": "help-center/troubleshooting/cannot-connect"
-              }
+              { "title": "From Open Source / Bitnami", "path": "migrations/from-open-source" },
+              { "title": "Between Package Formats", "path": "migrations/between-formats" },
+              { "title": "Version Upgrades", "path": "migrations/version-upgrades" },
+              { "title": "Planning Checklist", "path": "migrations/planning-checklist" }
             ]
           },
           {
-            "group": "Guides",
-            "icon": "book-open",
-            "expandable": false,
+            "group": "Support",
+            "icon": "life-buoy",
             "pages": [
-              {
-                "title": "Configure Queue",
-                "path": "help-center/guides/configure-queue"
-              }
+              { "title": "Licensing FAQ", "path": "support/licensing-faq" },
+              { "title": "Access Troubleshooting", "path": "support/access-troubleshooting" },
+              { "title": "Version & Support Policy", "path": "support/version-policy" },
+              { "title": "FIPS", "path": "support/fips" },
+              { "title": "Getting Help", "path": "support/getting-help" },
+              { "title": "Glossary", "path": "support/glossary" },
+              { "title": "Changelog", "path": "support/changelog" }
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Changelog",
-        "icon": "clock",
-        "pages": [
-          {
-            "title": "Release History",
-            "path": "changelog",
-            "icon": "history"
           }
         ]
       }
