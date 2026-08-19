@@ -8,7 +8,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Tanzu RabbitMQ Licensing",
+        "tab": "Licensing & Access",
         "icon": "key",
         "groups": [
           {
@@ -71,6 +71,211 @@
               { "title": "Getting Help", "path": "support/getting-help" },
               { "title": "Glossary", "path": "support/glossary" },
               { "title": "Changelog", "path": "support/changelog" }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Kubernetes",
+        "icon": "hexagon",
+        "groups": [
+          {
+            "group": "4.3 (Current)",
+            "icon": "star",
+            "pages": [
+              { "title": "Overview", "path": "docs/kubernetes/4.3/overview" },
+              { "title": "Prerequisites & Platforms", "path": "docs/kubernetes/4.3/prerequisites" },
+              { "title": "Install", "path": "docs/kubernetes/4.3/install" },
+              { "title": "Configuration", "path": "docs/kubernetes/4.3/configuration" },
+              { "title": "Upgrade", "path": "docs/kubernetes/4.3/upgrade" },
+              { "title": "Known Issues", "path": "docs/kubernetes/4.3/known-issues" },
+              { "title": "Troubleshooting", "path": "docs/kubernetes/4.3/troubleshooting" },
+              { "title": "Security Fixes", "path": "docs/kubernetes/4.3/security-fixes" },
+              { "title": "Release Notes", "path": "docs/kubernetes/4.3/release-notes" }
+            ]
+          },
+          {
+            "group": "4.2 (LTS)",
+            "icon": "shield",
+            "pages": [
+              { "title": "Overview", "path": "docs/kubernetes/4.2/overview" },
+              { "title": "Prerequisites & Platforms", "path": "docs/kubernetes/4.2/prerequisites" },
+              { "title": "Install", "path": "docs/kubernetes/4.2/install" },
+              { "title": "Configuration", "path": "docs/kubernetes/4.2/configuration" },
+              { "title": "Upgrade", "path": "docs/kubernetes/4.2/upgrade" },
+              { "title": "Known Issues", "path": "docs/kubernetes/4.2/known-issues" },
+              { "title": "Troubleshooting", "path": "docs/kubernetes/4.2/troubleshooting" },
+              { "title": "Release Notes", "path": "docs/kubernetes/4.2/release-notes" }
+            ]
+          },
+          {
+            "group": "3.13 (LTS)",
+            "icon": "shield",
+            "pages": [
+              { "title": "Overview", "path": "docs/kubernetes/3.13/overview" },
+              { "title": "Prerequisites & Platforms", "path": "docs/kubernetes/3.13/prerequisites" },
+              { "title": "Install", "path": "docs/kubernetes/3.13/install" },
+              { "title": "Upgrade", "path": "docs/kubernetes/3.13/upgrade" },
+              { "title": "Known Issues", "path": "docs/kubernetes/3.13/known-issues" },
+              { "title": "Release Notes", "path": "docs/kubernetes/3.13/release-notes" }
+            ]
+          },
+          {
+            "group": "4.1",
+            "icon": "circle",
+            "pages": [
+              { "title": "Overview & Install", "path": "docs/kubernetes/4.1/overview" },
+              { "title": "Known Issues", "path": "docs/kubernetes/4.1/known-issues" }
+            ]
+          },
+          {
+            "group": "4.0 (Sunsetting)",
+            "icon": "clock",
+            "pages": [
+              { "title": "Overview & Install", "path": "docs/kubernetes/4.0/overview" }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "OCI",
+        "icon": "box",
+        "groups": [
+          {
+            "group": "4.3 (Current)",
+            "icon": "star",
+            "pages": [
+              { "title": "Overview", "path": "docs/oci/4.3/overview" },
+              { "title": "Run the Image", "path": "docs/oci/4.3/run" },
+              { "title": "Configuration", "path": "docs/oci/4.3/configuration" },
+              { "title": "Upgrade", "path": "docs/oci/4.3/upgrade" },
+              { "title": "Known Issues", "path": "docs/oci/4.3/known-issues" },
+              { "title": "Release Notes", "path": "docs/oci/4.3/release-notes" }
+            ]
+          },
+          {
+            "group": "4.2 (LTS)",
+            "icon": "shield",
+            "pages": [
+              { "title": "Overview", "path": "docs/oci/4.2/overview" },
+              { "title": "Run the Image", "path": "docs/oci/4.2/run" },
+              { "title": "Configuration", "path": "docs/oci/4.2/configuration" },
+              { "title": "Release Notes", "path": "docs/oci/4.2/release-notes" }
+            ]
+          },
+          {
+            "group": "3.13 (LTS)",
+            "icon": "shield",
+            "pages": [
+              { "title": "Overview & Run", "path": "docs/oci/3.13/overview" }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "OVA",
+        "icon": "server",
+        "groups": [
+          {
+            "group": "4.3 (Current)",
+            "icon": "star",
+            "pages": [
+              { "title": "Overview", "path": "docs/ova/4.3/overview" },
+              { "title": "Import & Configure", "path": "docs/ova/4.3/import" },
+              { "title": "Known Issues & Troubleshooting", "path": "docs/ova/4.3/troubleshooting" },
+              { "title": "Release Notes", "path": "docs/ova/4.3/release-notes" }
+            ]
+          },
+          {
+            "group": "4.2 (LTS)",
+            "icon": "shield",
+            "pages": [
+              { "title": "Overview & Import", "path": "docs/ova/4.2/overview" }
+            ]
+          },
+          {
+            "group": "3.13 (LTS)",
+            "icon": "shield",
+            "pages": [
+              { "title": "Overview & Import", "path": "docs/ova/3.13/overview" }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "RPM",
+        "icon": "terminal",
+        "groups": [
+          {
+            "group": "4.3 (Current)",
+            "icon": "star",
+            "pages": [
+              { "title": "Overview", "path": "docs/rpm/4.3/overview" },
+              { "title": "Install", "path": "docs/rpm/4.3/install" },
+              { "title": "Supported Platforms", "path": "docs/rpm/4.3/platforms" },
+              { "title": "Release Notes", "path": "docs/rpm/4.3/release-notes" }
+            ]
+          },
+          {
+            "group": "4.2 (LTS)",
+            "icon": "shield",
+            "pages": [
+              { "title": "Overview & Install", "path": "docs/rpm/4.2/overview" }
+            ]
+          },
+          {
+            "group": "4.1",
+            "icon": "circle",
+            "pages": [
+              { "title": "Overview & Install", "path": "docs/rpm/4.1/overview" }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Open Source",
+        "icon": "code",
+        "groups": [
+          {
+            "group": "4.3",
+            "icon": "star",
+            "pages": [
+              { "title": "Overview & Erlang Requirements", "path": "docs/open-source/4.3/overview" },
+              { "title": "Release Notes", "path": "docs/open-source/4.3/release-notes" }
+            ]
+          },
+          {
+            "group": "4.2",
+            "icon": "shield",
+            "pages": [
+              { "title": "Overview & Erlang Requirements", "path": "docs/open-source/4.2/overview" }
+            ]
+          },
+          {
+            "group": "3.13",
+            "icon": "shield",
+            "pages": [
+              { "title": "Overview & Erlang Requirements", "path": "docs/open-source/3.13/overview" }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exclusive Features",
+        "icon": "layers",
+        "groups": [
+          {
+            "group": "Reference",
+            "icon": "book",
+            "pages": [
+              { "title": "Feature Availability by Version", "path": "docs/features/availability-matrix" },
+              { "title": "Warm Standby Replication", "path": "docs/features/warm-standby-replication" },
+              { "title": "Delayed Queues", "path": "docs/features/delayed-queues" },
+              { "title": "Intra-cluster Compression", "path": "docs/features/intra-cluster-compression" },
+              { "title": "AMQP 1.0 over WebSocket", "path": "docs/features/amqp10-websocket" },
+              { "title": "OAuth 2.0 Forward Proxy & Opaque Tokens", "path": "docs/features/oauth2" },
+              { "title": "LDAP Runtime Configuration", "path": "docs/features/ldap" },
+              { "title": "Distributed Shovels", "path": "docs/features/distributed-shovels" }
             ]
           }
         ]
