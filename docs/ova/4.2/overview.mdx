@@ -1,0 +1,16 @@
+---
+title: OVA 4.2 Overview & Import
+description: The Tanzu RabbitMQ 4.2 LTS OVA appliance.
+---
+
+4.2 is AceMQ's recommended LTS stream — see [Kubernetes 4.2 Overview](/docs/kubernetes/4.2/overview). Import and configuration steps are identical to [OVA 4.3](/docs/ova/4.3/import) — Photon OS base, VMXNET3 adapter, `bitnami`/`bitnami` default credentials (change immediately), manual network configuration after boot.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Same Photon OS firewall and NSX caveats apply as on 4.3 — see [OVA 4.3 Overview](/docs/ova/4.3/overview) for the full explanation before deploying a multi-node cluster.
+
+</Callout>
+
+See [Get the OVA Package](/packages/ova) for the download path — filename pattern is `tanzu-rabbitmq-standalone-4.2.6.ova`, with a `-fips` variant.

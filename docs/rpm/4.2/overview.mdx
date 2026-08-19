@@ -1,0 +1,13 @@
+---
+title: RPM 4.2 Overview & Install
+description: The Tanzu RabbitMQ 4.2 LTS RPM.
+---
+
+4.2 is AceMQ's recommended LTS stream. Install steps are identical to [RPM 4.3](/docs/rpm/4.3/install) — no YUM repo, direct file download, same three prerequisites (Erlang zero-dependency build, `logrotate`, GPG key).
+
+```bash
+sudo rpm -ivh tanzu-rabbitmq-server-4.2.6-1.el9.x86_64.rpm
+sudo systemctl enable --now rabbitmq-server
+```
+
+See [Get the RPM Package](/packages/rpm) for the download path and prerequisite steps in full.
