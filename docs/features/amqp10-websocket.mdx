@@ -1,0 +1,32 @@
+---
+title: AMQP 1.0 over WebSocket
+description: Run AMQP 1.0 over a WebSocket connection, with proxy protocol and configurable frame limits.
+---
+
+AMQP 1.0 over WebSocket lets AMQP 1.0 clients connect over a WebSocket transport — useful behind load balancers and proxies that only forward HTTP(S) traffic.
+
+## Configuration
+
+```
+web_amqp.ws_path = /some/other/path
+web_amqp.proxy_protocol = true
+web_amqp.ws_opts.max_frame_size = 10000000
+web_amqp.ws_opts.idle_timeout = 120000
+```
+
+- `max_frame_size` is in bytes (this example: 10MB) and applies to WebSocket frames only — not the same as the AMQP 1.0 `max-frame-size`. There's no 1:1 mapping between an AMQP frame and a WebSocket frame.
+- `idle_timeout` is in milliseconds. If unset, Cowboy's default one-minute timeout applies.
+
+## Clients
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+There is currently no official RabbitMQ AMQP 1.0 client library for JavaScript. Use an open-source AMQP 1.0 JavaScript library such as `rhea` — note that these can typically speak AMQP 1.0 but cannot declare exchanges, queues, or bindings themselves. Declare topology from a server-side client or the Messaging Topology Operator instead.
+
+</Callout>
+
+## Licensing
+
+Commercial-only. See [What's Included](/start-here/whats-included).

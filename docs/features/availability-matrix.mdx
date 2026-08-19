@@ -1,0 +1,28 @@
+---
+title: Feature Availability by Version
+description: Which Tanzu RabbitMQ exclusive features are available in which version and format.
+---
+
+These features are commercial-only — not available in Open Source RabbitMQ — and shared across Kubernetes, OCI, and OVA. Availability by version:
+
+| Feature | 3.13 | 4.0 | 4.1 | 4.2 | 4.3 |
+|---|---|---|---|---|---|
+| Warm Standby Replication | ✓ | ✓ | ✓ | ✓ (CRD-based) | ✓ (CRD-based) |
+| Delayed Queues | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Intra-cluster Compression | ✓ | ✓ | ✓ | ✓ | ✓ |
+| AMQP 1.0 over WebSocket | ✓ | ✓ | ✓ | ✓ | ✓ |
+| OAuth 2.0 Forward Proxy | – | ✓ | ✓ | ✓ | ✓ |
+| OAuth 2.0 Opaque Tokens | – | – | – | – | ✓ |
+| LDAP Runtime Config | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Distributed Shovels | – | – | – | – | ✓ |
+| SQL Filter Expressions (Streams) | – | – | – | ✓ | ✓ |
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+On Kubernetes 4.2 and later, Warm Standby Replication is configured on the `RabbitmqCluster` CRD directly — the older standalone Standby Replication Operator was removed. Older documentation you find elsewhere may still describe that operator; ignore it for 4.2+.
+
+</Callout>
+
+Each feature has its own reference page below. For how a license enables these, see [What Is Tanzu?](/start-here/what-is-tanzu).

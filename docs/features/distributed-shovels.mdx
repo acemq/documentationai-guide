@@ -1,0 +1,23 @@
+---
+title: Distributed Shovels
+description: A redesigned Shovel plugin available from 4.3, distributing shovel workers across cluster nodes.
+---
+
+Available from 4.3. Distributed Shovels redesign the standard Shovel plugin so that shovel workers are distributed across cluster nodes rather than running on a single node, improving resilience and throughput for shovel-based replication.
+
+## Differences from the standard Shovel plugin
+
+- Shovel workers can run on any node in the cluster, not just the node where the shovel was declared
+- Failover of a shovel worker to another node happens automatically if its original node goes down
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+If you're using Shovels for cross-cluster or cross-region replication today on an older version, this is one of the concrete reasons to prioritize the 4.3 upgrade — the old single-node shovel behavior was a real availability gap that distributed shovels close.
+
+</Callout>
+
+## Licensing
+
+Commercial-only, available from 4.3. See [Feature Availability by Version](/docs/features/availability-matrix).

@@ -1,0 +1,60 @@
+---
+title: Delayed Queues
+description: Schedule messages for future delivery using the Tanzu RabbitMQ delayed-message-exchange plugin.
+---
+
+Delayed Queues let you publish a message that isn't delivered to consumers until a specified delay has elapsed — useful for reminders, scheduled jobs, and retry-with-backoff patterns.
+
+## Enable the plugin
+
+```bash
+rabbitmq-plugins enable rabbitmq_delayed_message_exchange
+```
+
+## Quick start
+
+```bash
+# Declare a delayed exchange
+channel.exchange_declare(
+  exchange='my-delayed-exchange',
+  exchange_type='x-delayed-message',
+  durable=True,
+  arguments={'x-delayed-type': 'topic'}
+)
+
+# Bind a regular queue to it
+channel.queue_declare(queue='notifications', durable=True)
+channel.queue_bind(exchange='my-delayed-exchange', queue='notifications', routing_key='user.notification.*')
+
+# Publish with a 5-second delay
+channel.basic_publish(
+  exchange='my-delayed-exchange',
+  routing_key='user.notification.welcome',
+  body='Welcome notification',
+  properties=pika.BasicProperties(headers={'x-delay': 5000})
+)
+```
+
+## How it works
+
+Delayed messages are stored internally (RocksDB-backed) until their delay elapses, then routed as normal. This means delayed messages survive a broker restart.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Delayed Queues are not a substitute for a dead-letter/retry pattern at scale — they're best for genuinely time-scheduled delivery (reminders, scheduled jobs), not as a general backoff mechanism for high-volume retry traffic. At high volume, watch RocksDB compaction behavior; AceMQ has seen this become a tuning concern on very high-throughput delayed-queue workloads.
+
+</Callout>
+
+## Managing replicas and internal resources
+
+Delayed messages are managed internally per-node. Deleting a queue with pending delayed messages cleans up the associated internal resources automatically.
+
+## Troubleshooting
+
+If delayed messages aren't delivering on schedule, check that the exchange type is `x-delayed-message` and that the `x-delay` header is set in milliseconds, not seconds.
+
+## Licensing
+
+Delayed Queues is a commercial-only feature. See [What's Included](/start-here/whats-included).

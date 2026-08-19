@@ -1,0 +1,84 @@
+---
+title: Warm Standby Replication
+description: Disaster-recovery replication between a primary and one or more standby Tanzu RabbitMQ clusters.
+---
+
+Warm Standby Replication links a primary (upstream) cluster to one or more standby (downstream) clusters for disaster recovery. Replication is asynchronous, and standby clusters can run a different broker version than the primary.
+
+## What is replicated
+
+- Cluster schema (vhosts, queues, exchanges, bindings, policies, users) via **Continuous Schema Replication**
+- Message data via **Standby Message Replication**
+
+## How it works
+
+A standby cluster connects to the primary and continuously syncs schema and message data. Connection endpoints and credentials are configured as runtime parameters, so they can be reconfigured without a node restart.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Provide a list of connection endpoints on the upstream side, not a single address — an upstream node connects to the first reachable endpoint in the list, which makes replication resilient to individual node failures on the upstream side.
+
+</Callout>
+
+## Setting it up
+
+<Steps>
+  <Step title="Enable the plugins" icon="toggle-right">
+
+Enable Continuous Schema Replication and Standby Message Replication on both the primary and standby clusters.
+
+  </Step>
+  <Step title="Configure the upstream (primary)" icon="upload">
+
+Set `schema_definition_sync.operating_mode = upstream` and list connection endpoints.
+
+  </Step>
+  <Step title="Configure the downstream (standby)" icon="download">
+
+Point the standby at the upstream's connection endpoints and credentials.
+
+  </Step>
+  <Step title="Verify replication is working" icon="check">
+
+Check replication status via the CLI or HTTP API before relying on it for DR.
+
+  </Step>
+</Steps>
+
+## Promoting a standby for disaster recovery
+
+<Steps>
+  <Step title="Disconnect the downstream from the upstream" icon="unplug">
+
+```bash
+rabbitmqctl disconnect_standby_replication_downstream
+```
+
+  </Step>
+  <Step title="Wait, then promote" icon="clock">
+
+Allow time for in-flight replication to settle before promoting the standby to primary.
+
+  </Step>
+  <Step title="Reconnect downstream replication if needed" icon="plug">
+
+```bash
+rabbitmqctl connect_standby_replication_downstream
+```
+
+  </Step>
+</Steps>
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Test your promotion runbook before you need it for real. AceMQ has seen customers configure Warm Standby Replication and never actually run a promotion drill — the first time it's tested for real is during an actual outage, which is the worst possible time to discover a gap in the runbook.
+
+</Callout>
+
+## Licensing
+
+Warm Standby Replication is a commercial-only feature, included with your Tanzu license. See [What's Included](/start-here/whats-included).

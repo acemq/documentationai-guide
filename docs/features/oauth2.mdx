@@ -1,0 +1,26 @@
+---
+title: OAuth 2.0 Forward Proxy & Opaque Tokens
+description: Forward proxy support and opaque token support for the OAuth 2.0 authentication backend plugin.
+---
+
+Tanzu RabbitMQ extends the open-source OAuth 2.0 plugin with two commercial-only capabilities.
+
+## Forward proxy support
+
+When RabbitMQ needs to reach your authorization server's endpoints (OpenID Discovery, JWKS) through an explicit forward proxy, it establishes an HTTP tunnel using the `HTTP CONNECT` method. Configure the proxy settings alongside your standard OAuth 2.0 plugin configuration.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+This matters specifically for locked-down enterprise networks where the broker has no direct route to your identity provider. Without it, OAuth 2.0 setups in air-gapped or heavily firewalled environments simply can't reach the authorization server at all.
+
+</Callout>
+
+## Opaque token support
+
+Available from 4.3. Supports OAuth 2.0 deployments that issue opaque (non-JWT) access tokens, by having RabbitMQ call back to the authorization server's introspection endpoint rather than validating a self-contained JWT locally.
+
+## Licensing
+
+Commercial-only. See [What's Included](/start-here/whats-included) and [Feature Availability by Version](/docs/features/availability-matrix) for which streams support opaque tokens.

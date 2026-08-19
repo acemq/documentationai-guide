@@ -1,0 +1,18 @@
+---
+title: LDAP Runtime Configuration
+description: Change LDAP authentication and authorization plugin queries at runtime, without a node restart.
+---
+
+Tanzu RabbitMQ extends the open-source LDAP AuthN/AuthZ plugin with the ability to change LDAP queries at runtime, rather than requiring a configuration file change and node restart.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+This is particularly useful during an LDAP migration or schema change — you can adjust queries incrementally and verify each change against live authentication traffic, rather than needing a maintenance window for every LDAP query adjustment.
+
+</Callout>
+
+## Licensing
+
+Commercial-only. See [What's Included](/start-here/whats-included).

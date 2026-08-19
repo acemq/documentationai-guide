@@ -1,0 +1,41 @@
+---
+title: Intra-cluster Compression
+description: Compress inter-node traffic between Tanzu RabbitMQ cluster nodes to reduce bandwidth usage.
+---
+
+RabbitMQ nodes communicate with peers and CLI tools over dedicated TCP connections. In a heavily loaded system, this internode traffic can approach or saturate available bandwidth. Intra-cluster Compression reduces that load, in some cases by more than 50% depending on workload.
+
+## Enable it
+
+Set the environment variable on every node that should use compression:
+
+```bash
+RABBITMQ_SERVER_START_ARGS="-proto_dist inet_tcp_compress"
+```
+
+Nodes with this variable set negotiate a shared compression algorithm automatically. If both conditions below aren't met, traffic flows uncompressed with no error:
+
+- Both nodes must run Tanzu RabbitMQ (compression isn't supported on open-source RabbitMQ)
+- Both nodes must share at least one compression algorithm in common
+
+## Limitations
+
+<Callout kind="warning">
+
+**Intra-cluster compression and TLS are mutually exclusive.** Both replace the same distribution module (`inet_tcp_dist` or the TLS-enabled `inet_tls_dist`), and only one module can be active at a time. If you need TLS on inter-node traffic, you cannot also use this feature.
+
+</Callout>
+
+- Only Linux/amd64 is supported in the current packaging — the compression code relies on native libraries.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Because a node without compression support just falls back to uncompressed traffic silently, verify compression is actually active after enabling it — don't assume the environment variable alone is sufficient proof. Check via cluster diagnostics that the negotiated distribution module is the compressed one.
+
+</Callout>
+
+## Licensing
+
+Commercial-only. See [What's Included](/start-here/whats-included).
