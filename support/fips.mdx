@@ -1,0 +1,22 @@
+---
+title: FIPS
+description: Which Tanzu RabbitMQ artifacts are FIPS-ready, what the RPM requires, and why post-quantum TLS isn't available in FIPS mode.
+---
+
+## Which artifacts are FIPS-ready
+
+**FIPS-mode Erlang on OpenSSL 3 ships out of the box in the OVA, the OCI container, and the Kubernetes Helm chart.** These are the FIPS-ready artifacts — see [Choose a Variant](/packages/choose-a-variant) for the `-fips` image tag and [OVA](/packages/ova) for the FIPS OVA filename.
+
+<Callout kind="warning">
+
+**The RHEL RPM installs the broker but delivers no FIPS posture by itself.** No FIPS RPM artifact exists. FIPS on RPM requires you to boot the host with `fips=1` against RHEL's FIPS 140-3 validated OpenSSL provider, and start the Erlang crypto app with `fips_mode=true`. This is supported, but it's customer-owned host integration — not something delivered by the package.
+
+</Callout>
+
+## Post-quantum TLS
+
+Post-quantum TLS is not available in any supported Tanzu RabbitMQ release, and not for a version-specific reason — it's structural. The Erlang `crypto` and `ssl` applications are constrained to TLS 1.2 in FIPS mode. **FIPS-validated Erlang and PQ TLS 1.3 hybrid key exchange are mutually exclusive** in the current RabbitMQ/Erlang stack.
+
+## Getting the FIPS variant
+
+See [Choose a Variant](/packages/choose-a-variant) for containers, and [OVA](/packages/ova) for the FIPS OVA. There is no FIPS ARM64 combination for the OVA.

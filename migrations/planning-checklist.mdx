@@ -1,0 +1,13 @@
+---
+title: Planning Checklist
+description: A short pre-migration checklist for licensing-specific migrations — from open source, between formats, or between versions.
+---
+
+Before starting any migration in this section, confirm:
+
+- [ ] **Entitlement covers the target format.** Check [What's Included](/start-here/whats-included) — all formats are covered under a standard license, but confirm if you're unsure.
+- [ ] **JFrog access is working** for everyone who needs to pull the new package. See [Your JFrog Account](/access/jfrog-account) and [Generate a Token](/access/generate-token).
+- [ ] **You've identified the current supported minor** of your target version stream — see [Version & Support Policy](/support/version-policy).
+- [ ] **You have a rollback plan that doesn't rely on downgrading RabbitMQ itself** — upgrades are forward-only (see [Version Upgrades](/migrations/version-upgrades)). Back up data before cutover, not before install.
+- [ ] **You're treating this as a new deployment with a data migration**, not an in-place conversion — see [From Open Source / Bitnami](/migrations/from-open-source) or [Between Package Formats](/migrations/between-formats) for why.
+- [ ] **You have a support contact if something goes wrong mid-migration.** See [Getting Help](/support/getting-help).

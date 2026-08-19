@@ -1,0 +1,38 @@
+---
+title: Version Upgrades
+description: What changes about access and licensing — not broker behavior — when you move to a newer Tanzu RabbitMQ stream.
+---
+
+This page covers the **access and licensing** side of a version upgrade. For broker-level upgrade mechanics, see [Broadcom TechDocs](https://techdocs.broadcom.com) or your AceMQ Premium support resources.
+
+## Upgrades are forward-only
+
+<Callout kind="warning">
+
+**You cannot roll back a RabbitMQ version.** If you're testing an upgrade, do it somewhere you can tear down and redeploy from scratch — not against data you can't afford to lose if you decide to revert.
+
+</Callout>
+
+## Jump upgrades
+
+A licensed Tanzu build can perform **jump upgrades** — skipping intermediate versions — in situations the community edition cannot. If you're planning a multi-version jump (for example 3.13 straight to 4.3), this is one of the concrete benefits of being licensed rather than on the community build.
+
+## Before you upgrade
+
+<Steps>
+  <Step title="Check the target version's support window" icon="calendar">
+
+See [Version Support Matrix](/start-here/version-support-matrix) — don't upgrade onto a stream that's close to its own end of commercial support.
+
+  </Step>
+  <Step title="Confirm the current minor release" icon="check">
+
+Only the current minor of a stream is the actively Tanzu-supported build — see [Version & Support Policy](/support/version-policy). Pull the current patch, not an older one you may have bookmarked.
+
+  </Step>
+  <Step title="Pull the new package" icon="download">
+
+See [Get Your Packages](/packages/oci) for your format.
+
+  </Step>
+</Steps>

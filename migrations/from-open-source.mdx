@@ -1,0 +1,47 @@
+---
+title: Migrating from Open Source / Bitnami
+description: What actually happens when you license an existing Bitnami or open-source RabbitMQ deployment to Tanzu — it's a new deployment, not an in-place upgrade.
+---
+
+This is the single most consequential fact for a migrating customer, and it's easy to miss because "licensing" sounds like it should be a config change:
+
+<Callout kind="warning">
+
+**Moving from Bitnami/open-source RabbitMQ to a licensed Tanzu build is a new deployment, not an in-place upgrade.** Tanzu does not repackage the open-source Cluster/Topology operators or reuse the Bitnami images — it ships its own certified operator set and images, pulled from AceMQ's JFrog repository rather than the community source. Plan for a parallel cluster and a cutover, not an upgrade command.
+
+</Callout>
+
+## What carries over and what doesn't
+
+| | Carries over | Does not carry over |
+|---|---|---|
+| **Configuration** | Config values map closely, close to 1:1 | — |
+| **Kubernetes** | Your PVC (storage) setup and provisioning work | The **contents** of those PVCs — existing queue/message data doesn't upgrade in place into the new Tanzu-managed cluster |
+| **Licensing** | — | Your existing Bitnami deployment continues to receive AceMQ support during migration — see [Licensing FAQ](/support/licensing-faq) |
+
+## Migration approach
+
+<Steps>
+  <Step title="Get access and pull the Tanzu package" icon="download">
+
+See [Get Your Packages](/packages/oci) for your target format. Your existing Bitnami/OSS deployment keeps running during this step.
+
+  </Step>
+  <Step title="Deploy a parallel Tanzu cluster" icon="copy">
+
+Do not attempt to upgrade the existing deployment in place. Stand up the Tanzu cluster alongside it, using the same configuration values (they map closely).
+
+  </Step>
+  <Step title="Migrate data and cut over" icon="arrow-right-left">
+
+Move queues/data using RabbitMQ's own federation, shovel, or export/import tooling — this is a broker-level migration, not a licensing one. See [Broadcom TechDocs](https://techdocs.broadcom.com) or your AceMQ Premium support resources for the mechanics.
+
+  </Step>
+  <Step title="Decommission the old deployment" icon="check-circle">
+
+Once traffic has cut over and you've validated the new cluster, retire the Bitnami/OSS deployment.
+
+  </Step>
+</Steps>
+
+See [Planning Checklist](/migrations/planning-checklist) before you start.

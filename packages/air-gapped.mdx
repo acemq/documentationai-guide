@@ -1,0 +1,43 @@
+---
+title: Air-Gapped Environments
+description: How to get Tanzu RabbitMQ packages into an environment with no direct internet access.
+---
+
+Two of AceMQ's delivery formats are naturally air-gap-capable, because they're direct file downloads rather than a live registry pull:
+
+- **RPM, OVA, and tarball artifacts** from `ossrabbitmq-rabbitmq-oss` — download from a connected machine, transfer via your organization's approved file-transfer tool, then install offline. See [RPM](/packages/rpm) and [OVA](/packages/ova).
+- **Container images**, via `docker save`/`docker load`
+
+## Container images, offline
+
+<Steps>
+  <Step title="Pull and save on a connected machine" icon="download">
+
+```bash
+docker pull acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6
+docker save acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6 \
+  -o tanzu-rabbitmq-4.2.6.tar
+```
+
+  </Step>
+  <Step title="Transfer the tarball" icon="arrow-right">
+
+Move the `.tar` file into your air-gapped environment using your organization's approved transfer process.
+
+  </Step>
+  <Step title="Load and re-tag" icon="upload">
+
+```bash
+docker load -i tanzu-rabbitmq-4.2.6.tar
+docker tag acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6 \
+  <your-internal-registry>/vmware-tanzu-rabbitmq:4.2.6
+```
+
+  </Step>
+</Steps>
+
+<Callout kind="tip">
+
+For RPM downloads specifically, no token is required for a plain browser download from the JFrog UI — only repository-pull authentication requires a token. This makes the RPM path the simplest for a fully air-gapped workflow: download on a connected machine, transfer the file, install.
+
+</Callout>

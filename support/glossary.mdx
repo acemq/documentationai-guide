@@ -1,0 +1,20 @@
+---
+title: Glossary
+description: Terms used throughout this knowledge base.
+---
+
+**Tanzu RabbitMQ** — The commercial distribution of RabbitMQ: the open-source core, pre-configured with secure defaults, plus commercial-only plugins and AceMQ's support SLA. See [What Is Tanzu?](/start-here/what-is-tanzu)
+
+**Community edition** — The freely available, unsupported build. Capped at 3.13.7 without a commercial license.
+
+**LTS (Long-Term Support)** — A release stream with an extended commercial support window. Currently 4.2 and 3.13 have the longest remaining LTS windows — see [Version Support Matrix](/start-here/version-support-matrix).
+
+**Smart-remote** — A JFrog repository type that proxies and caches an upstream registry (Broadcom's, in this case). The first pull of a given version may be slower while it's cached; subsequent pulls are fast.
+
+**Entitlement** — What your license covers. Not enforced by a license key — it's embedded in the commercial build itself.
+
+**Deploy permission** — A JFrog permission distinct from read, required for your tooling to cache pulled images. Missing it is the most common cause of a failed containerized pull. See [Access Troubleshooting](/support/access-troubleshooting).
+
+**Jump upgrade** — Upgrading across multiple versions in one step, without stopping at every intermediate release. Available on licensed builds, not the community edition.
+
+**FIPS** — Federal Information Processing Standards compliance. See [FIPS](/support/fips) for which artifacts support it.

@@ -1,0 +1,25 @@
+---
+title: Version & Support Policy
+description: How Tanzu RabbitMQ version support actually works — stream-level dates, current-minor licensing, and Erlang/OTP compatibility.
+---
+
+## Two different facts, often conflated
+
+1. **How long a release stream is commercially supported** — see [Version Support Matrix](/start-here/version-support-matrix) for the dates.
+2. **Which specific minor release within that stream is the currently licensed Tanzu build.** Only the current minor of an LTS line is Tanzu-supported — an older minor within an otherwise-supported stream can already be off the licensed build. Always pull the current patch (see [Discover Versions](/access/discover-versions)) rather than one you have bookmarked.
+
+These are separate facts. "3.13 is supported through 2029" does not mean every 3.13.x build is current.
+
+## Erlang/OTP compatibility
+
+| OTP version | Status |
+|---|---|
+| 26, 27 | Fully supported |
+| 28 | Partially supported in 4.2.x, and only for brand-new clusters — upgrading a Khepri-enabled cluster from 27 to 28 has a known rolling-upgrade issue |
+| 28 on 4.3 | **Not certified** |
+
+## Upgrade guidance
+
+- Upgrades are forward-only — no rollback. See [Version Upgrades](/migrations/version-upgrades).
+- A licensed Tanzu build supports jump upgrades across versions; the community build does not.
+- If you're on a stream approaching end of commercial support (currently 4.0, ending 30 Sep 2026), start planning your move well ahead of that date.

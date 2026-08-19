@@ -1,0 +1,15 @@
+---
+title: Access Troubleshooting
+description: Fixes for the most common JFrog access and pull errors.
+---
+
+| Error | Cause | Fix |
+|---|---|---|
+| `No Access Privileges. You do not have permissions defined for any repository.` | Your group wasn't fully attached during provisioning — a known intermittent issue | Contact AceMQ support to re-verify your group assignment |
+| `manifest for ...vmware-tanzu-rabbitmq:latest not found` | No `latest` tag exists, and/or you lack read permission on the remote repo | Pull an explicit version tag — see [Discover Versions](/access/discover-versions) — and confirm read permission |
+| `Rejected artifact download request: User ... is not permitted to deploy ... into 'rabbitmq-docker-remote-cache'` | Missing **deploy** permission — read alone isn't enough for a smart-remote pull | See [Your JFrog Account](/access/jfrog-account); ask AceMQ to add deploy permission to your group |
+| `Binding token to existing user ... is allowed only through the user profile page.` | Token was generated somewhere other than the profile page | Regenerate the token from **Edit Profile → Identity Tokens** — see [Generate a Token](/access/generate-token) |
+| "I don't think we have access yet" / invite never arrived | Invitation email landed in spam or an unmonitored inbox | Check spam/updates folders before assuming it wasn't sent; contact AceMQ support to resend |
+| Slow first pull of a version you know exists | Expected — the smart-remote is caching the image layers from Broadcom on first request | Subsequent pulls of the same tag are fast; see [Discover Versions](/access/discover-versions) |
+
+If none of these match what you're seeing, see [Getting Help](/support/getting-help).

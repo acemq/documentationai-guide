@@ -1,0 +1,40 @@
+---
+title: Migrating Between Package Formats
+description: Moving between Tanzu RabbitMQ delivery formats — for example VM-based OVA to Kubernetes, or RPM to containers — without changing your license.
+---
+
+Your AceMQ license isn't tied to a package format — it covers OCI, RPM, OVA, Kubernetes, and Open Source equally (see [What's Included](/start-here/whats-included)). If your infrastructure changes but your entitlement doesn't, moving formats is a deployment exercise, not a re-licensing one.
+
+## Common moves
+
+- **VM (OVA or RPM) → Kubernetes** — typically driven by wanting managed lifecycle (HA, reconciliation, scaling). See [Kubernetes](/packages/kubernetes).
+- **RPM → containers (OCI)** — typically driven by containerizing existing infrastructure. See [OCI / Containers](/packages/oci).
+- **Standalone OCI → Kubernetes** — typically driven by outgrowing a single-container or Compose deployment.
+
+<Callout kind="info">
+
+As with migrating from open source (see [From Open Source / Bitnami](/migrations/from-open-source)), treat a format change as **a new deployment with a data migration**, not an in-place conversion. There's no tooling that converts a running OVA instance into a Kubernetes-managed one.
+
+</Callout>
+
+## Approach
+
+<Steps>
+  <Step title="Pull the new format" icon="download">
+
+Go to [Get Your Packages](/packages/oci) for your target format's quickstart.
+
+  </Step>
+  <Step title="Stand up in parallel" icon="copy">
+
+Deploy the new format alongside your existing one. Match configuration values — they're broker-level settings, not format-specific.
+
+  </Step>
+  <Step title="Migrate data and cut over" icon="arrow-right-left">
+
+Use RabbitMQ's own replication/federation tooling to move data, then cut traffic over.
+
+  </Step>
+</Steps>
+
+See [Planning Checklist](/migrations/planning-checklist) before you start.
