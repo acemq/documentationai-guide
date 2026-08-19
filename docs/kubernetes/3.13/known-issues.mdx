@@ -1,0 +1,12 @@
+---
+title: Kubernetes 3.13 Known Issues
+description: Known issues on Tanzu RabbitMQ 3.13.
+---
+
+<Callout kind="warning">
+
+**Quorum queue leader-election deadlock risk.** AceMQ recommends against deploying new quorum queues on 3.13 until you've confirmed current guidance — the safer path for quorum-queue-centric workloads is [4.2](/docs/kubernetes/4.2/known-issues) or [4.3](/docs/kubernetes/4.3/known-issues), where this class of issue is resolved.
+
+</Callout>
+
+See [Support → Version & Support Policy](/support/version-policy) for the separate rule that only the current 3.13 minor is the actively licensed Tanzu build.

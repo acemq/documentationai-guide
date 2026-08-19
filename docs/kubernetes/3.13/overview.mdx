@@ -1,0 +1,26 @@
+---
+title: Kubernetes 3.13 Overview
+description: Tanzu RabbitMQ on Kubernetes 3.13 — the other long-life LTS stream, supported through December 2029.
+---
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+3.13 is the community-edition-derived LTS stream, commercially supported through 31 December 2029 — longer than 4.3, though shorter than 4.2. Customers deliberately stay on 3.13 to avoid the classic mirrored-queue-to-quorum-queue migration required to move onto 4.x. If that migration isn't a near-term priority, 3.13 is a legitimate long-term choice, not just a legacy holdover. See [Version Support Matrix](/start-here/version-support-matrix).
+
+</Callout>
+
+## What's different from 4.x
+
+- Mnesia-based metadata store by default (Khepri became default starting 4.2)
+- Classic mirrored queues are still present — Broadcom is pushing customers off this pattern, which is part of why extended 3.13 support was not granted past 2029
+- Warm Standby Replication uses the standalone Standby Replication Operator, not the CRD-based configuration introduced in 4.2
+
+<Callout kind="warning">
+
+Do not deploy new quorum queues on 3.13 without checking current guidance first — a known leader-election deadlock risk has been reported on this stream. If quorum queues are central to your design, prioritize moving to [4.2](/docs/kubernetes/4.2/overview) or [4.3](/docs/kubernetes/4.3/overview).
+
+</Callout>
+
+See [Get the Kubernetes Package](/packages/kubernetes) to pull the 3.13 chart and images from AceMQ.

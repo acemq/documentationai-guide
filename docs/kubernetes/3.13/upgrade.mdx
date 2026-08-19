@@ -1,0 +1,12 @@
+---
+title: Upgrade from Kubernetes 3.13
+description: Upgrading off Tanzu RabbitMQ 3.13, including the classic-to-quorum-queue migration.
+---
+
+<Callout kind="warning">
+
+Moving from 3.13 to 4.x is a bigger step than a normal minor upgrade — it typically involves migrating from classic mirrored queues to quorum queues, and the Mnesia-to-Khepri metadata store transition. Plan this as its own project, not a routine patch upgrade. See [Version Upgrades](/migrations/version-upgrades).
+
+</Callout>
+
+A licensed Tanzu build supports jump upgrades, so moving straight from 3.13 to 4.3 (skipping 4.0/4.1) is possible — confirm the specifics with AceMQ support before starting, given the scope of change involved.

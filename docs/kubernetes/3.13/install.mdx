@@ -1,0 +1,20 @@
+---
+title: Install Kubernetes 3.13
+description: Installing Tanzu RabbitMQ on Kubernetes 3.13.
+---
+
+Same installation pattern as [Kubernetes 4.3](/docs/kubernetes/4.3/install) — install the `tanzu-rabbitmq-operators` chart, then deploy a `RabbitmqCluster` resource:
+
+```bash
+helm install rabbitmq-operators \
+  oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators \
+  --version 3.13.18 \
+  --namespace rabbitmq-system --create-namespace
+```
+
+```yaml
+spec:
+  image: acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:3.13.18
+```
+
+See [Get the Kubernetes Package](/packages/kubernetes) for the full pull sequence.
