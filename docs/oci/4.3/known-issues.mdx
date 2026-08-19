@@ -1,0 +1,11 @@
+---
+title: OCI 4.3 Known Issues
+description: Known issues and limitations specific to the standalone Tanzu RabbitMQ OCI image on 4.3.
+---
+
+The core known issues and breaking changes for the 4.3 release are the same across all formats — see [Kubernetes 4.3 Known Issues](/docs/kubernetes/4.3/known-issues) for the full list (Khepri default, AMQP 1.0 durable field default, Direct Reply-To mandatory flag, removed `*.cacerts` settings, quorum queue metric changes).
+
+## OCI-specific notes
+
+- Clustering multiple standalone containers requires manually keeping the Erlang cookie in sync across all containers — there's no operator managing this for you the way there is on Kubernetes.
+- No built-in rolling-upgrade orchestration — see [Upgrade](/docs/oci/4.3/upgrade) for the manual process and its risks.

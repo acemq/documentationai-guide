@@ -1,0 +1,29 @@
+---
+title: OCI 4.3 Configuration
+description: Configuring the Tanzu RabbitMQ 4.3 container image — ports, environment variables, and mounted configuration.
+---
+
+## Ports
+
+| Port | Purpose |
+|---|---|
+| 4369 | epmd, inter-node discovery |
+| 5672 / 5671 | AMQP / AMQP+TLS |
+| 15672 / 15671 | Management UI/API |
+| 25672 | Inter-node and CLI |
+| 5552 / 5551 | Stream protocol |
+
+## Key environment variables
+
+- `RABBITMQ_ERLANG_COOKIE` — shared secret for clustering. All nodes in a cluster must use the same value.
+- The `-h` flag sets the RabbitMQ hostname, relevant when clustering multiple containers.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+For anything beyond a single standalone container, use [Kubernetes](/docs/kubernetes/4.3/overview) instead of hand-managing a multi-container cluster with the OCI image directly. Clustering plain containers works, but you're reimplementing what the Cluster Operator already does — peer discovery, rolling upgrades, PVC reattachment — by hand.
+
+</Callout>
+
+See [Run the OCI 4.3 Image](/docs/oci/4.3/run) for the full run command and volume mounts.

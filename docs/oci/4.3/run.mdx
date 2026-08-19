@@ -1,0 +1,65 @@
+---
+title: Run the OCI 4.3 Image
+description: Running the Tanzu RabbitMQ 4.3 container image under Docker or Podman, with volume mounts and port mappings.
+---
+
+<Tabs>
+  <Tab title="Docker">
+
+```bash
+docker run -d --name rabbitmq \
+  --oom-score-adj=200 \
+  -p 4369:4369 -p 5672:5672 -p 5671:5671 \
+  -p 15672:15672 -p 15671:15671 -p 25672:25672 \
+  -v /data/rabbitmq/etc:/etc/rabbitmq \
+  -v /data/rabbitmq/data:/var/lib/rabbitmq/ \
+  -v /data/rabbitmq/logs:/var/log/rabbitmq \
+  -e RABBITMQ_ERLANG_COOKIE=<your-cookie> \
+  -h rmq1 \
+  acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.3.0
+```
+
+  </Tab>
+  <Tab title="Podman">
+
+```bash
+podman run --cgroups=no-conmon --rm --sdnotify=conmon -d --replace \
+  --oom-score-adj=200 --name rabbitmq \
+  -p 4369:4369 -p 5672:5672 -p 5671:5671 -p 15672:15672 \
+  -v /data/rabbitmq/etc:/etc/rabbitmq \
+  -v /data/rabbitmq/data:/var/lib/rabbitmq/ \
+  -e RABBITMQ_ERLANG_COOKIE=<your-cookie> \
+  -h rmq1 \
+  acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.3.0
+```
+
+To run as a systemd service so it survives reboots:
+
+```bash
+podman generate systemd --name rabbitmq --files --new
+loginctl enable-linger $USER
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+systemctl --user daemon-reload
+systemctl --user enable container-rabbitmq.service
+systemctl --user restart container-rabbitmq.service
+```
+
+  </Tab>
+</Tabs>
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Podman is a common choice here specifically because it's daemonless and lets you run the image as a systemd service without a heavyweight orchestrator. If you're running a single node or a small hand-managed cluster without Kubernetes, this is the pattern AceMQ sees most often in production.
+
+</Callout>
+
+## Volume mounts, explained
+
+| Mount | Purpose |
+|---|---|
+| `/var/lib/rabbitmq/` | Internal data store — must be read-write |
+| `/etc/rabbitmq/conf.d/90-userDefinedConfiguration.conf` | User configuration, applied last in the config chain — can be read-only |
+| `/etc/rabbitmq/enabled_plugins` | Enabled plugins list — must be read-write, RabbitMQ writes to this file |
+| `/etc/rabbitmq-tls/*` | TLS certificate and key, if using TLS/mTLS |

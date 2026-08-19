@@ -1,0 +1,22 @@
+---
+title: OCI 4.3 Overview
+description: What the Tanzu RabbitMQ OCI image is, when to use it instead of Kubernetes, and what changed in 4.3.
+---
+
+The Tanzu RabbitMQ OCI image is a container image you run directly under Docker, Podman, containerd, or a container platform tool — without a Kubernetes environment. It's a quick, lightweight way to run a standalone broker or a small hand-managed cluster.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Only use this if you don't have Kubernetes available, or you're on a non-Kubernetes container orchestration platform. If you do have Kubernetes, [Kubernetes](/docs/kubernetes/4.3/overview) is AceMQ's recommendation — the Cluster Operator provides HA orchestration, reconciliation, and rolling upgrades that running raw containers does not.
+
+</Callout>
+
+## What's new in 4.3
+
+Same release as [Kubernetes 4.3](/docs/kubernetes/4.3/overview) — Khepri by default, Distributed Shovels, delayed/scheduled messaging GA, OAuth 2.0 opaque tokens, SQL filter expressions for Streams, message interceptors, and more.
+
+## Getting the image
+
+See [Get the OCI / Container Package](/packages/oci) for the exact `acemq.jfrog.io` login and pull commands, and [Choose a Variant](/packages/choose-a-variant) for ARM64/FIPS.

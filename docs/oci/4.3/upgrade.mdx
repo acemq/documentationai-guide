@@ -1,0 +1,40 @@
+---
+title: Upgrade OCI 4.3
+description: Upgrading a standalone Tanzu RabbitMQ OCI deployment to 4.3.
+---
+
+<Callout kind="warning">
+
+Because of the complexity of upgrading a hand-managed OCI deployment, detailed automated tooling isn't provided the way it is for Kubernetes. General RabbitMQ upgrade requirements still apply — review them before you start, and see [Version Upgrades](/migrations/version-upgrades) for the licensing side.
+
+</Callout>
+
+<Steps>
+  <Step title="Pull the new version" icon="download">
+
+See [Get the OCI / Container Package](/packages/oci).
+
+  </Step>
+  <Step title="Stop the running container, preserving volumes" icon="pause">
+
+```bash
+docker stop rabbitmq
+```
+
+Data persists because it's on a bind-mounted volume, not inside the container.
+
+  </Step>
+  <Step title="Start the new version against the same mounts" icon="play">
+
+Re-run the same `docker run` command from [Run the OCI 4.3 Image](/docs/oci/4.3/run), pointing at the new image tag and the same volume paths.
+
+  </Step>
+</Steps>
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Take a snapshot or backup of the mounted data directory before upgrading a standalone container — there's no rolling-upgrade safety net here the way there is with the Cluster Operator. If something goes wrong mid-upgrade, your recovery path is restoring that backup, not rolling back the version.
+
+</Callout>
