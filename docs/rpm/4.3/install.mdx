@@ -1,0 +1,45 @@
+---
+title: Install RPM 4.3
+description: Installing the Tanzu RabbitMQ 4.3 RPM after downloading it from AceMQ.
+---
+
+<Callout kind="info">
+
+This page assumes you've already downloaded the RPM and installed the prerequisites (Erlang, logrotate, GPG key) — see [Get the RPM Package](/packages/rpm) if you haven't.
+
+</Callout>
+
+<Steps>
+  <Step title="Install the package" icon="package">
+
+```bash
+sudo rpm -ivh tanzu-rabbitmq-server-4.3.0-1.el9.x86_64.rpm
+```
+
+  </Step>
+  <Step title="Start the service" icon="play">
+
+```bash
+sudo systemctl enable rabbitmq-server
+sudo systemctl start rabbitmq-server
+sudo systemctl status rabbitmq-server
+```
+
+  </Step>
+  <Step title="Verify" icon="check">
+
+```bash
+sudo rabbitmqctl status
+sudo rabbitmqctl node_health_check
+```
+
+  </Step>
+</Steps>
+
+## Clustering multiple RPM nodes
+
+- Ensure all nodes share the same Erlang cookie (`/var/lib/rabbitmq/.erlang.cookie`)
+- Confirm 4369 and 25672 are open between nodes — see [Network Requirements](/access/network-requirements)
+- Join a node to a cluster with `rabbitmqctl join_cluster rabbit@<primary-hostname>`
+
+For configuration, TLS, and monitoring setup beyond first install, see [Broadcom TechDocs](https://techdocs.broadcom.com).

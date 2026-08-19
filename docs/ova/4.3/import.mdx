@@ -1,0 +1,47 @@
+---
+title: OVA 4.3 Import & Configure
+description: Importing the Tanzu RabbitMQ 4.3 OVA and configuring it after first boot.
+---
+
+<Steps>
+  <Step title="Import the OVA" icon="upload">
+
+See [Get the OVA Package](/packages/ova) for the download and vSphere/Workstation import steps.
+
+  </Step>
+  <Step title="Configure networking manually" icon="wifi">
+
+The current OVA can't sync IP/network settings from the import wizard — the VM retrieves its IP dynamically at boot. After the VM starts, log in from the console and configure networking manually.
+
+  </Step>
+  <Step title="Log in and verify the service" icon="check">
+
+Default credentials are `bitnami`/`bitnami` — **change these immediately.**
+
+```bash
+sudo systemctl status bitnami.vmware-tanzu-rabbitmq
+# if not running:
+sudo systemctl start bitnami.vmware-tanzu-rabbitmq
+```
+
+The OVA doesn't write error logs to a dedicated RabbitMQ log file by default:
+
+```bash
+sudo journalctl -u bitnami.vmware-tanzu-rabbitmq
+```
+
+  </Step>
+  <Step title="Generate certificates for clustering" icon="shield">
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+For a multi-node OVA cluster, generate certificates on the primary node first, then distribute copies to the other nodes — not the other way around. Set `chmod 400` on the private key files. If a node's binaries become corrupted, the fastest recovery path is redeploying that node from a fresh OVA rather than attempting to repair it in place.
+
+</Callout>
+
+  </Step>
+</Steps>
+
+For VM hardware sizing, the default is 1 vCPU / 1GB RAM / 10GB disk — raise this before production use. Edit the VM's hardware configuration after import if the defaults don't fit your workload.

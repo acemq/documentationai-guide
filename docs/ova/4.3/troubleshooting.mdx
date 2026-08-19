@@ -1,0 +1,28 @@
+---
+title: OVA 4.3 Known Issues & Troubleshooting
+description: Known issues and troubleshooting for the Tanzu RabbitMQ 4.3 OVA.
+---
+
+## Networking doesn't work after import
+
+Expected — the OVA import wizard can't sync IP configuration to the VM. Log in from the console and configure networking manually. See [Import & Configure](/docs/ova/4.3/import).
+
+## Service started but ports aren't reachable
+
+Common when using non-default ports, or after modifying a default port. Check `sudo systemctl status bitnami.vmware-tanzu-rabbitmq` and confirm the firewall (Photon's iptables) allows the port.
+
+## Cluster won't form between nodes
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Check Photon OS's iptables and any NSX micro-segmentation policy first — this is the most common cause AceMQ sees, not a RabbitMQ configuration problem. Confirm 4369 and 25672 are open between nodes.
+
+</Callout>
+
+## Corrupted node binaries
+
+Redeploy the affected node from a fresh OVA rather than attempting an in-place repair — this is faster and more reliable for an appliance-style deployment.
+
+For general RabbitMQ management and monitoring guidance beyond first boot, see [Broadcom TechDocs](https://techdocs.broadcom.com).

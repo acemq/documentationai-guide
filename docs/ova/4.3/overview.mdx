@@ -1,0 +1,28 @@
+---
+title: OVA 4.3 Overview
+description: What the Tanzu RabbitMQ OVA virtual appliance is, and when to use it instead of RPM or Kubernetes.
+---
+
+The Tanzu RabbitMQ OVA is a pre-built VMware virtual appliance — the fastest path to a running broker if your infrastructure is VMware-based and you don't want to manage OS-level install steps yourself.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+The OVA runs on **Photon OS**, VMware's minimal hardened Linux distribution — not the general-purpose distro you might expect. If you're migrating an existing RabbitMQ deployment onto the OVA, this is effectively a different operating system underneath, not just a different packaging format. Firewall rules (Photon's iptables) and any NSX micro-segmentation policies need to explicitly allow inter-node RabbitMQ traffic — AceMQ has seen cluster formation fail silently because Photon's default firewall or an NSX policy blocked ports between nodes.
+
+</Callout>
+
+## Getting the OVA
+
+See [Get the OVA Package](/packages/ova) for the exact download path and filenames, including the FIPS variant.
+
+## Network adapter
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Use the VMXNET3 network adapter, not the legacy E1000. AceMQ has resolved cluster networking issues that traced back to a VM template defaulting to E1000 — swapping to VMXNET3 fixed inter-node connectivity immediately.
+
+</Callout>

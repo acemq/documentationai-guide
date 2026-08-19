@@ -1,0 +1,16 @@
+---
+title: RPM 4.3 Overview
+description: What the Tanzu RabbitMQ RPM is and how it's delivered through AceMQ.
+---
+
+The Tanzu RabbitMQ RPM installs the broker directly on RHEL 8/9 and EL-compatible Linux hosts — no container platform or hypervisor required.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+There is no YUM/DNF repository for Tanzu RabbitMQ — you download the RPM file directly from AceMQ's JFrog repository. See [Get the RPM Package](/packages/rpm) for the exact path, and don't skip the three manual prerequisites (Erlang zero-dependency build, `logrotate`, GPG key) covered there — skipping any of them is the most common cause of a failed first install.
+
+</Callout>
+
+See [Install](/docs/rpm/4.3/install) to continue.
