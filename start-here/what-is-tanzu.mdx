@@ -1,0 +1,30 @@
+---
+title: What Is Tanzu?
+description: What VMware Tanzu RabbitMQ actually is, what a license adds over the open-source build, and why the name causes confusion.
+---
+
+"Tanzu" is the single most common point of confusion for new customers. It has caused real deals to stall over a misunderstanding of what's actually being purchased.
+
+## What Tanzu actually is
+
+There is no difference between the Tanzu build and the open-source build as far as the core broker is concerned. **Tanzu RabbitMQ is the open-source project, pre-configured with secure defaults, plus a set of commercial-only plugins and features** — Warm Standby Replication, Intra-cluster Compression, a stream browser, SQL filter expressions, and others.
+
+What you're licensing is:
+
+- Access to the LTS-supported release stream and newer commercial builds
+- The commercial-only plugins
+- AceMQ's commercial support SLA
+
+## The community ceiling
+
+Without a commercial license, **3.13.7 is the newest RabbitMQ build freely available** as "Tanzu Community Edition." Anything newer, and any LTS support, requires a license. This is the practical reason most customers license: they've outgrown the unsupported community ceiling.
+
+<Callout kind="warning">
+
+Only the *current* minor release of an LTS stream is actually the Tanzu-supported build — even within a stream you're entitled to. "3.13 is supported through 2029" and "the specific build you're running is current" are two different facts. See [Version & Support Policy](/support/version-policy).
+
+</Callout>
+
+## Does my support cover a non-Tanzu (Bitnami/open-source) deployment?
+
+**Yes.** AceMQ support covers all RabbitMQ deployments — Bitnami, open-source, or Tanzu — under your SLA. Licensing specifically adds LTS support and access to newer commercial builds; it does not gate whether AceMQ will help you with an existing open-source cluster.

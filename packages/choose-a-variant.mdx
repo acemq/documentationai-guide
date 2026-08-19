@@ -1,0 +1,39 @@
+---
+title: Choose a Variant
+description: How to pick between the plain, ARM64, FIPS, and ARM64-FIPS Tanzu RabbitMQ image variants.
+---
+
+The broker image ships in four variants, selected by a tag suffix:
+
+| Variant | Tag suffix | Use when |
+|---|---|---|
+| Standard (amd64) | *(none)* | Most deployments |
+| ARM64 | `-arm64` | Running on ARM-based hosts (e.g. Graviton) |
+| FIPS | `-fips` | FIPS 140-3 compliance required — see [FIPS](/support/fips) |
+| ARM64 + FIPS | `-arm64-fips` | Both of the above |
+
+```bash
+# Standard
+docker pull acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6
+
+# ARM64
+docker pull acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6-arm64
+
+# FIPS
+docker pull acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6-fips
+
+# ARM64 + FIPS
+docker pull acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6-arm64-fips
+```
+
+<Callout kind="warning">
+
+Pulling the wrong architecture variant is a real, observed failure — a customer once received an ARM64 image tarball for an AMD64 host. Always confirm what you pulled:
+
+```bash
+docker inspect --format='{{.Architecture}}' vmware-tanzu-rabbitmq:4.2.6
+```
+
+</Callout>
+
+RPM and OVA use similar naming conventions in their filenames — see [RPM](/packages/rpm) and [OVA](/packages/ova) for the exact patterns.

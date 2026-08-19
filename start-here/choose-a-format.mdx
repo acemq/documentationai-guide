@@ -1,0 +1,22 @@
+---
+title: Choose a Format
+description: Decide between OCI, RPM, OVA, and Kubernetes for your Tanzu RabbitMQ deployment.
+---
+
+All formats carry the same license and the same commercial support. Choose based on your infrastructure, not your entitlement — every format is fully covered.
+
+| Format | Best fit | Typical environment |
+|---|---|---|
+| **Kubernetes** | You already run Kubernetes and want managed lifecycle (HA orchestration, reconciliation, scaling) | EKS, RKE2, OpenShift, on-prem clusters |
+| **RPM** | Bare-metal or VM Linux hosts, no container platform | RHEL 8/9 and EL-compatible distributions |
+| **OVA** | VMware-based infrastructure, want a pre-built appliance | vSphere, ESXi, Workstation, Fusion |
+| **OCI** | Lightweight container deployment without a full Kubernetes environment | Docker Compose, Podman, small clusters |
+| **Open Source** | Not yet licensed, or specifically need the unlicensed community build (e.g. Windows) | Any — see [What's Included](/start-here/whats-included) for the Windows caveat |
+
+<Callout kind="tip">
+
+**Kubernetes is recommended for production HA deployments.** The Cluster Operator and Messaging Topology Operator (installed together via the `tanzu-rabbitmq-operators` Helm chart) provide ongoing lifecycle management that Helm alone, or a standalone VM/container, does not. For a fully managed, production-grade deployment, this is AceMQ's default recommendation.
+
+</Callout>
+
+Once you've chosen, jump to that format's quickstart in [Get Your Packages](/packages/oci).

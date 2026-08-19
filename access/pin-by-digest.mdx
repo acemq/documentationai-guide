@@ -1,0 +1,45 @@
+---
+title: Pin by Digest
+description: Production immutability practice for Tanzu RabbitMQ images pulled from AceMQ.
+---
+
+Tags are mutable; digests are not. For audited or compliance-bound deployments, pin by SHA256 digest instead of a version tag.
+
+<Callout kind="warning">
+
+Never use the `:latest` tag in production. Broadcom does not publish a stable cross-version `latest` for Tanzu RabbitMQ — pulling `:latest` can silently move you across major versions during a routine rebuild.
+
+</Callout>
+
+<Steps>
+  <Step title="Pull and inspect" icon="search">
+
+```bash
+docker pull acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6
+docker inspect --format='{{index .RepoDigests 0}}' \
+  acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6
+```
+
+  </Step>
+  <Step title="Use the digest" icon="anchor">
+
+```bash
+docker pull acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq@sha256:<64-hex-chars>
+```
+
+In Kubernetes manifests:
+
+```yaml
+image: acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq@sha256:<64-hex-chars>
+```
+
+  </Step>
+</Steps>
+
+### Tag-and-digest hybrid
+
+For human readability plus immutability, specify both — the runtime uses only the digest for pulling, but the tag stays visible to humans and tooling:
+
+```
+vmware-tanzu-rabbitmq:4.2.6@sha256:<64-hex-chars>
+```

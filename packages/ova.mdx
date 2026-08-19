@@ -1,0 +1,54 @@
+---
+title: Get the OVA Package
+description: Download the Tanzu RabbitMQ VMware appliance from the AceMQ JFrog repository, including the FIPS variant.
+---
+
+## Download the OVA
+
+The OVA is delivered from the same repository as the RPM — not a separate portal.
+
+<Steps>
+  <Step title="Browse to your version" icon="folder">
+
+In `acemq.jfrog.io`, open **Artifacts → `ossrabbitmq-rabbitmq-oss`** and browse to the version you want.
+
+  </Step>
+  <Step title="Pick standard or FIPS" icon="shield">
+
+```
+tanzu-rabbitmq-standalone-<version>.ova
+tanzu-rabbitmq-standalone-fips-<version>.ova
+```
+
+There is no ARM64 OVA — only the generic-unix tarball ships an ARM64 build.
+
+  </Step>
+  <Step title="Right-click → Download" icon="download">
+
+See [Navigating JFrog](/access/navigating-jfrog) for the download UI.
+
+  </Step>
+</Steps>
+
+## Import the OVA
+
+<Tabs>
+  <Tab title="VMware ESXi / vSphere">
+
+Use **Deploy OVF Template** in vSphere (v7.0 Update 3 or later recommended). Leave the network configuration empty during import — the current OVA can't sync IP/network settings from the wizard. After the VM starts, log in and configure networking manually from the terminal.
+
+  </Tab>
+  <Tab title="VMware Workstation Player / Fusion">
+
+Open the `.ova` file directly (File → Open), fill in the VM name and storage path, and leave VM/network properties empty for the same reason as above.
+
+  </Tab>
+</Tabs>
+
+<Callout kind="warning">
+
+**Default credentials are `bitnami`/`bitnami`.** Change this immediately after first login. The RabbitMQ service runs as a systemd unit (`bitnami.vmware-tanzu-rabbitmq`) — check status with `sudo systemctl status bitnami.vmware-tanzu-rabbitmq` and logs with `sudo journalctl -u bitnami.vmware-tanzu-rabbitmq`.
+
+</Callout>
+
+For FIPS requirements beyond the OVA variant itself, see [FIPS](/support/fips).

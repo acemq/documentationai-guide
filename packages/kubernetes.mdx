@@ -1,0 +1,63 @@
+---
+title: Get the Kubernetes Package
+description: Pull the Tanzu RabbitMQ Helm chart and operator images from AceMQ's JFrog repository.
+---
+
+## What ships together
+
+Tanzu RabbitMQ for Kubernetes installs as **one Helm chart, `tanzu-rabbitmq-operators`, which installs three operator images together:**
+
+- `cluster-operator`
+- `messaging-topology-operator`
+- `default-user-credential-updater`
+
+<Callout kind="warning">
+
+Do not pin these operator images independently — install them as the bundle the Helm chart provides. Tanzu does not repackage the open-source Cluster/Topology operators; it ships its own certified set. If you're moving from a Bitnami/community Kubernetes deployment, this is a new deployment, not an in-place upgrade — see [Migrating Between Formats](/migrations/between-formats) and [From Open Source / Bitnami](/migrations/from-open-source).
+
+</Callout>
+
+## Pull the chart
+
+<Steps>
+  <Step title="Authenticate" icon="key">
+
+```bash
+helm registry login acemq.jfrog.io \
+  --username <your-jfrog-username> \
+  --password <your-access-token>
+```
+
+Requires a recent enough Helm client to authenticate against Artifactory (Helm 3.8+).
+
+  </Step>
+  <Step title="Pull the chart" icon="download">
+
+```bash
+helm pull oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators --version <version>
+```
+
+  </Step>
+  <Step title="Install" icon="rocket">
+
+```bash
+helm install rabbitmq-operators \
+  oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators \
+  --version <version> \
+  --namespace rabbitmq-system --create-namespace
+```
+
+  </Step>
+</Steps>
+
+The operator images themselves live in `rabbitmq-operator-docker-remote` and are pulled automatically by the chart — you don't need to pull them separately.
+
+## Deploying the broker
+
+Once the operators are running, deploy a `RabbitmqCluster` custom resource pointing at the broker image (see [OCI / Containers](/packages/oci) for image path conventions). Declare durable topology — vhosts, queues, exchanges, policies — as Messaging Topology Operator custom resources under GitOps, not embedded in Helm values.
+
+<Callout kind="info">
+
+RKE2 is fully supported for Tanzu RabbitMQ, even though some Broadcom documentation lists only OpenShift and VKS.
+
+</Callout>

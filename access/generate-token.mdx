@@ -1,0 +1,42 @@
+---
+title: Generate a Token
+description: Create a scoped JFrog identity token to authenticate Docker, Helm, and RPM pulls.
+---
+
+You need a token to authenticate `docker login`, `helm`, and repository pulls. Your JFrog username alone is not a password.
+
+<Steps>
+  <Step title="Open your user profile" icon="user">
+
+  Log in to `acemq.jfrog.io`, click your username in the upper right, and select **Edit Profile**.
+
+  </Step>
+  <Step title="Generate an identity token" icon="key">
+
+  Open the **Identity Tokens** section and click **Generate Token**. Set an expiration that matches your organization's secret-rotation policy.
+
+  <Callout kind="warning">
+
+  A token created outside the user profile page (for example, through certain API calls) can fail to bind correctly to your account. Always generate it from the profile page.
+
+  </Callout>
+
+  </Step>
+  <Step title="Copy it immediately" icon="copy">
+
+  JFrog displays the token only once. Store it in a secrets manager — never commit it to source control.
+
+  </Step>
+</Steps>
+
+## Using the token
+
+The token is your password. Your JFrog username is your username:
+
+```bash
+docker login acemq.jfrog.io
+# Username: <your JFrog username>
+# Password: <paste the token>
+```
+
+See [OCI / Containers](/packages/oci) to continue with your first pull.

@@ -1,0 +1,62 @@
+---
+title: Get the OCI / Container Package
+description: Pull the Tanzu RabbitMQ container image from the AceMQ JFrog cache using Docker, Podman, or containerd.
+---
+
+<Steps>
+  <Step title="Authenticate" icon="key">
+
+<Tabs>
+  <Tab title="Docker">
+
+```bash
+docker login acemq.jfrog.io
+# Username: <your JFrog username>
+# Password: <your access token>
+```
+
+  </Tab>
+  <Tab title="Podman">
+
+```bash
+podman login acemq.jfrog.io
+```
+
+  </Tab>
+  <Tab title="containerd / nerdctl">
+
+```bash
+nerdctl login acemq.jfrog.io
+```
+
+  </Tab>
+</Tabs>
+
+Need a token? See [Generate a Token](/access/generate-token).
+
+  </Step>
+  <Step title="Pull a pinned version" icon="download">
+
+Always specify an explicit tag in production — never `:latest` (see [Pin by Digest](/access/pin-by-digest)):
+
+```bash
+docker pull acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6
+```
+
+  </Step>
+  <Step title="Check for variants" icon="layers">
+
+If you need ARM64 or FIPS, see [Choose a Variant](/packages/choose-a-variant) before you pull.
+
+  </Step>
+</Steps>
+
+<Callout kind="info">
+
+Not sure which version to pull? See [Discover Versions](/access/discover-versions) and [Version Support Matrix](/start-here/version-support-matrix).
+
+</Callout>
+
+## Kubernetes
+
+If you're deploying to Kubernetes rather than running a container directly, use the [Kubernetes](/packages/kubernetes) quickstart instead — it covers the Helm chart and operators, not just the raw image.

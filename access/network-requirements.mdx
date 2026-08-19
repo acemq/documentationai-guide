@@ -1,0 +1,24 @@
+---
+title: Network Requirements
+description: Hostnames, ports, and proxy configuration needed to reach AceMQ's JFrog repository and run RabbitMQ.
+---
+
+## Reaching AceMQ's repository
+
+- **Hostname:** `acemq.jfrog.io`, outbound TCP/443
+- If you operate behind an egress firewall or proxy, allowlist this hostname before your first pull. JFrog may serve image layers from a CDN endpoint distinct from the primary hostname — if a manifest pull succeeds but layer downloads fail, broaden your allowlist or contact AceMQ for the current CDN endpoint list.
+- Configure `HTTPS_PROXY` / `NO_PROXY` on your container client and Kubernetes nodes if you're behind a corporate proxy.
+
+## RabbitMQ cluster ports
+
+Once deployed, RabbitMQ itself needs these ports open between nodes and to clients:
+
+| Port | Purpose |
+|---|---|
+| 4369 | Inter-node discovery (epmd) |
+| 25672 | Inter-node and CLI tool communication |
+| 5672 | AMQP |
+| 5671 | AMQP over TLS |
+| 15672 | Management UI/API |
+
+Only 15672 typically needs to be reachable from outside the cluster; 4369 and 25672 are inter-node only and should not be exposed externally.

@@ -1,0 +1,71 @@
+---
+title: Get the RPM Package
+description: Download the Tanzu RabbitMQ RPM directly from the AceMQ JFrog repository. No YUM repository exists — this is a direct file download.
+---
+
+<Callout kind="info">
+
+**There is no YUM/DNF repository configuration for Tanzu RabbitMQ.** Every repository in AceMQ's JFrog tenant is Generic, Docker, or Helm OCI — none is a package-manager type. Downloading the RPM file directly, as below, is the permanent mechanism, not a temporary workaround.
+
+</Callout>
+
+## Download the RPM
+
+<Steps>
+  <Step title="Browse to your version" icon="folder">
+
+In `acemq.jfrog.io`, open **Artifacts → `ossrabbitmq-rabbitmq-oss`** and browse to the version you want.
+
+  </Step>
+  <Step title="Pick the right file for your OS" icon="file">
+
+RPMs are built for RHEL 8 (`el8`) and RHEL 9 (`el9`), and are compatible with EL8/EL9-based distributions (CentOS Stream, Rocky Linux, AlmaLinux, Oracle Linux). Filename pattern: `tanzu-rabbitmq-server-<version>-1.el8.x86_64.rpm` or `-el9.x86_64.rpm`.
+
+<Callout kind="warning">
+
+File naming has not been fully consistent across versions and patches — some older or very recent patches use plain `rabbitmq-server-<version>` naming instead of `tanzu-rabbitmq-server-`, and folder layout varies. If the file you expect isn't in the flat folder, check for `/rpm/` or `/ova/` subfolders, or contact AceMQ support if a version appears to be missing an RPM entirely.
+
+</Callout>
+
+  </Step>
+  <Step title="Right-click → Download" icon="download">
+
+See [Navigating JFrog](/access/navigating-jfrog) — there's no prominent download button; right-click the file or use the link icon.
+
+  </Step>
+</Steps>
+
+## Prerequisites — install these first
+
+Because there's no YUM repo to resolve dependencies automatically, **three prerequisites must be installed manually.** Skipping any of these is the most common cause of a failed first install.
+
+<Steps>
+  <Step title="Install Erlang (zero-dependency build)" icon="package">
+
+Do not use your distribution's default Erlang package. Use the **zero-dependency build**, matched to your EL version and architecture, from the `erlang-rpm` releases page. This build strips everything RabbitMQ doesn't need, which reduces CVE exposure.
+
+  </Step>
+  <Step title="Install logrotate" icon="rotate-cw">
+
+Pull `logrotate` from your own distribution's Red Hat repository — it is not bundled with the Tanzu RPM.
+
+```bash
+sudo dnf install -y logrotate
+```
+
+  </Step>
+  <Step title="Import the GPG signing key" icon="shield">
+
+Import the signing key referenced alongside your download before installing, so the install isn't flagged as untrusted.
+
+  </Step>
+  <Step title="Install the RabbitMQ RPM" icon="check">
+
+```bash
+sudo rpm -ivh tanzu-rabbitmq-server-<version>-1.el9.x86_64.rpm
+```
+
+  </Step>
+</Steps>
+
+For anything past first install — clustering, TLS, plugin configuration — see [Broadcom TechDocs](https://techdocs.broadcom.com) or your AceMQ Premium support resources.

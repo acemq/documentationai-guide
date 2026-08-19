@@ -1,0 +1,39 @@
+---
+title: Re-host in Your Registry
+description: Pull from AceMQ and push to your own registry — a supported pattern for teams that need images available inside their own network boundary.
+---
+
+Pulling from `acemq.jfrog.io` at deploy time and re-hosting in your own registry (Docker Hub, ECR, GCR, an internal registry) is a normal, supported pattern — several licensed customers do this so their Helm charts and CI/CD pipelines only ever reference internal registries.
+
+<Steps>
+  <Step title="Pull from AceMQ" icon="download">
+
+```bash
+docker pull acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6
+```
+
+  </Step>
+  <Step title="Re-tag for your registry" icon="tag">
+
+```bash
+docker tag acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6 \
+  <your-registry>/vmware-tanzu-rabbitmq:4.2.6
+```
+
+  </Step>
+  <Step title="Push and point your tooling at it" icon="upload">
+
+```bash
+docker push <your-registry>/vmware-tanzu-rabbitmq:4.2.6
+```
+
+Update your Helm values or manifests to reference `<your-registry>` instead of `acemq.jfrog.io`.
+
+  </Step>
+</Steps>
+
+<Callout kind="warning">
+
+If you re-host, **pin by digest** (see [Pin by Digest](/access/pin-by-digest)) so your internal copy is guaranteed identical to what you pulled from AceMQ — a re-tag alone doesn't protect against your own registry's tag being overwritten later.
+
+</Callout>

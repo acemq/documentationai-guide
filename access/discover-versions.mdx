@@ -1,0 +1,37 @@
+---
+title: Discover Versions
+description: How to check which Tanzu RabbitMQ versions are available before you pull.
+---
+
+## Docker images
+
+List every available tag for the broker image using the Docker Registry v2 API with your JFrog credentials:
+
+```bash
+curl -s -u '<jfrog-username>:<access-token>' \
+  https://acemq.jfrog.io/artifactory/api/docker/rabbitmq-docker-remote/v2/vmware-tanzu-rabbitmq/tags/list \
+  | jq -r '.tags[]' | sort -V
+```
+
+This returns the **full upstream catalog** proxied from Broadcom — a tag being listed does not mean it's already cached at AceMQ's edge.
+
+<Callout kind="info">
+
+A version can appear in the tag list and still be slow on your first pull, while the smart-remote fetches and caches the actual image layers from Broadcom. Subsequent pulls of the same tag, by you or any other AceMQ customer, are fast — the cache is shared at the repository level.
+
+</Callout>
+
+## RPM, OVA, and tarball artifacts
+
+Browse the `ossrabbitmq-rabbitmq-oss` repository directly in the JFrog UI, or list a version folder via the storage API:
+
+```bash
+curl -s -u '<jfrog-username>:<access-token>' \
+  https://acemq.jfrog.io/artifactory/api/storage/ossrabbitmq-rabbitmq-oss
+```
+
+<Callout kind="warning">
+
+File naming and folder layout have varied between versions — some versions use subfolders (`/rpm/`, `/ova/`, `/tar/`), others are flat. Always check the actual folder contents for the version you need rather than assuming a pattern from a different version.
+
+</Callout>

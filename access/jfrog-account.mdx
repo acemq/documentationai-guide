@@ -1,0 +1,25 @@
+---
+title: Your JFrog Account
+description: First login, setting your password, understanding groups and permissions, and service accounts.
+---
+
+## First login
+
+Use the temporary password from your provisioning email at `acemq.jfrog.io`. You'll be prompted to set your own password on first login.
+
+## Groups and permissions
+
+Every user in your company is added to a company-specific JFrog group. That group needs **two permissions**, both required:
+
+- **Read** — lets you browse and download
+- **Deploy** — lets your tooling cache pulled images locally. **Without deploy, containerized builds (Docker, Helm) will fail**, even though read alone looks sufficient.
+
+If you get a permissions error, see [Access Troubleshooting](/support/access-troubleshooting) — this is the most common cause.
+
+## Service accounts
+
+There's no separate "service account" provisioning path in JFrog. **A service account is just an invited user whose mailbox is a shared or team inbox** rather than an individual's. If you need CI/CD access, have your admin invite an address like `ci@yourcompany.com` through the normal [onboarding](/access/onboarding) flow.
+
+## Next step
+
+Once you're logged in, go to [Generate a Token](/access/generate-token) — you'll need one to pull anything.

@@ -1,0 +1,37 @@
+---
+title: Navigating JFrog
+description: A tour of the five AceMQ JFrog repositories and how to find what you need.
+---
+
+On the platform side, **Artifacts** is the only section that matters for pulling packages. You'll see five repositories:
+
+| Repository | Holds |
+|---|---|
+| `ossrabbitmq-rabbitmq-oss` | RPM, OVA, and tarball artifacts — both Open Source and Tanzu builds, mixed in one repo |
+| `rabbitmq-docker-remote` | Broker OCI images (Docker/Podman/containerd) |
+| `rabbitmq-helmoci-remote` | The Kubernetes Helm chart |
+| `rabbitmq-operator-docker-remote` | The three Kubernetes operator images |
+| `helm-remote` | Front end used by `helm pull` to reach the Helm chart |
+
+## Downloading a file
+
+For RPM and OVA artifacts in `ossrabbitmq-rabbitmq-oss`, there is no `.repo` file or package-manager integration — you browse and download directly:
+
+<Steps>
+  <Step title="Browse to the version folder" icon="folder">
+
+  In the Artifacts tree, open `ossrabbitmq-rabbitmq-oss`, then the version folder you want (for example `4.2.6`).
+
+  </Step>
+  <Step title="Right-click the file and select Download" icon="download">
+
+  This is easy to miss — there is no prominent download button on the artifact page itself. Right-click the file in the tree, or use the small link icon next to it ("the actual link") to get a direct URL.
+
+  </Step>
+</Steps>
+
+<Callout kind="tip">
+
+If you can't find a version you know exists, see [Discover Versions](/access/discover-versions) before assuming AceMQ doesn't carry it.
+
+</Callout>
