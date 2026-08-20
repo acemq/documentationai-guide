@@ -1,10 +1,48 @@
 {
+  "title": "AceMQ Tanzu RabbitMQ Licensing",
   "name": "AceMQ Tanzu RabbitMQ Licensing",
   "initialRoute": "start-here/introduction",
+  "logo-dark": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-a02231b5-c90d-40fd-a8a9-958b390d89fb/1786474174553-m7buekhmk7b-AceMQ-White-Header.png?fm=auto&auto=compress%2Cformat",
+  "logo-light": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-a02231b5-c90d-40fd-a8a9-958b390d89fb/1786474185146-92a0knl641m-AceMQ-Black-Header.png?fm=auto&auto=compress%2Cformat",
+  "favicon": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-a02231b5-c90d-40fd-a8a9-958b390d89fb/1782008069941-pjkh91bv3w-Ace-Black-Icon.svg?fm=auto&auto=compress%2Cformat",
   "colors": {
-    "light": { "brand": "#3B82F6" },
-    "dark": { "brand": "#87B1F6" }
+    "light": {
+      "brand": "#FF6600",
+      "heading": "#1a1a1a",
+      "text": "#374151"
+    },
+    "dark": {
+      "brand": "#FF6600",
+      "heading": "#f2f2f2",
+      "text": "#c1c1c1"
+    }
   },
+  "seo": {
+    "siteUrl": "https://tanzu-docs.acemq.com",
+    "siteName": "AceMQ Tanzu RabbitMQ Licensing",
+    "defaultDescription": "AceMQ's licensing and access knowledge base for Tanzu RabbitMQ customers — onboarding, JFrog access, package quickstarts, migrations, and core product documentation.",
+    "robots:index": false,
+    "robots:follow": false,
+    "sitemap:enabled": false,
+    "llms-txt:enabled": false
+  },
+  "ai": {
+    "ai-assistant:enabled": true,
+    "ai-assistant:starter-questions": [
+      "How do I get access to my licensed Tanzu RabbitMQ packages?",
+      "Where do I download the RPM — there's no YUM repo?",
+      "Is my Bitnami deployment covered by AceMQ support?",
+      "How long is 4.2 supported for?"
+    ],
+    "page-actions": ["copy", "view"]
+  },
+  "feedback": {
+    "reactions": true,
+    "survey": true
+  },
+  "scripts": [
+    { "src": "scripts/acemq-callout-branding.js" }
+  ],
   "navigation": {
     "tabs": [
       {
