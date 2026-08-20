@@ -22,9 +22,9 @@
     "ai-assistant:enabled": true,
     "ai-assistant:starter-questions": [
       "How do I get access to my licensed Tanzu RabbitMQ packages?",
-      "How is my license counted — do dev and test environments count?",
       "Where do I download the RPM — there's no YUM repo?",
-      "Is my Bitnami deployment covered by AceMQ support?"
+      "Is my Bitnami deployment covered by AceMQ support?",
+      "How do I migrate from Bitnami to a licensed Tanzu build?"
     ],
     "page-actions": ["copy", "view"]
   },
@@ -48,16 +48,6 @@
             ]
           },
           {
-            "group": "Licensing",
-            "icon": "file-text",
-            "pages": [
-              { "title": "Licensing Overview", "path": "access/licensing" },
-              { "title": "How Licensing Is Counted", "path": "access/core-counting" },
-              { "title": "Terms, Billing & Renewals", "path": "access/terms-and-renewals" },
-              { "title": "Licensing FAQ", "path": "support/licensing-faq" }
-            ]
-          },
-          {
             "group": "Get Access",
             "icon": "unlock",
             "pages": [
@@ -68,7 +58,8 @@
               { "title": "Discover Versions", "path": "access/discover-versions" },
               { "title": "Re-host in Your Registry", "path": "access/rehost-in-your-registry" },
               { "title": "Pin by Digest", "path": "access/pin-by-digest" },
-              { "title": "Network Requirements", "path": "access/network-requirements" }
+              { "title": "Network Requirements", "path": "access/network-requirements" },
+              { "title": "Licensing Overview", "path": "access/licensing" }
             ]
           },
           {
@@ -80,7 +71,7 @@
               { "title": "RPM", "path": "packages/rpm" },
               { "title": "OVA", "path": "packages/ova" },
               { "title": "Kubernetes", "path": "packages/kubernetes" },
-              { "title": "Open Source RabbitMQ", "path": "packages/open-source" },
+              { "title": "Windows & Open Source", "path": "packages/open-source" },
               { "title": "Air-Gapped Environments", "path": "packages/air-gapped" }
             ]
           },
@@ -98,6 +89,7 @@
             "group": "Support",
             "icon": "life-buoy",
             "pages": [
+              { "title": "Licensing FAQ", "path": "support/licensing-faq" },
               { "title": "Access Troubleshooting", "path": "support/access-troubleshooting" },
               { "title": "Version & Support Policy", "path": "support/version-policy" },
               { "title": "FIPS", "path": "support/fips" },
