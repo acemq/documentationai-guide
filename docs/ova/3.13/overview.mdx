@@ -1,8 +1,87 @@
 ---
 title: OVA 3.13 Overview & Import
-description: The Tanzu RabbitMQ 3.13 LTS OVA appliance.
+description: The Tanzu RabbitMQ 3.13 LTS OVA appliance — import, first boot, and known issues specific to this stream.
 ---
 
-Import and configuration steps are identical to [OVA 4.3](/docs/ova/4.3/import) — Photon OS base, VMXNET3 adapter, `bitnami`/`bitnami` default credentials (change immediately).
+3.13 is a long-life LTS stream, commercially supported through 31 December 2029 — see [Kubernetes 3.13 Overview](/docs/kubernetes/3.13/overview) for why customers deliberately stay on it.
 
-See [Kubernetes 3.13 Overview](/docs/kubernetes/3.13/overview) for why customers choose this stream, and [Get the OVA Package](/packages/ova) for the download — filename `tanzu-rabbitmq-standalone-3.13.18.ova`.
+## Prerequisites
+
+A VMware VM environment — ESXi/vSphere, Workstation Player (Windows or Linux), or Fusion (macOS). The OVA can also run in non-VMware VM environments.
+
+<Callout kind="info">
+
+**vSphere v7.0 Update 3 (Hardware version 19) is the earliest recommended version.**
+
+</Callout>
+
+## Download
+
+See [Get the OVA Package](/packages/ova) — filename pattern `tanzu-rabbitmq-standalone-3.13.18.ova`, with a `-fips-` variant for FIPS deployments.
+
+## Import
+
+<Tabs>
+  <Tab title="ESXi / vSphere">
+
+1. **Deploy OVF Template** in vSphere
+2. Upload the OVA image
+3. Accept the EULA
+4. Choose storage location and VM storage policy
+5. **Leave the Network information empty** — see the known issue below
+6. After creation, edit VM hardware if needed — the default is **1 vCPU / 1 GB RAM / 10 GB disk**, which is not a production configuration
+
+  </Tab>
+  <Tab title="Workstation Player / Fusion">
+
+1. **File → Open**, select the `.ova`
+2. Fill in VM name and storage path
+3. **Leave VM Properties and Networking Properties empty**
+4. Click **Import**
+5. Edit VM hardware configuration after creation
+
+  </Tab>
+</Tabs>
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+The default 1 vCPU / 1 GB / 10 GB sizing exists to make the appliance import anywhere — it is not a starting point for production. Size it for your workload before you put traffic on it, and remember your licensed core count must cover every environment including non-production (see [Licensing](/access/licensing)).
+
+</Callout>
+
+## First boot
+
+```bash
+# Default credentials — change immediately
+# username: bitnami   password: bitnami
+
+sudo systemctl status bitnami.vmware-tanzu-rabbitmq
+sudo systemctl start bitnami.vmware-tanzu-rabbitmq
+
+# The OVA does not write to a dedicated RabbitMQ log file by default
+sudo journalctl -u bitnami.vmware-tanzu-rabbitmq
+```
+
+## Known issues on this stream
+
+| Issue | Found in | Workaround |
+|---|---|---|
+| **Networking set in the import wizard doesn't apply.** The VM gets its IP dynamically at boot. | 1.4.1 | Log in from the console after boot and configure networking manually. Fix planned in a future release. |
+| **OVA import fails: `No support for the virtual hardware device type '35'`** | 3.13.10 and earlier | Untar the OVA (`tar -xvf <file>.ova`), remove the `ResourceType 35` item (roughly lines 66–75 of the `.ovf`), recompute the `.ovf` SHA and update it in the `.mf` file, then import. |
+| **Some RabbitMQ commands fail** because `PATH` doesn't include the OTP binaries | 3.13.3 | Add the OTP binary directory to `PATH` before running CLI tools. |
+| **TTY/screen doesn't display after boot** | 3.13.15 | Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F3</kbd> to reach the terminal. Resolved in 3.13.16. |
+| WSR credentials in `rabbitmq.conf` stored in plaintext | 3.13.3+ | See [WSR Troubleshooting](/docs/features/warm-standby-troubleshooting). |
+
+**Resolved:** downstream-to-upstream WSR connection failures (found 3.13.3, resolved 3.13.6); WSR exception on upstream stream data expiry (resolved 3.13.6).
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+The hardware-device-type-35 import failure catches people on older 3.13 patches and looks like a corrupt download rather than a known bug. If you hit it, pull a newer 3.13 patch first — that's faster than the OVF surgery, and you should be on the current patch anyway (see [Version & Support Policy](/support/version-policy)).
+
+</Callout>
+
+For Photon OS firewall and NSX considerations on multi-node clusters, see [OVA 4.3 Overview](/docs/ova/4.3/overview) — the same caveats apply.

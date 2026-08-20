@@ -1,16 +1,39 @@
 ---
 title: OVA 4.2 Overview & Import
-description: The Tanzu RabbitMQ 4.2 LTS OVA appliance.
+description: The Tanzu RabbitMQ 4.2 LTS OVA appliance — AceMQ's recommended stream for new VM-based deployments.
 ---
 
-4.2 is AceMQ's recommended LTS stream — see [Kubernetes 4.2 Overview](/docs/kubernetes/4.2/overview). Import and configuration steps are identical to [OVA 4.3](/docs/ova/4.3/import) — Photon OS base, VMXNET3 adapter, `bitnami`/`bitnami` default credentials (change immediately), manual network configuration after boot.
+4.2 is AceMQ's recommended LTS stream — longest remaining commercial support of any active stream (30 June 2030). See [Kubernetes 4.2 Overview](/docs/kubernetes/4.2/overview).
+
+## Prerequisites
+
+A VMware VM environment — ESXi/vSphere (v7.0 Update 3 or later recommended), Workstation Player, or Fusion. Non-VMware environments also work.
+
+## Download
+
+See [Get the OVA Package](/packages/ova) — `tanzu-rabbitmq-standalone-4.2.6.ova`, with a `-fips-` variant.
+
+## Import and first boot
+
+Identical procedure to [OVA 3.13](/docs/ova/3.13/overview):
+
+- Leave network configuration empty during import; configure manually after first boot
+- Default credentials `bitnami`/`bitnami` — **change immediately**
+- Default sizing is 1 vCPU / 1 GB / 10 GB — resize before production use
+- Service unit is `bitnami.vmware-tanzu-rabbitmq`; logs via `journalctl -u bitnami.vmware-tanzu-rabbitmq`
 
 <Callout kind="alert">
 
 **AceMQ Insight**
 
-Same Photon OS firewall and NSX caveats apply as on 4.3 — see [OVA 4.3 Overview](/docs/ova/4.3/overview) for the full explanation before deploying a multi-node cluster.
+The OVA runs on **Photon OS**. On multi-node clusters, Photon's iptables and any NSX micro-segmentation policy must explicitly allow inter-node traffic on 4369 and 25672 — AceMQ has seen cluster formation fail silently because of this. Use the **VMXNET3** network adapter, not the legacy E1000. Full detail on [OVA 4.3 Overview](/docs/ova/4.3/overview).
 
 </Callout>
 
-See [Get the OVA Package](/packages/ova) for the download path — filename pattern is `tanzu-rabbitmq-standalone-4.2.6.ova`, with a `-fips` variant.
+## Warm Standby Replication
+
+On 4.2 and later, WSR is configured on the broker directly (the standalone Standby Replication Operator was removed in this stream). See [Warm Standby Replication](/docs/features/warm-standby-replication).
+
+## FIPS
+
+The OVA is one of the three FIPS-ready artifacts — use the `-fips-` filename variant. See [FIPS](/support/fips).
