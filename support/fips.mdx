@@ -1,6 +1,6 @@
 ---
 title: FIPS
-description: Which Tanzu RabbitMQ artifacts are FIPS-ready, what the RPM requires, and why post-quantum TLS isn't available in FIPS mode.
+description: Which Tanzu RabbitMQ artifacts are FIPS-ready, how to enable FIPS on the Kubernetes operators, and why post-quantum TLS isn't available in FIPS mode.
 ---
 
 ## Which artifacts are FIPS-ready
@@ -12,6 +12,24 @@ description: Which Tanzu RabbitMQ artifacts are FIPS-ready, what the RPM require
 **The RHEL RPM installs the broker but delivers no FIPS posture by itself.** No FIPS RPM artifact exists. FIPS on RPM requires you to boot the host with `fips=1` against RHEL's FIPS 140-3 validated OpenSSL provider, and start the Erlang crypto app with `fips_mode=true`. This is supported, but it's customer-owned host integration — not something delivered by the package.
 
 </Callout>
+
+## Enabling FIPS on the Kubernetes operators
+
+FIPS mode on the Cluster Operator and Messaging Topology Operator is enabled through a `GODEBUG` environment variable in the Helm chart values, before you install the operator bundle:
+
+```yaml
+clusterOperator:
+  extraEnvVars:
+    - name: GODEBUG
+      value: fips140=on
+
+msgTopologyOperator:
+  extraEnvVars:
+    - name: GODEBUG
+      value: fips140=on
+```
+
+Set this in your `values.yaml` before running `helm install`, then reference that file with `--values` — see [Kubernetes → Install](/docs/kubernetes/4.3/install). This governs the operators themselves; the broker's own FIPS posture still comes from the `-fips` image variant.
 
 ## Post-quantum TLS
 

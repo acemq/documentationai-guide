@@ -9,13 +9,28 @@ description: Install the Tanzu RabbitMQ operators and deploy your first cluster 
 See [Get the Kubernetes Package](/packages/kubernetes) for the exact `acemq.jfrog.io` login and pull commands — this page assumes you already have the chart.
 
   </Step>
+  <Step title="Decide on cert-manager" icon="shield">
+
+The operator bundle's webhooks need certificates, normally provisioned by `cert-manager`. You have three options:
+
+- **Already running cert-manager?** Leave `useCertManager: true` (the default) and point at your existing installation.
+- **No cert-manager yet, cluster has internet access:** install it from its upstream GitHub release before installing the operator bundle.
+- **No Messaging Topology Operator needed?** Set `msgTopologyOperator.enabled: false` and `useCertManager: false` in your values file — cert-manager is only required for the Topology Operator's webhooks. This is a legitimate choice if you only need the Cluster Operator to manage `RabbitmqCluster` resources and don't need declarative topology.
+
+  </Step>
+  <Step title="(Optional) Enable FIPS on the operators" icon="lock">
+
+See [FIPS](/support/fips) for the exact `values.yaml` snippet — this must be set before you install, not after.
+
+  </Step>
   <Step title="Install the operator bundle" icon="rocket">
 
 ```bash
 helm install rabbitmq-operators \
   oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators \
   --version 4.3.0 \
-  --namespace rabbitmq-system --create-namespace
+  --namespace rabbitmq-system --create-namespace \
+  --values values.yaml
 ```
 
 This installs the Cluster Operator, Messaging Topology Operator, and Default User Credential Updater together.
@@ -66,5 +81,13 @@ See [Get Access → Discover Versions](/access/discover-versions) for how the `i
 Declare durable topology — vhosts, queues, exchanges, bindings, policies, dead-letter exchanges — as Messaging Topology Operator custom resources under GitOps. Applications should only declare their own private or ephemeral queues at runtime. Embedding durable topology in Helm values or leaving it to application code means it lives outside Kubernetes' own reconciliation loop, and it's the single most common source of "my queues disappeared after a redeploy" tickets AceMQ sees.
 
 </Callout>
+
+## Uninstalling
+
+```bash
+helm uninstall rabbitmq-operators --namespace rabbitmq-system
+```
+
+This removes the operators; existing `RabbitmqCluster` resources and their StatefulSets are not automatically torn down — delete those separately if you're decommissioning entirely.
 
 For configuration beyond first deploy — TLS, resource tuning, affinity — see [Configuration](/docs/kubernetes/4.3/configuration).
