@@ -15,24 +15,29 @@ Your entitlement covers Tanzu RabbitMQ in every format AceMQ distributes:
 - **RPM** — Red Hat Enterprise Linux 8 and 9
 - **OVA** — VMware virtual appliance, including a FIPS variant
 - **Kubernetes** — Helm chart and operator images
-- **Open Source RabbitMQ** — the unlicensed community build, also available through the same repository
+- **Open Source RabbitMQ** — the community build, also available through the same repository
 
-<Callout kind="warning">
+<Callout kind="info">
 
-A licensed Tanzu build is not distributed for Windows. Windows deployments use Open Source RabbitMQ — see [Open Source RabbitMQ](/packages/open-source).
+**Windows:** Windows builds are available from the same repository under plain `rabbitmq-server-` naming. If you run Windows under a commercial agreement, confirm your specific entitlement with AceMQ — see [Open Source RabbitMQ](/packages/open-source).
 
 </Callout>
 
-## Core counting
+## How it's counted
 
-Licensing is priced per core. **Non-production cores count the same as production cores.** If you run dev, staging, and prod environments, your core count must include all of them — not just production.
+Licensing is priced per CPU core, and **every environment counts — production and non-production alike.** See [How Licensing Is Counted](/access/core-counting) for what AceMQ needs to size a quote and why vCPU vs physical cores matters.
+
+## Terms
+
+1-year and 3-year terms are available, billed annually. See [Terms, Billing & Renewals](/access/terms-and-renewals).
 
 ## Support
 
 AceMQ support covers all RabbitMQ — Bitnami/open-source or Tanzu, any release — under your SLA. Licensing specifically adds:
 
-- Access to LTS-supported and newer commercial builds
+- Access to LTS-supported and newer commercial builds (the free community ceiling is 3.13.7)
+- The commercial-only plugins — see [Exclusive Features](/docs/features/availability-matrix)
 - A standard 12-hour response time on product-related issues
 - A discount on emergency escalation and incident-management contracts, if you need faster response
 
-See [Licensing FAQ](/support/licensing-faq) for more, and [Getting Help](/support/getting-help) for how to open a ticket.
+See [Licensing FAQ](/support/licensing-faq) and [Getting Help](/support/getting-help).
