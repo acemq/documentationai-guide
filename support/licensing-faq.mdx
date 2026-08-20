@@ -1,32 +1,102 @@
 ---
 title: Licensing FAQ
-description: Common questions about what an AceMQ Tanzu RabbitMQ license covers.
+description: Common questions about what an AceMQ Tanzu RabbitMQ license covers, how it's counted, billed, and renewed.
 ---
 
-### Do I need a license key?
-
-No. The license is embedded in the commercial build you pull from `acemq.jfrog.io`. See [Licensing](/access/licensing).
-
-### Does my support cover our existing Bitnami/open-source deployment?
-
-Yes. AceMQ support covers all RabbitMQ deployments — Bitnami, open-source, or Tanzu — under your SLA. Licensing adds LTS support and access to newer commercial builds; it doesn't gate support for what you're already running.
+## Cost and sizing
 
 ### How is licensing priced?
 
-Per core, and **pre-production cores count the same as production cores.** Include every environment when sizing.
+Per CPU core, across **all** environments — production and non-production. See [How Licensing Is Counted](/access/core-counting).
 
-### What does "Tanzu" actually mean?
+### Can we license production only and leave dev/test unlicensed?
 
-See [What Is Tanzu?](/start-here/what-is-tanzu) — it's the most commonly misunderstood term in this whole process.
+**No.** Broadcom's licensing requirements mandate that all pre-production and production environments are licensed. Production-only scoping is not an available option.
+
+### Do you need vCPU or physical core counts?
+
+AceMQ asks for both the total count **and** whether they're physical or virtualized — the two produce different quotes. Always state which you're supplying. See [How Licensing Is Counted](/access/core-counting).
+
+### What's the minimum core commitment?
+
+A minimum applies, and the figure depends on product, region, and purchasing channel. Confirm the one that applies to you with AceMQ before budgeting — see [How Licensing Is Counted](/access/core-counting).
+
+### Can you license us in our region?
+
+AceMQ's selling authorization varies by region and by the purchasing entity's location. Raise this early if your deploying and purchasing entities are in different countries.
+
+### What do you need from us to produce a quote?
+
+Total core count across all environments, whether those are physical or virtual, your RabbitMQ version, and a rough picture of the deployment.
+
+## Terms and billing
+
+### What term lengths are available?
+
+1-year and 3-year. Multi-year is billed annually across the term, not upfront. See [Terms, Billing & Renewals](/access/terms-and-renewals).
+
+### Is my invoice for licensing or for services?
+
+They're billed separately by design. See [Terms, Billing & Renewals](/access/terms-and-renewals).
+
+### How does renewal work?
+
+AceMQ confirms whether your core count changed, then produces a renewal quote. Start early if your approvals take time. See [Terms, Billing & Renewals](/access/terms-and-renewals).
+
+## What the license covers
+
+### Do I need a license key?
+
+No. The license is embedded in the commercial build you pull from `acemq.jfrog.io`. If you pulled it from AceMQ, you're licensed. See [Licensing](/access/licensing).
 
 ### Which package formats does my license cover?
 
 All of them — OCI, RPM, OVA, Kubernetes, and Open Source. See [What's Included](/start-here/whats-included).
 
+### Does my support cover our existing Bitnami / open-source deployment?
+
+**Yes.** AceMQ support covers all RabbitMQ deployments — Bitnami, open-source, or Tanzu — under your SLA. Licensing adds LTS support and access to newer commercial builds; it doesn't gate whether AceMQ will help with what you're already running.
+
+### What does licensing actually get me over the community build?
+
+Three things: access to the LTS-supported stream and newer commercial builds (the free community ceiling is 3.13.7), the commercial-only plugins, and AceMQ's commercial support SLA. See [What Is Tanzu?](/start-here/what-is-tanzu).
+
+### Which versions am I entitled to?
+
+Once licensed, you have access to commercial downloads for every supported RabbitMQ version — you can upgrade whenever you choose. See [Version Support Matrix](/start-here/version-support-matrix).
+
 ### Is Windows covered?
 
-AceMQ support covers Windows deployments, but there is no licensed Tanzu package for Windows — only the Open Source build. See [Open Source RabbitMQ](/packages/open-source).
+AceMQ support covers Windows deployments, but **there is no licensed Tanzu package for Windows** — only the Open Source build. See [Open Source RabbitMQ](/packages/open-source).
 
-### How long is my version supported?
+## Getting your software
 
-See [Version Support Matrix](/start-here/version-support-matrix) for stream-level dates, and [Version & Support Policy](/support/version-policy) for the separate rule about which minor release is actually current.
+### I'm licensed — how do I actually download anything?
+
+You'll receive a JFrog access email and a separate Jira service desk invite. See [Onboarding](/access/onboarding).
+
+### I logged into JFrog but can't download anything
+
+Look under **Artifacts**, not Packages — see [Navigating JFrog](/access/navigating-jfrog). This is the single most common first-login stumble.
+
+### How do I add more people to our access?
+
+Every person needs to be listed on the onboarding submission to receive their own invite. To add someone afterwards, contact AceMQ — see [Getting Help](/support/getting-help). Any email address can be added; there's no domain restriction or seat limit.
+
+### How long after ordering until we have access?
+
+JFrog provisioning is a manual step on AceMQ's side, triggered by your onboarding form submission. Submit the form promptly after your order completes — that's the gate. See [Onboarding](/access/onboarding).
+
+## Security and compliance
+
+### Do you provide CVE information for our build?
+
+Ask AceMQ support for a CVE summary against your specific running version — see [Getting Help](/support/getting-help). This is a common compliance-review request.
+
+### Is FIPS supported?
+
+Yes, in specific artifacts. See [FIPS](/support/fips).
+
+### What are your support response times?
+
+A standard 12-hour response on product-related issues is included with every license, with faster response available under an add-on incident-management contract. See [Getting Help](/support/getting-help).

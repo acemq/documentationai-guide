@@ -3,6 +3,14 @@ title: Navigating JFrog
 description: A tour of the five AceMQ JFrog repositories and how to find what you need.
 ---
 
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+**Look under Artifacts, not Packages.** This is the single most common first-login stumble — customers log in successfully, click Packages, find nothing downloadable, and conclude their access is broken. Downloadable files live under **Artifacts**. Packages is a different view and is not where you retrieve builds.
+
+</Callout>
+
 On the platform side, **Artifacts** is the only section that matters for pulling packages. You'll see five repositories:
 
 | Repository | Holds |
@@ -15,10 +23,10 @@ On the platform side, **Artifacts** is the only section that matters for pulling
 
 ## Downloading a file
 
-For RPM and OVA artifacts in `ossrabbitmq-rabbitmq-oss`, there is no `.repo` file or package-manager integration — you browse and download directly:
+For RPM, OVA, and tarball artifacts in `ossrabbitmq-rabbitmq-oss`, there is no `.repo` file or package-manager integration — you browse and download directly:
 
 <Steps>
-  <Step title="Browse to the version folder" icon="folder">
+  <Step title="Artifacts → ossrabbitmq-rabbitmq-oss" icon="folder">
 
   In the Artifacts tree, open `ossrabbitmq-rabbitmq-oss`, then the version folder you want (for example `4.2.6`).
 
@@ -35,3 +43,5 @@ For RPM and OVA artifacts in `ossrabbitmq-rabbitmq-oss`, there is no `.repo` fil
 If you can't find a version you know exists, see [Discover Versions](/access/discover-versions) before assuming AceMQ doesn't carry it.
 
 </Callout>
+
+If you see a permissions error rather than a missing file, check your token scope — see [Generate a Token](/access/generate-token) and [Access Troubleshooting](/support/access-troubleshooting).

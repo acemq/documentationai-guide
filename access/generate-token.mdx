@@ -1,6 +1,6 @@
 ---
 title: Generate a Token
-description: Create a scoped JFrog identity token to authenticate Docker, Helm, and RPM pulls.
+description: Create a scoped JFrog identity token to authenticate Docker, Helm, and repository pulls.
 ---
 
 You need a token to authenticate `docker login`, `helm`, and repository pulls. Your JFrog username alone is not a password.
@@ -17,9 +17,29 @@ You need a token to authenticate `docker login`, `helm`, and repository pulls. Y
 
   <Callout kind="warning">
 
-  A token created outside the user profile page (for example, through certain API calls) can fail to bind correctly to your account. Always generate it from the profile page.
+  A token created outside the user profile page (for example, through certain API calls) can fail to bind correctly to your account, producing a *"Binding token to existing user ... is allowed only through the user profile page"* error. Always generate it from the profile page.
 
   </Callout>
+
+  </Step>
+  <Step title="Scope it to every repository you'll use" icon="layers">
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Don't scope the token to `rabbitmq-docker-remote` alone. That covers container images only — a token scoped that narrowly **cannot pull RPMs, OVAs, Helm charts, or operator images**, and produces confusing permission errors that look like an entitlement problem rather than a token-scope problem. Scope it across every repository you actually use:
+
+| Repository | Needed for |
+|---|---|
+| `rabbitmq-docker-remote` | Broker container images |
+| `ossrabbitmq-rabbitmq-oss` | RPM, OVA, tarballs, Open Source builds |
+| `rabbitmq-helmoci-remote` / `helm-remote` | Kubernetes Helm chart |
+| `rabbitmq-operator-docker-remote` | Kubernetes operator images |
+
+</Callout>
+
+Container and Helm pulls also need **deploy** permission, not just read — see [Your JFrog Account](/access/jfrog-account).
 
   </Step>
   <Step title="Copy it immediately" icon="copy">
