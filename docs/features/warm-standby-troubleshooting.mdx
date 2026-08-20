@@ -1,0 +1,117 @@
+---
+title: WSR — Diagnostics & Troubleshooting
+description: Verify Tanzu RabbitMQ warm standby replication is working, and diagnose it when it isn't.
+---
+
+<Callout kind="warning">
+
+These diagnostic commands read and parse all replicated data on disk. They can take a long time on medium or large data sets. Use them deliberately, not in a monitoring loop.
+
+</Callout>
+
+## Verify replication status
+
+```bash
+rabbitmqctl schema_replication_status
+rabbitmqctl standby_replication_status
+```
+
+## Upstream — what's being collected
+
+```bash
+rabbitmq-diagnostics inspect_standby_upstream_metrics
+```
+
+You should also see a **stream-type connection** from the downstream on the upstream cluster. Relevant metrics are also exposed on the Prometheus endpoint.
+
+## Downstream — what's been received
+
+```bash
+# Queue-level metrics for recoverable data
+rabbitmq-diagnostics inspect_standby_downstream_metrics
+
+# Message counts by exchange and routing key
+rabbitmq-diagnostics inspect_local_data_available_for_standby_replication_recovery
+
+# Stream data available for recovery
+rabbitmq-diagnostics inspect_local_stream_data_available_for_standby_replication_recovery
+
+# Disk used by replicated data
+rabbitmqctl display_disk_space_used_by_standby_replication_data
+```
+
+You can also view this in the Management UI under **Admin → Schema Replication / Standby Replication / Standby Promotion**.
+
+<Callout kind="info">
+
+These report messages by **exchange and routing key**, not by queue. An empty/missing exchange means the message went to the default exchange. The routing key is often but not always the queue name.
+
+</Callout>
+
+## "Messages collect upstream but never arrive downstream"
+
+The single most common WSR issue. Work through this checklist **on the upstream cluster**:
+
+<Steps>
+  <Step title="Is the vhost tagged?" icon="tag">
+
+The vhost must carry the `standby_replication` tag. See [Message Replication Setup](/docs/features/warm-standby-message-replication).
+
+  </Step>
+  <Step title="Does the effective policy include remote-dc-replicate?" icon="filter">
+
+Only one policy applies at a time — confirm the *effective* policy on the queue has `"remote-dc-replicate": true`, not just that you created a policy somewhere.
+
+  </Step>
+  <Step title="Is the queue a supported type?" icon="list">
+
+Quorum, classic, and stream queues are supported.
+
+  </Step>
+  <Step title="Do the internal streams have messages?" icon="database">
+
+Check `rabbitmq.internal.osr.messages` and `rabbitmq.internal.osr.metrics` on each replicated vhost.
+
+  </Step>
+  <Step title="Can the replicator user authenticate?" icon="key">
+
+```bash
+rabbitmqctl authenticate_user <user> <password>
+```
+
+  </Step>
+</Steps>
+
+If all of those pass, search the **downstream** cluster's RabbitMQ logs for related errors.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Before working this checklist, confirm you're not chasing expected behavior: for quorum and classic queues, replicated messages are **invisible in the Management UI until promotion** by design. Use `inspect_standby_downstream_metrics` to confirm they're actually there. Streams are the exception — those are visible pre-promotion.
+
+</Callout>
+
+## Verify recoverable data before promoting
+
+```bash
+# Which queues have recoverable messages
+rabbitmq-diagnostics inspect_standby_downstream_metrics
+
+# How many messages, by exchange and routing key
+rabbitmq-diagnostics inspect_local_data_available_for_standby_replication_recovery
+
+# Stream equivalent
+rabbitmq-diagnostics inspect_local_stream_data_available_for_standby_replication_recovery
+```
+
+## Known issues
+
+| Issue | Affected | Notes |
+|---|---|---|
+| WSR credentials configured in `rabbitmq.conf` are stored in plaintext in that file | 3.13.3+ | A secret-store mechanism is planned. Configuring credentials in `rabbitmq.conf` was introduced in 3.13.3. |
+| `schema_definition_sync.downstream.locals.users.*` produces failed-permission-import warnings in downstream logs | 3.13.3+ | Safe to ignore; does not affect promotion. |
+| Downstreams could fail to connect to upstreams under some conditions | Found 3.13.3 | Resolved in 3.13.6 |
+| Expiring upstream stream data could cause a downstream replication exception | Before 3.13.6 | Resolved in 3.13.6 |
+
+See [Getting Help](/support/getting-help) if none of this resolves your issue.

@@ -1,0 +1,153 @@
+---
+title: WSR — Message Replication Setup
+description: Configure the Standby Message Replication plug-in, the replication policy, and retention for Tanzu RabbitMQ warm standby.
+---
+
+This configures replication of **messages**. Schema/definition replication is configured separately — see [Schema Replication Setup](/docs/features/warm-standby-schema-sync).
+
+## Upstream (primary) cluster
+
+```ini
+cluster_name = eu.1
+standby.replication.operating_mode = upstream
+
+# Total message stream size limit in bytes (5 GB shown — adjust to your needs)
+standby.replication.retention.size_limit.messages = 5000000000
+```
+
+## Downstream (standby) cluster
+
+```ini
+cluster_name = eu.2
+standby.replication.operating_mode = downstream
+standby.replication.retention.size_limit.messages = 5000000000
+
+# IMPORTANT: stops schema sync from interfering with local WSR state
+schema_definition_sync.downstream.locals.global_parameters = ^standby
+```
+
+<Callout kind="warning">
+
+That last line is not optional. Without `schema_definition_sync.downstream.locals.global_parameters = ^standby`, the schema sync plug-in can overwrite the local state the message replication plug-in depends on.
+
+</Callout>
+
+Set the upstream endpoints:
+
+```bash
+# NOTE: the target port is the RabbitMQ Stream protocol port (5552), NOT AMQP
+rabbitmqctl set_standby_replication_upstream_endpoints '{"endpoints": \
+  ["a.rabbitmq.eu-1.local:5552","b.rabbitmq.eu-1.local:5552","c.rabbitmq.eu-1.local:5552"], \
+  "username": "offsite-replicator", "password": "<password>"}'
+```
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Port 5552 (stream protocol), not 5672 (AMQP). Using the AMQP port here is a common and confusing failure — the link simply never establishes, with no obvious error pointing at the port.
+
+</Callout>
+
+Or in `rabbitmq.conf`:
+
+```ini
+standby.replication.connection.endpoints.one   = a.rabbitmq.eu-1.local:5552
+standby.replication.connection.endpoints.two   = b.rabbitmq.eu-1.local:5552
+standby.replication.connection.endpoints.three = c.rabbitmq.eu-1.local:5552
+standby.replication.connection.username = offsite-replicator
+standby.replication.connection.password = <password>
+```
+
+## Select which queues replicate
+
+Message collection is opt-in per virtual host and per queue. Two steps, both required:
+
+<Steps>
+  <Step title="Tag the virtual host" icon="tag">
+
+```bash
+rabbitmqctl add_vhost "vhost1" --tags "standby_replication"
+```
+
+Tagged vhosts get an outgoing stream declared by the plug-in on the upstream. The tag also makes it easy to see at a glance which vhosts have WSR enabled.
+
+  </Step>
+  <Step title="Apply a replication policy" icon="filter">
+
+```bash
+rabbitmqctl set_policy --vhost "vhost1" osr "^.*" '{"remote-dc-replicate": true}' --apply-to "queues"
+```
+
+<Callout kind="warning">
+
+Only one policy applies to a queue at a time. If your queues already have a policy, **merge** `remote-dc-replicate` into it rather than adding a competing policy — otherwise one policy silently wins and replication may not apply where you expect.
+
+</Callout>
+
+  </Step>
+</Steps>
+
+## Retention and storage settings
+
+```ini
+standby.replication.operating_mode = upstream
+
+# Custom location for stream data — e.g. to use replicated storage
+standby.replication.downstream.data_dir = /some/location
+
+# Max data kept in a stream, in bytes — applied per vhost
+standby.replication.retention.size_limit.messages = 10000000000
+
+# Or retain by time
+standby.replication.retention.time_limit.messages = 12h
+```
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+The size limit is **per virtual host**, not per cluster. With many replicated vhosts, your actual disk requirement is the limit multiplied by the vhost count — size your standby's storage accordingly. Message collection carries a real bandwidth and disk footprint; this is the setting people most often under-provision.
+
+</Callout>
+
+## TLS
+
+On the downstream:
+
+```ini
+standby.replication.downstream.ssl_options.cacertfile = /path/to/ca.crt
+standby.replication.downstream.ssl_options.certfile   = /path/to/tls.crt
+standby.replication.downstream.ssl_options.keyfile    = /path/to/tls.key
+standby.replication.downstream.ssl_options.verify     = verify_none
+standby.replication.downstream.ssl_options.fail_if_no_peer_cert = false
+```
+
+On the upstream, put the stream listener on TLS:
+
+```ini
+stream.listeners.tcp = none
+stream.listeners.ssl.1 = 5551
+```
+
+<Callout kind="warning">
+
+As with schema sync, **peer verification is not supported** — `verify` must be `verify_none`.
+
+</Callout>
+
+## Verify
+
+```bash
+rabbitmqctl standby_replication_status
+```
+
+See [Diagnostics & Troubleshooting](/docs/features/warm-standby-troubleshooting) for confirming messages are actually arriving.
+
+## Pausing and resuming
+
+```bash
+rabbitmqctl disconnect_standby_replication_downstream
+# ...
+rabbitmqctl connect_standby_replication_downstream
+```

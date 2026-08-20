@@ -1,0 +1,126 @@
+---
+title: WSR — Schema Replication Setup
+description: Configure the Continuous Schema Replication plug-in on the upstream and downstream Tanzu RabbitMQ clusters.
+---
+
+This configures replication of **definitions** — vhosts, queues, users, exchanges, bindings, policies, parameters. Message replication is configured separately; see [Message Replication Setup](/docs/features/warm-standby-message-replication).
+
+## Upstream (primary) cluster
+
+Set the operating mode in `rabbitmq.conf`:
+
+```ini
+# source cluster
+cluster_name = eu.1
+schema_definition_sync.operating_mode = upstream
+```
+
+Create the sync vhost and user, then set the endpoints:
+
+```bash
+# Dedicated vhost for schema replication
+rabbitmqctl add_vhost rabbitmq_schema_definition_sync
+
+# Like add_user, but also grants full permissions on the sync vhost
+rabbitmqctl add_schema_replication_user "schema-replicator" "<password>"
+
+rabbitmqctl set_schema_replication_upstream_endpoints '{"endpoints": \
+  ["a.rabbitmq.eu-1.local:5672","b.rabbitmq.eu-1.local:5672","c.rabbitmq.eu-1.local:5672"], \
+  "username": "schema-replicator", "password": "<password>"}'
+```
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Always provide a **list** of endpoints, not a single address. The connecting node uses the first reachable endpoint, so a list makes replication resilient to individual node failures on the upstream side. Endpoints are runtime parameters, so you can change them without restarting a node.
+
+</Callout>
+
+Alternatively, configure endpoints in `rabbitmq.conf` at first boot — the plug-in creates the user for you:
+
+```ini
+schema_definition_sync.connection.endpoints.one   = a.rabbitmq.eu-1.local:5672
+schema_definition_sync.connection.endpoints.two   = b.rabbitmq.eu-1.local:5672
+schema_definition_sync.connection.endpoints.three = c.rabbitmq.eu-1.local:5672
+schema_definition_sync.connection.username = schema-replicator
+schema_definition_sync.connection.password = <password>
+```
+
+## Downstream (standby) cluster
+
+```ini
+# follower cluster
+cluster_name = eu.2
+schema_definition_sync.operating_mode = downstream
+
+# How often to initiate sync operations, in seconds
+schema_definition_sync.downstream.minimum_sync_interval = 30
+```
+
+Point it at the upstream's endpoints using the same `set_schema_replication_upstream_endpoints` command shown above.
+
+<Callout kind="info">
+
+If a sync operation takes longer than `minimum_sync_interval`, the longer duration wins. This prevents syncs from stacking up when there's a large delta to import.
+
+</Callout>
+
+## Verify
+
+```bash
+rabbitmqctl schema_replication_status
+```
+
+## Excluding local entities from sync
+
+The downstream deletes any entity not present on the upstream. If you need to keep downstream-local entities (a local admin user, for example), exclude them with regex filters:
+
+```ini
+schema_definition_sync.downstream.locals.users             = ^my-user$
+schema_definition_sync.downstream.locals.vhosts            = ^vhost-test.*
+schema_definition_sync.downstream.locals.policies          = ^example$
+schema_definition_sync.downstream.locals.global_parameters = ^some-param
+schema_definition_sync.downstream.locals.parameters        = example$
+schema_definition_sync.downstream.locals.queues            = ^leave-this-q$
+schema_definition_sync.downstream.locals.exchanges         = ^important-exchange-[a-z]+
+```
+
+<Callout kind="warning">
+
+Using `schema_definition_sync.downstream.locals.users.*` produces warnings in the downstream logs about failed permission imports. These are safe to ignore and do not affect promotion.
+
+</Callout>
+
+## TLS
+
+```ini
+listeners.tcp = none
+listeners.ssl.default = 5671
+schema_definition_sync.ssl_options.cacertfile = /path/to/ca.crt
+schema_definition_sync.ssl_options.certfile   = /path/to/tls.crt
+schema_definition_sync.ssl_options.keyfile    = /path/to/tls.key
+schema_definition_sync.ssl_options.verify     = verify_none
+schema_definition_sync.ssl_options.fail_if_no_peer_cert = false
+```
+
+<Callout kind="warning">
+
+**Peer verification is not supported for schema sync.** `verify` must be `verify_none`. This is a product constraint, not a recommendation — setting `verify_peer` will not work.
+
+</Callout>
+
+## OAuth 2.0 authentication
+
+Both clusters can authenticate via OAuth 2.0 instead of username/password. Enable and configure `rabbitmq_auth_backend_oauth2`, then:
+
+```bash
+rabbitmqctl set_schema_replication_upstream_endpoints \
+  '{"endpoints": ["a.rabbitmq.eu-1.local:5672","b.rabbitmq.eu-1.local:5672"],
+    "oauth2_access_token_request": {
+      "client_id": "schema-sync",
+      "client_secret": "<secret>"
+    }}'
+```
+
+The OAuth client needs full read/write/configure permission on the schema replication vhost. If you run multiple OAuth providers, name the one to use with `"oauth2_provider": "<provider-name>"` inside `oauth2_access_token_request`.

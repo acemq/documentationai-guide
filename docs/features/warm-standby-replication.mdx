@@ -1,84 +1,95 @@
 ---
 title: Warm Standby Replication
-description: Disaster-recovery replication between a primary and one or more standby Tanzu RabbitMQ clusters.
+description: Disaster-recovery replication between a primary and standby Tanzu RabbitMQ cluster — concepts, terminology, and how the two plug-ins work together.
 ---
 
-Warm Standby Replication links a primary (upstream) cluster to one or more standby (downstream) clusters for disaster recovery. Replication is asynchronous, and standby clusters can run a different broker version than the primary.
+Warm Standby Replication (WSR) replicates schema definitions and messages from an upstream (primary) cluster to one or more downstream (standby) clusters. If the primary fails, an administrator promotes a standby into service as the new primary with minimal downtime or data loss.
 
-## What is replicated
+<Callout kind="info">
 
-- Cluster schema (vhosts, queues, exchanges, bindings, policies, users) via **Continuous Schema Replication**
-- Message data via **Standby Message Replication**
+Commercial-only — not available in open-source RabbitMQ. Included with your AceMQ license; see [What's Included](/start-here/whats-included).
 
-## How it works
+</Callout>
 
-A standby cluster connects to the primary and continuously syncs schema and message data. Connection endpoints and credentials are configured as runtime parameters, so they can be reconfigured without a node restart.
+## Two plug-ins, configured separately
+
+WSR is implemented by **two independent plug-ins** that you configure separately. Both must be enabled and configured for full WSR.
+
+| Plug-in | Replicates |
+|---|---|
+| **Continuous Schema Replication** (`rabbitmq_schema_definition_sync`) | Vhosts, queues, users, exchanges, bindings, policies, runtime parameters |
+| **Standby Message Replication** (`rabbitmq_standby_replication`) | Messages published to quorum queues, classic queues, and streams |
 
 <Callout kind="alert">
 
 **AceMQ Insight**
 
-Provide a list of connection endpoints on the upstream side, not a single address — an upstream node connects to the first reachable endpoint in the list, which makes replication resilient to individual node failures on the upstream side.
+The most common WSR setup mistake AceMQ sees is configuring schema replication and assuming messages are covered too. They're separate plug-ins with separate configuration. If you only did the `schema_definition_sync.*` settings, your definitions replicate but **your messages do not**.
 
 </Callout>
 
-## Setting it up
+## Terminology
 
-<Steps>
-  <Step title="Enable the plugins" icon="toggle-right">
+| Term | Meaning |
+|---|---|
+| **Upstream (primary)** | The active source cluster |
+| **Downstream (standby)** | The passive replica cluster |
+| **Schema** | Definitions — users, vhosts, queues, exchanges, bindings, runtime parameters |
+| **Sync operation** | A request/response pair: downstream requests, upstream returns the delta |
+| **Downstream promotion** | Converting a standby into an independent primary during DR |
 
-Enable Continuous Schema Replication and Standby Message Replication on both the primary and standby clusters.
+## Key design properties
 
-  </Step>
-  <Step title="Configure the upstream (primary)" icon="upload">
+- **Loose coupling.** Both sides are independent. If the link fails, the delta grows but neither cluster is otherwise affected. Downstreams syncing from a shared upstream don't coordinate with or interfere with each other.
+- **Version independence.** A standby can run a different RabbitMQ version than the primary — all communication is asynchronous.
+- **Per-vhost connections.** One connection per replicated virtual host, so load spreads across nodes. In a 3-node downstream with 10 vhosts, nodes own roughly 4/3/3 vhosts each for transfer and recovery.
+- **Multiple standbys.** One primary can feed several standbys in different data centers.
 
-Set `schema_definition_sync.operating_mode = upstream` and list connection endpoints.
+## How message replication actually behaves
 
-  </Step>
-  <Step title="Configure the downstream (standby)" icon="download">
+This differs by queue type and is important to understand before you rely on it:
 
-Point the standby at the upstream's connection endpoints and credentials.
-
-  </Step>
-  <Step title="Verify replication is working" icon="check">
-
-Check replication status via the CLI or HTTP API before relying on it for DR.
-
-  </Step>
-</Steps>
-
-## Promoting a standby for disaster recovery
-
-<Steps>
-  <Step title="Disconnect the downstream from the upstream" icon="unplug">
-
-```bash
-rabbitmqctl disconnect_standby_replication_downstream
-```
-
-  </Step>
-  <Step title="Wait, then promote" icon="clock">
-
-Allow time for in-flight replication to settle before promoting the standby to primary.
-
-  </Step>
-  <Step title="Reconnect downstream replication if needed" icon="plug">
-
-```bash
-rabbitmqctl connect_standby_replication_downstream
-```
-
-  </Step>
-</Steps>
+- **Quorum and classic queues:** messages are written to an internal stream log on the downstream. They are **not visible in the Management UI and not in the destination queues until promotion.** At promotion, they're re-published to their original destination queues, filtered against the replicated acknowledgement log so already-processed messages are skipped.
+- **Streams:** messages replicate directly into the destination streams on the downstream and **are** visible before promotion. You cannot publish new messages to them until promotion.
 
 <Callout kind="alert">
 
 **AceMQ Insight**
 
-Test your promotion runbook before you need it for real. AceMQ has seen customers configure Warm Standby Replication and never actually run a promotion drill — the first time it's tested for real is during an actual outage, which is the worst possible time to discover a gap in the runbook.
+Because quorum/classic messages are invisible until promotion, "I don't see my messages on the standby" is expected behavior, not a fault. Verify with the diagnostic commands on [Diagnostics & Troubleshooting](/docs/features/warm-standby-troubleshooting) instead of looking at the Management UI queue counts.
 
 </Callout>
 
-## Licensing
+## Prerequisites
 
-Warm Standby Replication is a commercial-only feature, included with your Tanzu license. See [What's Included](/start-here/whats-included).
+- At least two RabbitMQ clusters — one upstream, one downstream
+- **Stream protocol ports (typically TCP 6000–6500) open on the host firewall** and published on the container if running OCI
+- If using TLS, the plug-ins need a **client** certificate generated with client-authentication use — and AceMQ recommends it be a different certificate from the broker's server certificate, so components have separate keys
+
+## Enable both plug-ins
+
+```bash
+# Check status
+rabbitmq-plugins list rabbitmq_schema_definition_sync
+rabbitmq-plugins list rabbitmq_standby_replication
+
+# Enable both at once
+rabbitmqctl enable_warm_standby
+```
+
+## Next steps
+
+<Columns cols={2}>
+  <Card title="Schema Replication Setup" icon="settings" href="/docs/features/warm-standby-schema-sync">
+    Configure the Continuous Schema Replication plug-in on both clusters.
+  </Card>
+  <Card title="Message Replication Setup" icon="repeat" href="/docs/features/warm-standby-message-replication">
+    Configure the Standby Message Replication plug-in and the replication policy.
+  </Card>
+  <Card title="Promotion & DR" icon="alert-triangle" href="/docs/features/warm-standby-promotion">
+    Promote a standby during a disaster event, and what to do afterward.
+  </Card>
+  <Card title="Diagnostics & Troubleshooting" icon="activity" href="/docs/features/warm-standby-troubleshooting">
+    Verify replication is working, and fix it when it isn't.
+  </Card>
+</Columns>

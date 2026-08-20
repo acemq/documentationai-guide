@@ -1,0 +1,127 @@
+---
+title: WSR — Promotion & Disaster Recovery
+description: Promote a Tanzu RabbitMQ standby cluster to primary during a disaster event, and what to do afterward.
+---
+
+Promotion detaches a downstream from its upstream and makes it an independent cluster that can serve as the new primary.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Run a promotion drill before you need one. AceMQ has seen customers configure WSR correctly and never test promotion — the first real attempt happens during an actual outage, which is the worst time to discover a gap. Promotion is CPU and disk-I/O intensive for quorum/classic queues and takes time proportional to your retention period; you want to know that number in advance.
+
+</Callout>
+
+## Before promoting
+
+List which vhosts have recoverable data:
+
+```bash
+rabbitmqctl list_vhosts_available_for_standby_replication_recovery
+```
+
+Verify what will actually be recovered — see [Diagnostics & Troubleshooting](/docs/features/warm-standby-troubleshooting).
+
+## Promote
+
+**Easiest method — HTTP API** (takes no arguments):
+
+```bash
+curl -u <user>:<password> -X POST \
+  http://<node-hostname>:15672/api/tanzu/osr/downstream/promote
+```
+
+**New deployments — one-step CLI.** Completes all promotion tasks including the schema-side steps:
+
+```bash
+rabbitmqctl promote_warm_standby
+```
+
+**Existing deployments already using the older command:**
+
+```bash
+rabbitmqctl promote_standby_replication_downstream_cluster \
+  [--start-from-scratch] [--all-available] \
+  [--exclude-virtual-hosts "<vhost1>,<vhost2>"]
+```
+
+If you use this older command, you must also complete the schema-side promotion steps below.
+
+<Callout kind="info">
+
+`--start-from-scratch`, `--all-available`, and `--exclude-virtual-hosts` apply to both commands, for quorum and classic queues.
+
+</Callout>
+
+## Schema-side promotion (if not using `promote_warm_standby`)
+
+```bash
+# Stop replication
+rabbitmqctl disable_schema_replication
+
+# One-time upstream setup on the promoted cluster
+rabbitmqctl add_vhost rabbitmq_schema_definition_sync
+rabbitmqctl add_schema_replication_user "schema-replicator" "<password>"
+
+# Point at the local (now-promoted) nodes
+rabbitmqctl set_schema_replication_upstream_endpoints '{"endpoints": \
+  ["a.rabbitmq.eu-2.local:5672","b.rabbitmq.eu-2.local:5672"], \
+  "username": "schema-replicator", "password": "<password>"}'
+
+# Switch mode and restart
+rabbitmqctl set_schema_replication_mode upstream
+rabbitmqctl enable_schema_replication
+```
+
+## What happens at promotion
+
+- All upstream links close.
+- For every vhost, collected-but-unconsumed messages are re-published to their original destination queues — quorum and classic queues only. Streams are already in place and simply restart.
+- Each downstream node recovers the vhosts it owns, spreading the load across the cluster.
+
+## After promotion
+
+<Callout kind="warning">
+
+**Change `operatingMode: "downstream"` to `operatingMode: "upstream"` in the cluster's definition file.** This does not happen automatically. If you restart the promoted cluster without changing it, it comes back up in downstream mode.
+
+</Callout>
+
+Once promoted and stable, erase the old replicated data:
+
+```bash
+rabbitmqctl delete_all_data_on_standby_replication_cluster
+```
+
+<Callout kind="warning">
+
+If run on an *active* downstream, this deletes all transferred data up to that moment and may stop replication. Disconnect and reconnect the downstream to resume.
+
+</Callout>
+
+## If the original primary survives
+
+You can convert it into a downstream for the newly promoted cluster:
+
+1. Apply the downstream configuration from [Schema Replication Setup](/docs/features/warm-standby-schema-sync)
+2. Apply the downstream configuration from [Message Replication Setup](/docs/features/warm-standby-message-replication)
+3. Re-create the OSR policy on the new upstream
+
+## Other useful commands
+
+```bash
+# Start/stop/restart both plug-ins together
+rabbitmqctl enable_warm_standby
+rabbitmqctl disable_warm_standby
+rabbitmqctl restart_warm_standby
+
+# After a cluster size change, clean up vhost data nodes no longer own
+rabbitmqctl delete_orphaned_data_on_standby_replication_downstream_cluster
+
+# Delete internal streams on the upstream
+rabbitmqctl delete_internal_streams_on_standby_replication_upstream_cluster
+
+# Check disk usage of replicated data
+rabbitmqctl display_disk_space_used_by_standby_replication_data
+```
