@@ -1,8 +1,46 @@
 ---
 title: RPM 4.1 Overview & Install
-description: The Tanzu RabbitMQ 4.1 RPM.
+description: The Tanzu RabbitMQ 4.1 RPM — install, supported platforms, and support window.
 ---
 
-Same install pattern as [RPM 4.3](/docs/rpm/4.3/install) — no YUM repo, direct file download, same three prerequisites. See [Version Support Matrix](/start-here/version-support-matrix) — 4.1 is supported through 30 April 2027; AceMQ recommends [4.2](/docs/rpm/4.2/overview) for new deployments.
+<Callout kind="info">
 
-See [Get the RPM Package](/packages/rpm) for the download path.
+4.1 is supported through **30 April 2027**. For new deployments AceMQ recommends [4.2](/docs/rpm/4.2/overview) (supported to June 2030). See [Version Support Matrix](/start-here/version-support-matrix).
+
+</Callout>
+
+## Supported platforms
+
+- Red Hat Enterprise Linux 8 and 9
+- CentOS Stream 8 and 9
+- Rocky Linux 8 and 9
+- AlmaLinux 8 and 9
+- Oracle Linux 8 and 9
+
+Compatible with any EL8- or EL9-based Enterprise Linux distribution.
+
+<Callout kind="warning">
+
+**EL10 is not supported on the 4.1 stream** — only EL8 and EL9. If you need EL10, check [RPM 4.3 → Supported Platforms](/docs/rpm/4.3/platforms) and confirm availability for your specific patch before committing.
+
+</Callout>
+
+For platforms outside EL8/EL9, use [OCI](/docs/oci/4.3/overview) or [OVA](/docs/ova/4.3/overview) instead.
+
+## Install
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+AceMQ customers download the RPM file directly from JFrog — there is no YUM repository. Don't skip the three manual prerequisites (Erlang zero-dependency build, `logrotate`, GPG key); missing one of them is the most common cause of a failed first install. Full steps on [Get the RPM Package](/packages/rpm).
+
+</Callout>
+
+```bash
+sudo rpm -ivh tanzu-rabbitmq-server-4.1.15-1.el9.x86_64.rpm
+sudo systemctl enable --now rabbitmq-server
+sudo rabbitmqctl status
+```
+
+For clustering, TLS, and monitoring beyond first install, see [Broadcom TechDocs](https://techdocs.broadcom.com).

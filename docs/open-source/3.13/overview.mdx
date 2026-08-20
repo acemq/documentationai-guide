@@ -1,8 +1,28 @@
 ---
 title: Open Source RabbitMQ 3.13 Overview & Erlang Requirements
-description: The Open Source RabbitMQ 3.13 LTS build and Erlang/OTP compatibility.
+description: The Open Source RabbitMQ 3.13 LTS build, the community version ceiling, and Erlang/OTP compatibility.
 ---
 
-3.13 is the community-edition-derived LTS stream — see [Kubernetes 3.13 Overview](/docs/kubernetes/3.13/overview) for why customers choose it, and [What Is Tanzu?](/start-here/what-is-tanzu) for the community-vs-licensed distinction. Without a commercial license, 3.13.7 is the newest build available.
+3.13 is the community-edition-derived LTS stream. See [What Is Tanzu?](/start-here/what-is-tanzu) for the community-vs-licensed distinction.
 
-See [Get Open Source RabbitMQ](/packages/open-source) to download.
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+**Without a commercial license, 3.13.7 is the newest build freely available.** Anything past that — and LTS support through 2029 — requires a license. This is the practical reason most customers license: they've hit the community ceiling and need newer patches for CVE remediation.
+
+</Callout>
+
+## Erlang/OTP compatibility
+
+Each 3.13.x patch declares a minimum supported Erlang version. Nodes fail to start on Erlang releases older than that minimum — check the compatibility matrix before changing your runtime.
+
+| OTP version | Status on 3.13 |
+|---|---|
+| 26 | Supported |
+| 27 | Supported |
+| 28 | Not applicable to this stream — see [4.3](/docs/open-source/4.3/overview) |
+
+## Getting the build
+
+See [Get Open Source RabbitMQ](/packages/open-source), including the Windows `.exe`/`.zip` builds — which are **only** available as Open Source, never as a licensed Tanzu artifact.

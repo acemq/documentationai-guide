@@ -3,6 +3,27 @@ title: Open Source RabbitMQ 4.2 Overview & Erlang Requirements
 description: The Open Source RabbitMQ 4.2 build and Erlang/OTP compatibility.
 ---
 
-Same Erlang/OTP compatibility as [Open Source 4.3](/docs/open-source/4.3/overview): OTP 26 and 27 fully supported, OTP 28 partially supported and only for brand-new clusters.
+See [What Is Tanzu?](/start-here/what-is-tanzu) for what a commercial license adds over this build.
 
-See [Get Open Source RabbitMQ](/packages/open-source) to download.
+## Erlang/OTP compatibility
+
+| OTP version | Status |
+|---|---|
+| 26, 27 | Fully supported |
+| 28 | **Partially supported — brand-new clusters only** |
+
+<Callout kind="warning">
+
+Upgrading a **Khepri-enabled** cluster from Erlang 27 to 28 has a known issue affecting rolling upgrades. Erlang 28 is only safe for clusters built new on it. Stay on Erlang 27 for existing clusters.
+
+</Callout>
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Nodes fail to start outright on an Erlang release older than the minimum for your RabbitMQ version — this is a hard failure, not a warning. Verify the compatibility matrix before any runtime change, and treat Erlang upgrades as their own change window rather than bundling them with a RabbitMQ upgrade.
+
+</Callout>
+
+See [Get Open Source RabbitMQ](/packages/open-source) to download, and [Version & Support Policy](/support/version-policy) for the full matrix.

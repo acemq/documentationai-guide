@@ -1,8 +1,49 @@
 ---
 title: OCI 3.13 Overview & Run
-description: The Tanzu RabbitMQ 3.13 LTS container image.
+description: The Tanzu RabbitMQ 3.13 LTS container image — run, configure, and known issues.
 ---
 
-Same run pattern as [OCI 4.3](/docs/oci/4.3/run) — substitute the `3.13.18` tag. See [Kubernetes 3.13 Overview](/docs/kubernetes/3.13/overview) for why customers choose this stream, and the quorum-queue caveat that applies across every format on 3.13.
+3.13 is a long-life LTS stream, commercially supported through **31 December 2029**. See [Kubernetes 3.13 Overview](/docs/kubernetes/3.13/overview) for why customers deliberately stay on it.
 
-See [Get the OCI / Container Package](/packages/oci) to pull it.
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Use the standalone OCI image only when you don't have Kubernetes. If you do, [Kubernetes 3.13](/docs/kubernetes/3.13/overview) gives you HA orchestration, reconciliation, and rolling upgrades that hand-run containers don't.
+
+</Callout>
+
+## Run
+
+```bash
+docker run -d --name rabbitmq \
+  --oom-score-adj=200 \
+  -p 4369:4369 -p 5672:5672 -p 5671:5671 \
+  -p 15672:15672 -p 25672:25672 \
+  -p 5552:5552 \
+  -v /data/rabbitmq/etc:/etc/rabbitmq \
+  -v /data/rabbitmq/data:/var/lib/rabbitmq/ \
+  -v /data/rabbitmq/logs:/var/log/rabbitmq \
+  -e RABBITMQ_ERLANG_COOKIE=<your-cookie> \
+  -h rmq1 \
+  acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:3.13.18
+```
+
+See [OCI 4.3 → Run](/docs/oci/4.3/run) for the full volume-mount reference and the Podman/systemd pattern — unchanged on 3.13.
+
+<Callout kind="warning">
+
+If you plan to use [Warm Standby Replication](/docs/features/warm-standby-replication), the **stream protocol ports (typically TCP 6000–6500) must be open on the host firewall and published on the container**, plus 5552 for the stream listener. This is easy to miss when the container is otherwise working fine.
+
+</Callout>
+
+## Known issues on this stream
+
+| Issue | Found in | Notes |
+|---|---|---|
+| WSR credentials configured in `rabbitmq.conf` are stored in plaintext | 3.13.3+ | Secret-store support planned. |
+| `schema_definition_sync.downstream.locals.users.*` leaves failed-permission-import warnings in downstream logs | 3.13.3+ | Safe to ignore; doesn't affect promotion. |
+
+**Resolved:** WSR downstream-to-upstream connection failures (found 3.13.3, resolved 3.13.6); WSR exception when upstream stream data expires (resolved 3.13.6).
+
+See [Get the OCI / Container Package](/packages/oci) to pull the image.

@@ -1,13 +1,41 @@
 ---
 title: RPM 4.2 Overview & Install
-description: The Tanzu RabbitMQ 4.2 LTS RPM.
+description: The Tanzu RabbitMQ 4.2 LTS RPM — AceMQ's recommended stream for RHEL-based deployments.
 ---
 
-4.2 is AceMQ's recommended LTS stream. Install steps are identical to [RPM 4.3](/docs/rpm/4.3/install) — no YUM repo, direct file download, same three prerequisites (Erlang zero-dependency build, `logrotate`, GPG key).
+4.2 is AceMQ's recommended LTS stream — supported through **30 June 2030**, the longest of any active stream.
+
+## Supported platforms
+
+RHEL 8 and 9, CentOS Stream 8/9, Rocky Linux 8/9, AlmaLinux 8/9, Oracle Linux 8/9 — and any EL8/EL9-compatible distribution. See [RPM 4.3 → Supported Platforms](/docs/rpm/4.3/platforms) for the EL10 caveat.
+
+## Install
+
+Same procedure as [RPM 4.3 → Install](/docs/rpm/4.3/install):
 
 ```bash
 sudo rpm -ivh tanzu-rabbitmq-server-4.2.6-1.el9.x86_64.rpm
 sudo systemctl enable --now rabbitmq-server
+sudo rabbitmqctl status
+sudo rabbitmqctl node_health_check
 ```
 
-See [Get the RPM Package](/packages/rpm) for the download path and prerequisite steps in full.
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Three prerequisites must be installed manually before the RPM, because there's no YUM repo resolving dependencies: the **Erlang zero-dependency build** (matched to your EL version and architecture), **logrotate** from your own RHEL repo, and the **GPG signing key**. See [Get the RPM Package](/packages/rpm).
+
+</Callout>
+
+## FIPS
+
+<Callout kind="warning">
+
+The RPM delivers **no FIPS posture on its own** — no FIPS RPM artifact exists. FIPS on RHEL requires booting the host with `fips=1` and starting the Erlang crypto app with `fips_mode=true`. If you need a FIPS-ready artifact out of the box, use the [OVA](/docs/ova/4.2/overview) or [OCI](/docs/oci/4.2/overview) instead. See [FIPS](/support/fips).
+
+</Callout>
+
+## Clustering
+
+All nodes need the same Erlang cookie (`/var/lib/rabbitmq/.erlang.cookie`) and ports 4369 and 25672 open between them — see [Network Requirements](/access/network-requirements).

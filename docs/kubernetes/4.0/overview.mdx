@@ -1,12 +1,37 @@
 ---
 title: Kubernetes 4.0 Overview & Install
-description: Tanzu RabbitMQ on Kubernetes 4.0 — sunsetting, supported through 30 September 2026.
+description: Tanzu RabbitMQ on Kubernetes 4.0 — sunsetting 30 September 2026. Component versions and migration guidance.
 ---
 
 <Callout kind="warning">
 
-**4.0 reaches end of commercial support on 30 September 2026.** If you're running 4.0, start planning your move to [4.2](/docs/kubernetes/4.2/overview) or [4.3](/docs/kubernetes/4.3/overview) now — see [Version Upgrades](/migrations/version-upgrades) and [Version Support Matrix](/start-here/version-support-matrix).
+**4.0 reaches end of commercial support on 30 September 2026** — the shortest remaining window of any active stream. If you're running 4.0, plan your move now. See [Version Upgrades](/migrations/version-upgrades) and [Version Support Matrix](/start-here/version-support-matrix).
 
 </Callout>
 
-Installation follows the same pattern as [Kubernetes 4.3](/docs/kubernetes/4.3/install), substituting the 4.0.x chart and image tags. See [Get the Kubernetes Package](/packages/kubernetes).
+## What ships in 4.0.24
+
+| Component | Version |
+|---|---|
+| Tanzu RabbitMQ | 4.0.24 (based on open-source RabbitMQ 4.0.24) |
+| Erlang | 27.3.4.16 |
+| Cluster Operator | 2.22.4 |
+| Messaging Topology Operator | 1.20.1 |
+
+4.0.24 is a maintenance release — the 4.0.x series continues to receive patches through its support window, but no new features.
+
+## Install
+
+Same procedure as [Kubernetes 4.3 → Install](/docs/kubernetes/4.3/install), substituting 4.0.x chart and image versions. See [Get the Kubernetes Package](/packages/kubernetes).
+
+## Where to go from 4.0
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+**Go to 4.2, not 4.3.** 4.2 is supported to June 2030; 4.3 only to April 2028. From 4.0 both are a similar amount of work, so 4.2 buys you nearly two extra years before you have to do this again. A licensed Tanzu build supports jump upgrades, so skipping 4.1 entirely is fine — confirm the path with AceMQ support first.
+
+</Callout>
+
+See [Version Upgrades](/migrations/version-upgrades) for the licensing side and [Kubernetes 4.2 → Upgrade](/docs/kubernetes/4.2/upgrade) for the mechanics.

@@ -1,14 +1,53 @@
 ---
 title: Kubernetes 4.1 Overview & Install
-description: Tanzu RabbitMQ on Kubernetes 4.1 — supported through April 2027.
+description: Tanzu RabbitMQ on Kubernetes 4.1 — component versions, install, and support window.
 ---
 
 <Callout kind="info">
 
-4.1 is supported through 30 April 2027 — shorter remaining support than 4.2, 3.13, or 4.3. See [Version Support Matrix](/start-here/version-support-matrix). If you're starting a new deployment, AceMQ recommends [4.2](/docs/kubernetes/4.2/overview) instead.
+4.1 is supported through **30 April 2027** — shorter remaining support than 4.2 (Jun 2030), 3.13 (Dec 2029), or 4.3 (Apr 2028). For new deployments AceMQ recommends [4.2](/docs/kubernetes/4.2/overview). See [Version Support Matrix](/start-here/version-support-matrix).
 
 </Callout>
 
-Installation follows the same pattern as [Kubernetes 4.3](/docs/kubernetes/4.3/install) — the `tanzu-rabbitmq-operators` chart, then a `RabbitmqCluster` resource pointing at the 4.1.x image tag.
+## What ships in 4.1.15
 
-See [Get the Kubernetes Package](/packages/kubernetes) to pull it, and [Known Issues](/docs/kubernetes/4.1/known-issues) before upgrading onto or off of this stream.
+The latest patch in the 4.1.x series bundles:
+
+| Component | Version |
+|---|---|
+| Tanzu RabbitMQ | 4.1.15 (based on open-source RabbitMQ 4.1.15) |
+| Erlang | 27.3.4.16 |
+| Cluster Operator | 2.22.4 |
+| Messaging Topology Operator | 1.20.1 |
+
+<Callout kind="warning">
+
+Nodes fail to start on Erlang releases older than the minimum for your RabbitMQ version. Check the Erlang/OTP compatibility matrix before changing the runtime — see [Version & Support Policy](/support/version-policy).
+
+</Callout>
+
+## Install
+
+Same procedure as [Kubernetes 4.3 → Install](/docs/kubernetes/4.3/install) — the `tanzu-rabbitmq-operators` Helm chart installs the Cluster Operator and Messaging Topology Operator together, then you deploy a `RabbitmqCluster` resource.
+
+```bash
+helm install rabbitmq-operators \
+  oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators \
+  --version 4.1.15 \
+  --namespace rabbitmq-system --create-namespace \
+  --values values.yaml
+```
+
+See [Get the Kubernetes Package](/packages/kubernetes) for pulling from AceMQ, and [FIPS](/support/fips) if you need FIPS mode on the operators.
+
+## Warm Standby Replication
+
+On 4.1, WSR is configured on the broker via the schema-sync and standby-replication plug-ins — see [Warm Standby Replication](/docs/features/warm-standby-replication).
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+If you're on 4.1 and planning ahead, moving to 4.2 rather than 4.3 buys you the longest support runway (Jun 2030 vs Apr 2028) and is the smaller jump. AceMQ recommends 4.2 as the destination for most 4.1 customers.
+
+</Callout>
