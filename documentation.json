@@ -6,16 +6,8 @@
   "logo-light": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-18523f33-8c99-4c41-b635-870d8d994aee/1787251907879-z23rxyvh2kk-AceMQ-Black-Header.png?fm=auto&auto=compress%2Cformat",
   "favicon": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-18523f33-8c99-4c41-b635-870d8d994aee/1787251920316-q2lfmurty1a-Ace-Black-Icon.svg?rasterize-bypass=true",
   "colors": {
-    "light": {
-      "brand": "#FF6600",
-      "heading": "#1a1a1a",
-      "text": "#374151"
-    },
-    "dark": {
-      "brand": "#FF6600",
-      "heading": "#f2f2f2",
-      "text": "#c1c1c1"
-    }
+    "light": { "brand": "#FF6600", "heading": "#1a1a1a", "text": "#374151" },
+    "dark": { "brand": "#FF6600", "heading": "#f2f2f2", "text": "#c1c1c1" }
   },
   "seo": {
     "siteUrl": "https://tanzu-docs.acemq.com",
@@ -30,19 +22,14 @@
     "ai-assistant:enabled": true,
     "ai-assistant:starter-questions": [
       "How do I get access to my licensed Tanzu RabbitMQ packages?",
+      "How is my license counted — do dev and test environments count?",
       "Where do I download the RPM — there's no YUM repo?",
-      "Is my Bitnami deployment covered by AceMQ support?",
-      "How long is 4.2 supported for?"
+      "Is my Bitnami deployment covered by AceMQ support?"
     ],
     "page-actions": ["copy", "view"]
   },
-  "feedback": {
-    "reactions": true,
-    "survey": true
-  },
-  "scripts": [
-    { "src": "scripts/acemq-callout-branding.js" }
-  ],
+  "feedback": { "reactions": true, "survey": true },
+  "scripts": [ { "src": "scripts/acemq-callout-branding.js" } ],
   "navigation": {
     "tabs": [
       {
@@ -61,6 +48,16 @@
             ]
           },
           {
+            "group": "Licensing",
+            "icon": "file-text",
+            "pages": [
+              { "title": "Licensing Overview", "path": "access/licensing" },
+              { "title": "How Licensing Is Counted", "path": "access/core-counting" },
+              { "title": "Terms, Billing & Renewals", "path": "access/terms-and-renewals" },
+              { "title": "Licensing FAQ", "path": "support/licensing-faq" }
+            ]
+          },
+          {
             "group": "Get Access",
             "icon": "unlock",
             "pages": [
@@ -71,8 +68,7 @@
               { "title": "Discover Versions", "path": "access/discover-versions" },
               { "title": "Re-host in Your Registry", "path": "access/rehost-in-your-registry" },
               { "title": "Pin by Digest", "path": "access/pin-by-digest" },
-              { "title": "Network Requirements", "path": "access/network-requirements" },
-              { "title": "Licensing", "path": "access/licensing" }
+              { "title": "Network Requirements", "path": "access/network-requirements" }
             ]
           },
           {
@@ -102,7 +98,6 @@
             "group": "Support",
             "icon": "life-buoy",
             "pages": [
-              { "title": "Licensing FAQ", "path": "support/licensing-faq" },
               { "title": "Access Troubleshooting", "path": "support/access-troubleshooting" },
               { "title": "Version & Support Policy", "path": "support/version-policy" },
               { "title": "FIPS", "path": "support/fips" },
@@ -309,13 +304,23 @@
             "icon": "book",
             "pages": [
               { "title": "Feature Availability by Version", "path": "docs/features/availability-matrix" },
-              { "title": "Warm Standby Replication", "path": "docs/features/warm-standby-replication" },
               { "title": "Delayed Queues", "path": "docs/features/delayed-queues" },
               { "title": "Intra-cluster Compression", "path": "docs/features/intra-cluster-compression" },
               { "title": "AMQP 1.0 over WebSocket", "path": "docs/features/amqp10-websocket" },
               { "title": "OAuth 2.0 Forward Proxy & Opaque Tokens", "path": "docs/features/oauth2" },
               { "title": "LDAP Runtime Configuration", "path": "docs/features/ldap" },
               { "title": "Distributed Shovels", "path": "docs/features/distributed-shovels" }
+            ]
+          },
+          {
+            "group": "Warm Standby Replication",
+            "icon": "copy",
+            "pages": [
+              { "title": "Overview & Concepts", "path": "docs/features/warm-standby-replication" },
+              { "title": "Schema Replication Setup", "path": "docs/features/warm-standby-schema-sync" },
+              { "title": "Message Replication Setup", "path": "docs/features/warm-standby-message-replication" },
+              { "title": "Promotion & Disaster Recovery", "path": "docs/features/warm-standby-promotion" },
+              { "title": "Diagnostics & Troubleshooting", "path": "docs/features/warm-standby-troubleshooting" }
             ]
           }
         ]
