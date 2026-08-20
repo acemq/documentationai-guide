@@ -2,9 +2,9 @@
   "title": "AceMQ Tanzu RabbitMQ Licensing",
   "name": "AceMQ Tanzu RabbitMQ Licensing",
   "initialRoute": "start-here/introduction",
-  "logo-dark": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-a02231b5-c90d-40fd-a8a9-958b390d89fb/1786474174553-m7buekhmk7b-AceMQ-White-Header.png?fm=auto&auto=compress%2Cformat",
-  "logo-light": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-a02231b5-c90d-40fd-a8a9-958b390d89fb/1786474185146-92a0knl641m-AceMQ-Black-Header.png?fm=auto&auto=compress%2Cformat",
-  "favicon": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-a02231b5-c90d-40fd-a8a9-958b390d89fb/1782008069941-pjkh91bv3w-Ace-Black-Icon.svg?fm=auto&auto=compress%2Cformat",
+  "logo-dark": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-18523f33-8c99-4c41-b635-870d8d994aee/1787251898585-z3kzqgoytbj-AceMQ-White-Header.png?fm=auto&auto=compress%2Cformat",
+  "logo-light": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-18523f33-8c99-4c41-b635-870d8d994aee/1787251907879-z23rxyvh2kk-AceMQ-Black-Header.png?fm=auto&auto=compress%2Cformat",
+  "favicon": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-18523f33-8c99-4c41-b635-870d8d994aee/1787251920316-q2lfmurty1a-Ace-Black-Icon.svg?rasterize-bypass=true",
   "colors": {
     "light": {
       "brand": "#FF6600",
@@ -53,158 +53,62 @@
             "group": "Start Here",
             "icon": "rocket",
             "pages": [
-              {
-                "title": "Introduction",
-                "path": "start-here/introduction"
-              },
-              {
-                "title": "What's Included",
-                "path": "start-here/whats-included"
-              },
-              {
-                "title": "Choose a Format",
-                "path": "start-here/choose-a-format"
-              },
-              {
-                "title": "Version Support Matrix",
-                "path": "start-here/version-support-matrix"
-              },
-              {
-                "title": "What Is Tanzu?",
-                "path": "start-here/what-is-tanzu"
-              }
+              { "title": "Introduction", "path": "start-here/introduction" },
+              { "title": "What's Included", "path": "start-here/whats-included" },
+              { "title": "Choose a Format", "path": "start-here/choose-a-format" },
+              { "title": "Version Support Matrix", "path": "start-here/version-support-matrix" },
+              { "title": "What Is Tanzu?", "path": "start-here/what-is-tanzu" }
             ]
           },
           {
             "group": "Get Access",
             "icon": "unlock",
             "pages": [
-              {
-                "title": "Onboarding",
-                "path": "access/onboarding"
-              },
-              {
-                "title": "Your JFrog Account",
-                "path": "access/jfrog-account"
-              },
-              {
-                "title": "Generate a Token",
-                "path": "access/generate-token"
-              },
-              {
-                "title": "Navigating JFrog",
-                "path": "access/navigating-jfrog"
-              },
-              {
-                "title": "Discover Versions",
-                "path": "access/discover-versions"
-              },
-              {
-                "title": "Re-host in Your Registry",
-                "path": "access/rehost-in-your-registry"
-              },
-              {
-                "title": "Pin by Digest",
-                "path": "access/pin-by-digest"
-              },
-              {
-                "title": "Network Requirements",
-                "path": "access/network-requirements"
-              },
-              {
-                "title": "Licensing",
-                "path": "access/licensing"
-              }
+              { "title": "Onboarding", "path": "access/onboarding" },
+              { "title": "Your JFrog Account", "path": "access/jfrog-account" },
+              { "title": "Generate a Token", "path": "access/generate-token" },
+              { "title": "Navigating JFrog", "path": "access/navigating-jfrog" },
+              { "title": "Discover Versions", "path": "access/discover-versions" },
+              { "title": "Re-host in Your Registry", "path": "access/rehost-in-your-registry" },
+              { "title": "Pin by Digest", "path": "access/pin-by-digest" },
+              { "title": "Network Requirements", "path": "access/network-requirements" },
+              { "title": "Licensing", "path": "access/licensing" }
             ]
           },
           {
             "group": "Get Your Packages",
             "icon": "download",
             "pages": [
-              {
-                "title": "OCI / Containers",
-                "path": "packages/oci"
-              },
-              {
-                "title": "Choose a Variant",
-                "path": "packages/choose-a-variant"
-              },
-              {
-                "title": "RPM",
-                "path": "packages/rpm"
-              },
-              {
-                "title": "OVA",
-                "path": "packages/ova"
-              },
-              {
-                "title": "Kubernetes",
-                "path": "packages/kubernetes"
-              },
-              {
-                "title": "Open Source RabbitMQ",
-                "path": "packages/open-source"
-              },
-              {
-                "title": "Air-Gapped Environments",
-                "path": "packages/air-gapped"
-              }
+              { "title": "OCI / Containers", "path": "packages/oci" },
+              { "title": "Choose a Variant", "path": "packages/choose-a-variant" },
+              { "title": "RPM", "path": "packages/rpm" },
+              { "title": "OVA", "path": "packages/ova" },
+              { "title": "Kubernetes", "path": "packages/kubernetes" },
+              { "title": "Open Source RabbitMQ", "path": "packages/open-source" },
+              { "title": "Air-Gapped Environments", "path": "packages/air-gapped" }
             ]
           },
           {
             "group": "Migrations",
             "icon": "shuffle",
             "pages": [
-              {
-                "title": "From Open Source / Bitnami",
-                "path": "migrations/from-open-source"
-              },
-              {
-                "title": "Between Package Formats",
-                "path": "migrations/between-formats"
-              },
-              {
-                "title": "Version Upgrades",
-                "path": "migrations/version-upgrades"
-              },
-              {
-                "title": "Planning Checklist",
-                "path": "migrations/planning-checklist"
-              }
+              { "title": "From Open Source / Bitnami", "path": "migrations/from-open-source" },
+              { "title": "Between Package Formats", "path": "migrations/between-formats" },
+              { "title": "Version Upgrades", "path": "migrations/version-upgrades" },
+              { "title": "Planning Checklist", "path": "migrations/planning-checklist" }
             ]
           },
           {
             "group": "Support",
             "icon": "life-buoy",
             "pages": [
-              {
-                "title": "Licensing FAQ",
-                "path": "support/licensing-faq"
-              },
-              {
-                "title": "Access Troubleshooting",
-                "path": "support/access-troubleshooting"
-              },
-              {
-                "title": "Version & Support Policy",
-                "path": "support/version-policy"
-              },
-              {
-                "title": "FIPS",
-                "path": "support/fips"
-              },
-              {
-                "title": "Getting Help",
-                "path": "support/getting-help"
-              },
-              {
-                "title": "Glossary",
-                "path": "support/glossary"
-              },
-              {
-                "title": "Changelog",
-                "path": "support/changelog"
-              }
+              { "title": "Licensing FAQ", "path": "support/licensing-faq" },
+              { "title": "Access Troubleshooting", "path": "support/access-troubleshooting" },
+              { "title": "Version & Support Policy", "path": "support/version-policy" },
+              { "title": "FIPS", "path": "support/fips" },
+              { "title": "Getting Help", "path": "support/getting-help" },
+              { "title": "Glossary", "path": "support/glossary" },
+              { "title": "Changelog", "path": "support/changelog" }
             ]
           }
         ]
@@ -217,134 +121,58 @@
             "group": "4.3 (Current)",
             "icon": "star",
             "pages": [
-              {
-                "title": "Overview",
-                "path": "docs/kubernetes/4.3/overview"
-              },
-              {
-                "title": "Prerequisites & Platforms",
-                "path": "docs/kubernetes/4.3/prerequisites"
-              },
-              {
-                "title": "Install",
-                "path": "docs/kubernetes/4.3/install"
-              },
-              {
-                "title": "Configuration",
-                "path": "docs/kubernetes/4.3/configuration"
-              },
-              {
-                "title": "Upgrade",
-                "path": "docs/kubernetes/4.3/upgrade"
-              },
-              {
-                "title": "Known Issues",
-                "path": "docs/kubernetes/4.3/known-issues"
-              },
-              {
-                "title": "Troubleshooting",
-                "path": "docs/kubernetes/4.3/troubleshooting"
-              },
-              {
-                "title": "Security Fixes",
-                "path": "docs/kubernetes/4.3/security-fixes"
-              },
-              {
-                "title": "Release Notes",
-                "path": "docs/kubernetes/4.3/release-notes"
-              }
+              { "title": "Overview", "path": "docs/kubernetes/4.3/overview" },
+              { "title": "Prerequisites & Platforms", "path": "docs/kubernetes/4.3/prerequisites" },
+              { "title": "Install", "path": "docs/kubernetes/4.3/install" },
+              { "title": "Configuration", "path": "docs/kubernetes/4.3/configuration" },
+              { "title": "Upgrade", "path": "docs/kubernetes/4.3/upgrade" },
+              { "title": "Known Issues", "path": "docs/kubernetes/4.3/known-issues" },
+              { "title": "Troubleshooting", "path": "docs/kubernetes/4.3/troubleshooting" },
+              { "title": "Security Fixes", "path": "docs/kubernetes/4.3/security-fixes" },
+              { "title": "Release Notes", "path": "docs/kubernetes/4.3/release-notes" }
             ]
           },
           {
             "group": "4.2 (LTS)",
             "icon": "shield",
             "pages": [
-              {
-                "title": "Overview",
-                "path": "docs/kubernetes/4.2/overview"
-              },
-              {
-                "title": "Prerequisites & Platforms",
-                "path": "docs/kubernetes/4.2/prerequisites"
-              },
-              {
-                "title": "Install",
-                "path": "docs/kubernetes/4.2/install"
-              },
-              {
-                "title": "Configuration",
-                "path": "docs/kubernetes/4.2/configuration"
-              },
-              {
-                "title": "Upgrade",
-                "path": "docs/kubernetes/4.2/upgrade"
-              },
-              {
-                "title": "Known Issues",
-                "path": "docs/kubernetes/4.2/known-issues"
-              },
-              {
-                "title": "Troubleshooting",
-                "path": "docs/kubernetes/4.2/troubleshooting"
-              },
-              {
-                "title": "Release Notes",
-                "path": "docs/kubernetes/4.2/release-notes"
-              }
+              { "title": "Overview", "path": "docs/kubernetes/4.2/overview" },
+              { "title": "Prerequisites & Platforms", "path": "docs/kubernetes/4.2/prerequisites" },
+              { "title": "Install", "path": "docs/kubernetes/4.2/install" },
+              { "title": "Configuration", "path": "docs/kubernetes/4.2/configuration" },
+              { "title": "Upgrade", "path": "docs/kubernetes/4.2/upgrade" },
+              { "title": "Known Issues", "path": "docs/kubernetes/4.2/known-issues" },
+              { "title": "Troubleshooting", "path": "docs/kubernetes/4.2/troubleshooting" },
+              { "title": "Release Notes", "path": "docs/kubernetes/4.2/release-notes" }
             ]
           },
           {
             "group": "3.13 (LTS)",
             "icon": "shield",
             "pages": [
-              {
-                "title": "Overview",
-                "path": "docs/kubernetes/3.13/overview"
-              },
-              {
-                "title": "Prerequisites & Platforms",
-                "path": "docs/kubernetes/3.13/prerequisites"
-              },
-              {
-                "title": "Install",
-                "path": "docs/kubernetes/3.13/install"
-              },
-              {
-                "title": "Upgrade",
-                "path": "docs/kubernetes/3.13/upgrade"
-              },
-              {
-                "title": "Known Issues",
-                "path": "docs/kubernetes/3.13/known-issues"
-              },
-              {
-                "title": "Release Notes",
-                "path": "docs/kubernetes/3.13/release-notes"
-              }
+              { "title": "Overview", "path": "docs/kubernetes/3.13/overview" },
+              { "title": "Prerequisites & Platforms", "path": "docs/kubernetes/3.13/prerequisites" },
+              { "title": "Install", "path": "docs/kubernetes/3.13/install" },
+              { "title": "Configuration", "path": "docs/kubernetes/3.13/configuration" },
+              { "title": "Upgrade", "path": "docs/kubernetes/3.13/upgrade" },
+              { "title": "Known Issues", "path": "docs/kubernetes/3.13/known-issues" },
+              { "title": "Troubleshooting", "path": "docs/kubernetes/3.13/troubleshooting" },
+              { "title": "Release Notes", "path": "docs/kubernetes/3.13/release-notes" }
             ]
           },
           {
             "group": "4.1",
             "icon": "circle",
             "pages": [
-              {
-                "title": "Overview & Install",
-                "path": "docs/kubernetes/4.1/overview"
-              },
-              {
-                "title": "Known Issues",
-                "path": "docs/kubernetes/4.1/known-issues"
-              }
+              { "title": "Overview & Install", "path": "docs/kubernetes/4.1/overview" },
+              { "title": "Known Issues", "path": "docs/kubernetes/4.1/known-issues" }
             ]
           },
           {
             "group": "4.0 (Sunsetting)",
             "icon": "clock",
             "pages": [
-              {
-                "title": "Overview & Install",
-                "path": "docs/kubernetes/4.0/overview"
-              }
+              { "title": "Overview & Install", "path": "docs/kubernetes/4.0/overview" }
             ]
           }
         ]
@@ -357,62 +185,29 @@
             "group": "4.3 (Current)",
             "icon": "star",
             "pages": [
-              {
-                "title": "Overview",
-                "path": "docs/oci/4.3/overview"
-              },
-              {
-                "title": "Run the Image",
-                "path": "docs/oci/4.3/run"
-              },
-              {
-                "title": "Configuration",
-                "path": "docs/oci/4.3/configuration"
-              },
-              {
-                "title": "Upgrade",
-                "path": "docs/oci/4.3/upgrade"
-              },
-              {
-                "title": "Known Issues",
-                "path": "docs/oci/4.3/known-issues"
-              },
-              {
-                "title": "Release Notes",
-                "path": "docs/oci/4.3/release-notes"
-              }
+              { "title": "Overview", "path": "docs/oci/4.3/overview" },
+              { "title": "Run the Image", "path": "docs/oci/4.3/run" },
+              { "title": "Configuration", "path": "docs/oci/4.3/configuration" },
+              { "title": "Upgrade", "path": "docs/oci/4.3/upgrade" },
+              { "title": "Known Issues", "path": "docs/oci/4.3/known-issues" },
+              { "title": "Release Notes", "path": "docs/oci/4.3/release-notes" }
             ]
           },
           {
             "group": "4.2 (LTS)",
             "icon": "shield",
             "pages": [
-              {
-                "title": "Overview",
-                "path": "docs/oci/4.2/overview"
-              },
-              {
-                "title": "Run the Image",
-                "path": "docs/oci/4.2/run"
-              },
-              {
-                "title": "Configuration",
-                "path": "docs/oci/4.2/configuration"
-              },
-              {
-                "title": "Release Notes",
-                "path": "docs/oci/4.2/release-notes"
-              }
+              { "title": "Overview", "path": "docs/oci/4.2/overview" },
+              { "title": "Run the Image", "path": "docs/oci/4.2/run" },
+              { "title": "Configuration", "path": "docs/oci/4.2/configuration" },
+              { "title": "Release Notes", "path": "docs/oci/4.2/release-notes" }
             ]
           },
           {
             "group": "3.13 (LTS)",
             "icon": "shield",
             "pages": [
-              {
-                "title": "Overview & Run",
-                "path": "docs/oci/3.13/overview"
-              }
+              { "title": "Overview & Run", "path": "docs/oci/3.13/overview" }
             ]
           }
         ]
@@ -425,42 +220,24 @@
             "group": "4.3 (Current)",
             "icon": "star",
             "pages": [
-              {
-                "title": "Overview",
-                "path": "docs/ova/4.3/overview"
-              },
-              {
-                "title": "Import & Configure",
-                "path": "docs/ova/4.3/import"
-              },
-              {
-                "title": "Known Issues & Troubleshooting",
-                "path": "docs/ova/4.3/troubleshooting"
-              },
-              {
-                "title": "Release Notes",
-                "path": "docs/ova/4.3/release-notes"
-              }
+              { "title": "Overview", "path": "docs/ova/4.3/overview" },
+              { "title": "Import & Configure", "path": "docs/ova/4.3/import" },
+              { "title": "Known Issues & Troubleshooting", "path": "docs/ova/4.3/troubleshooting" },
+              { "title": "Release Notes", "path": "docs/ova/4.3/release-notes" }
             ]
           },
           {
             "group": "4.2 (LTS)",
             "icon": "shield",
             "pages": [
-              {
-                "title": "Overview & Import",
-                "path": "docs/ova/4.2/overview"
-              }
+              { "title": "Overview & Import", "path": "docs/ova/4.2/overview" }
             ]
           },
           {
             "group": "3.13 (LTS)",
             "icon": "shield",
             "pages": [
-              {
-                "title": "Overview & Import",
-                "path": "docs/ova/3.13/overview"
-              }
+              { "title": "Overview & Import", "path": "docs/ova/3.13/overview" }
             ]
           }
         ]
@@ -473,42 +250,24 @@
             "group": "4.3 (Current)",
             "icon": "star",
             "pages": [
-              {
-                "title": "Overview",
-                "path": "docs/rpm/4.3/overview"
-              },
-              {
-                "title": "Install",
-                "path": "docs/rpm/4.3/install"
-              },
-              {
-                "title": "Supported Platforms",
-                "path": "docs/rpm/4.3/platforms"
-              },
-              {
-                "title": "Release Notes",
-                "path": "docs/rpm/4.3/release-notes"
-              }
+              { "title": "Overview", "path": "docs/rpm/4.3/overview" },
+              { "title": "Install", "path": "docs/rpm/4.3/install" },
+              { "title": "Supported Platforms", "path": "docs/rpm/4.3/platforms" },
+              { "title": "Release Notes", "path": "docs/rpm/4.3/release-notes" }
             ]
           },
           {
             "group": "4.2 (LTS)",
             "icon": "shield",
             "pages": [
-              {
-                "title": "Overview & Install",
-                "path": "docs/rpm/4.2/overview"
-              }
+              { "title": "Overview & Install", "path": "docs/rpm/4.2/overview" }
             ]
           },
           {
             "group": "4.1",
             "icon": "circle",
             "pages": [
-              {
-                "title": "Overview & Install",
-                "path": "docs/rpm/4.1/overview"
-              }
+              { "title": "Overview & Install", "path": "docs/rpm/4.1/overview" }
             ]
           }
         ]
@@ -521,34 +280,22 @@
             "group": "4.3",
             "icon": "star",
             "pages": [
-              {
-                "title": "Overview & Erlang Requirements",
-                "path": "docs/open-source/4.3/overview"
-              },
-              {
-                "title": "Release Notes",
-                "path": "docs/open-source/4.3/release-notes"
-              }
+              { "title": "Overview & Erlang Requirements", "path": "docs/open-source/4.3/overview" },
+              { "title": "Release Notes", "path": "docs/open-source/4.3/release-notes" }
             ]
           },
           {
             "group": "4.2",
             "icon": "shield",
             "pages": [
-              {
-                "title": "Overview & Erlang Requirements",
-                "path": "docs/open-source/4.2/overview"
-              }
+              { "title": "Overview & Erlang Requirements", "path": "docs/open-source/4.2/overview" }
             ]
           },
           {
             "group": "3.13",
             "icon": "shield",
             "pages": [
-              {
-                "title": "Overview & Erlang Requirements",
-                "path": "docs/open-source/3.13/overview"
-              }
+              { "title": "Overview & Erlang Requirements", "path": "docs/open-source/3.13/overview" }
             ]
           }
         ]
@@ -561,51 +308,18 @@
             "group": "Reference",
             "icon": "book",
             "pages": [
-              {
-                "title": "Feature Availability by Version",
-                "path": "docs/features/availability-matrix"
-              },
-              {
-                "title": "Warm Standby Replication",
-                "path": "docs/features/warm-standby-replication"
-              },
-              {
-                "title": "Delayed Queues",
-                "path": "docs/features/delayed-queues"
-              },
-              {
-                "title": "Intra-cluster Compression",
-                "path": "docs/features/intra-cluster-compression"
-              },
-              {
-                "title": "AMQP 1.0 over WebSocket",
-                "path": "docs/features/amqp10-websocket"
-              },
-              {
-                "title": "OAuth 2.0 Forward Proxy & Opaque Tokens",
-                "path": "docs/features/oauth2"
-              },
-              {
-                "title": "LDAP Runtime Configuration",
-                "path": "docs/features/ldap"
-              },
-              {
-                "title": "Distributed Shovels",
-                "path": "docs/features/distributed-shovels"
-              }
+              { "title": "Feature Availability by Version", "path": "docs/features/availability-matrix" },
+              { "title": "Warm Standby Replication", "path": "docs/features/warm-standby-replication" },
+              { "title": "Delayed Queues", "path": "docs/features/delayed-queues" },
+              { "title": "Intra-cluster Compression", "path": "docs/features/intra-cluster-compression" },
+              { "title": "AMQP 1.0 over WebSocket", "path": "docs/features/amqp10-websocket" },
+              { "title": "OAuth 2.0 Forward Proxy & Opaque Tokens", "path": "docs/features/oauth2" },
+              { "title": "LDAP Runtime Configuration", "path": "docs/features/ldap" },
+              { "title": "Distributed Shovels", "path": "docs/features/distributed-shovels" }
             ]
           }
         ]
       }
     ]
-  },
-  "seo": {
-    "robots:index": false,
-    "robots:follow": false,
-    "llms-txt:enabled": false,
-    "sitemap:enabled": false
-  },
-  "logo-dark": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-18523f33-8c99-4c41-b635-870d8d994aee/1787251898585-z3kzqgoytbj-AceMQ-White-Header.png?fm=auto&auto=compress%2Cformat",
-  "logo-light": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-18523f33-8c99-4c41-b635-870d8d994aee/1787251907879-z23rxyvh2kk-AceMQ-Black-Header.png?fm=auto&auto=compress%2Cformat",
-  "favicon": "https://blob-cdn.documentation.ai/org-2cfc168c-86cc-4832-b39d-49942593cc60/doc-18523f33-8c99-4c41-b635-870d8d994aee/1787251920316-q2lfmurty1a-Ace-Black-Icon.svg?rasterize-bypass=true"
+  }
 }
