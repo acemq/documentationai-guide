@@ -1,40 +1,42 @@
 ---
-title: Get Open Source RabbitMQ
-description: Access Open Source RabbitMQ artifacts, including Windows builds, from the same AceMQ repository.
+title: Get Open Source & Windows Builds
+description: Access Open Source RabbitMQ artifacts and Windows builds from the AceMQ repository.
 ---
 
-Open Source RabbitMQ artifacts live in the same `ossrabbitmq-rabbitmq-oss` repository as the Tanzu builds — same access, same login. Follow [Navigating JFrog](/access/navigating-jfrog) and [Discover Versions](/access/discover-versions) to browse and download.
+Open Source RabbitMQ artifacts and Windows builds live in the `ossrabbitmq-rabbitmq-oss` repository — same access, same login as everything else. Follow [Navigating JFrog](/access/navigating-jfrog) and [Discover Versions](/access/discover-versions) to browse and download.
 
-## Windows
+## Windows builds
 
-Windows builds are available from the AceMQ repository, in the same `ossrabbitmq-rabbitmq-oss` folder structure as everything else:
+Windows builds are available to AceMQ customers from the same repository:
 
 ```
 rabbitmq-server-<version>.exe          # full installer
 rabbitmq-server-windows-<version>.zip  # zip distribution
 ```
 
-<Callout kind="info">
-
-**A note on naming.** Windows artifacts carry plain `rabbitmq-server-` naming rather than the `tanzu-rabbitmq-` prefix used on the Linux RPM and OVA builds. Naming alone doesn't tell you what your license entitles you to — **if you're running Windows under a commercial agreement, confirm your entitlement and which build to use with AceMQ** rather than inferring it from the filename. See [Getting Help](/support/getting-help).
-
-</Callout>
+Browse to **Artifacts → `ossrabbitmq-rabbitmq-oss` → `<version>`** and download the installer or zip directly — no token needed for a browser download.
 
 <Callout kind="alert">
 
 **AceMQ Insight**
 
-AceMQ supports Windows RabbitMQ deployments under commercial support agreements, and has commercial customers running Windows estates today. If you're on Windows and need a specific version, or you're unsure whether a commercial-only feature is available to you on that platform, ask — don't assume from the artifact name in the repository.
+AceMQ has commercial customers running Windows estates in production, and commercial features including Warm Standby Replication work on Windows. If you need a specific Windows version that isn't showing in the repository, ask — some Windows builds are pulled into the local repo on request rather than proxied automatically. See [Getting Help](/support/getting-help).
 
 </Callout>
 
-## Why you might use the Open Source build
+### Windows deployment notes
 
-- You're evaluating before licensing
-- You're running the community edition deliberately and don't need LTS support or commercial plugins
+See the AceMQ Premium knowledge base or your support contact for Windows-specific operational guidance. Two things worth knowing before you start:
+
+- **EDR/antivirus exclusions.** Endpoint protection commonly blocks `rabbitmqctl` and `rabbitmq-diagnostics`. Exclude the Erlang OTP and RabbitMQ server directories **and all subdirectories**.
+- **Environment variables.** After changing `ERLANG_HOME`, `RABBITMQ_SERVER`, or `RABBITMQ_BASE`, reinstall the service (`rabbitmq-service.bat stop` → `remove` → `install` → `start`) and verify with `echo %RABBITMQ_BASE%`.
+
+## Open Source builds
+
+The community build is available in the same repository for evaluation or for deployments that deliberately don't need LTS support or commercial plugins.
 
 Without a commercial license, **3.13.7 is the newest freely available build** — see [What Is Tanzu?](/start-here/what-is-tanzu) for what a license adds beyond that.
 
 ## Support
 
-AceMQ support covers all RabbitMQ deployments — open-source, Bitnami, or Tanzu — under your SLA. See [Licensing FAQ](/support/licensing-faq).
+AceMQ support covers all RabbitMQ deployments — open-source, Bitnami, or Tanzu — under your agreement. See [Licensing FAQ](/support/licensing-faq).

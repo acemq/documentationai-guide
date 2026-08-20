@@ -1,11 +1,11 @@
 ---
 title: What's Included in Your License
-description: What an AceMQ Tanzu RabbitMQ subscription covers — package formats, core counting, and support tiers.
+description: What an AceMQ Tanzu RabbitMQ subscription covers — package formats, platforms, and support.
 ---
 
 ## No license key
 
-There is no separate license key to install or configure. **The license is embedded in the commercial builds you pull from the AceMQ JFrog repository.** As long as you're running packages pulled from `acemq.jfrog.io`, you're licensed. See [Get Your Packages](/packages/oci) for how to pull them.
+There is no separate license key to install or configure. **The license is embedded in the commercial builds you pull from the AceMQ JFrog repository.** As long as you're running packages pulled from `acemq.jfrog.io`, you're licensed. See [Get Your Packages](/packages/oci).
 
 ## Package formats covered
 
@@ -15,29 +15,28 @@ Your entitlement covers Tanzu RabbitMQ in every format AceMQ distributes:
 - **RPM** — Red Hat Enterprise Linux 8 and 9
 - **OVA** — VMware virtual appliance, including a FIPS variant
 - **Kubernetes** — Helm chart and operator images
+- **Windows** — installer and zip distribution
 - **Open Source RabbitMQ** — the community build, also available through the same repository
 
-<Callout kind="info">
+Not sure which to use? See [Choose a Format](/start-here/choose-a-format).
 
-**Windows:** Windows builds are available from the same repository under plain `rabbitmq-server-` naming. If you run Windows under a commercial agreement, confirm your specific entitlement with AceMQ — see [Open Source RabbitMQ](/packages/open-source).
+## Commercial features
 
-</Callout>
-
-## How it's counted
-
-Licensing is priced per CPU core, and **every environment counts — production and non-production alike.** See [How Licensing Is Counted](/access/core-counting) for what AceMQ needs to size a quote and why vCPU vs physical cores matters.
-
-## Terms
-
-1-year and 3-year terms are available, billed annually. See [Terms, Billing & Renewals](/access/terms-and-renewals).
+Your license unlocks the commercial-only plugins — Warm Standby Replication, Delayed Queues, Intra-cluster Compression, AMQP 1.0 over WebSocket, OAuth 2.0 extensions, LDAP runtime configuration, and Distributed Shovels. See [Exclusive Features](/docs/features/availability-matrix) for what's available in which version.
 
 ## Support
 
-AceMQ support covers all RabbitMQ — Bitnami/open-source or Tanzu, any release — under your SLA. Licensing specifically adds:
+AceMQ support covers all RabbitMQ — Bitnami/open-source or Tanzu, any release — under your agreement. Licensing specifically adds:
 
 - Access to LTS-supported and newer commercial builds (the free community ceiling is 3.13.7)
-- The commercial-only plugins — see [Exclusive Features](/docs/features/availability-matrix)
+- The commercial-only plugins above
+- Jump upgrades across versions
 - A standard 12-hour response time on product-related issues
-- A discount on emergency escalation and incident-management contracts, if you need faster response
+
+<Callout kind="info">
+
+If your core usage exceeds your currently contracted amount, contact your AceMQ account owner — see [Licensing Overview](/access/licensing).
+
+</Callout>
 
 See [Licensing FAQ](/support/licensing-faq) and [Getting Help](/support/getting-help).

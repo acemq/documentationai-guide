@@ -1,23 +1,35 @@
 ---
-title: Licensing
-description: How AceMQ Tanzu RabbitMQ licensing works — no separate license key, core counting, and support tiers.
+title: Licensing Overview
+description: How your AceMQ Tanzu RabbitMQ license works in practice — no license key, what it unlocks, and who to contact about entitlement changes.
 ---
 
-## No license key
+## There is no license key
 
-There is no license key file, environment variable, or config setting to apply. **The license is embedded in the commercial build itself.** If you pulled it from `acemq.jfrog.io`, you're licensed to run it.
+There is no license key file, environment variable, or configuration setting to apply. **The license is embedded in the commercial build itself.** If you pulled it from `acemq.jfrog.io`, you're licensed to run it.
 
-## Core counting
+This is the most common question from new customers, and it surprises people migrating from products that issue key files. Nothing to install, nothing to renew inside the broker.
 
-Licensing is priced per core, and **pre-production cores are counted the same as production cores.** When sizing your license, include every environment — dev, staging, DR, and prod.
+## What your license unlocks technically
 
-## Support tiers
+| | Community build | Licensed build |
+|---|---|---|
+| Newest available version | 3.13.7 | All supported streams — see [Version Support Matrix](/start-here/version-support-matrix) |
+| Commercial plugins | — | Warm Standby Replication, Delayed Queues, Intra-cluster Compression, and others — see [Exclusive Features](/docs/features/availability-matrix) |
+| Jump upgrades across versions | — | Supported |
+| LTS support window | — | Through the stream's commercial support date |
 
-All licensed customers receive:
+See [What Is Tanzu?](/start-here/what-is-tanzu) for the full distinction.
 
-- Commercial support covering all RabbitMQ deployments (Bitnami/open-source or Tanzu)
-- A standard 12-hour response time on product-related issues
+## If your usage grows
 
-Customers who need faster response for production incidents can add an emergency escalation and incident-management contract, at a discount for licensed customers.
+<Callout kind="info">
+
+**If your core usage exceeds your currently contracted amount, contact your AceMQ account owner.** Adding environments, scaling out a cluster, or standing up a new DR site can all move you past your contracted count. This is a commercial conversation, not a technical block — nothing stops you pulling and running the software, but your entitlement should reflect what you're actually running.
+
+</Callout>
+
+## Support scope
+
+AceMQ support covers **all** RabbitMQ deployments — open-source, Bitnami, or Tanzu — under your agreement. Licensing adds the newer builds, LTS support, and commercial plugins above; it does not determine whether AceMQ will help you with what you're already running.
 
 See [Getting Help](/support/getting-help) to open a ticket, and [Licensing FAQ](/support/licensing-faq) for common questions.
