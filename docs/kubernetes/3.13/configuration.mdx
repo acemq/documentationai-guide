@@ -1,0 +1,53 @@
+---
+title: Kubernetes 3.13 Configuration
+description: Configuring the RabbitmqCluster CRD, imagePullSecrets, and the audit-logger on Kubernetes 3.13.
+---
+
+Same broker-level configuration shape as [Kubernetes 4.3 → Configuration](/docs/kubernetes/4.3/configuration) — `spec.rabbitmq.additionalConfig`, `spec.tls`, `spec.resources`, `spec.affinity`.
+
+## imagePullSecrets
+
+Before installing the operators, create the namespace and a pull secret:
+
+```bash
+kubectl create namespace rabbitmq-system
+kubectl create secret docker-registry acemq-jfrog-pull \
+  --docker-server=acemq.jfrog.io \
+  --docker-username=<your-jfrog-username> \
+  --docker-password=<your-access-token> \
+  --namespace rabbitmq-system
+```
+
+The Helm chart's default secret name is `tanzu-rabbitmq-registry-creds` — either use that name or override it in your values file to match what you created.
+
+## Audit logging
+
+Tanzu RabbitMQ on Kubernetes supports audit logging via a dedicated `audit-logger` package, which publishes RabbitMQ activity (queue/exchange/binding events, connections, consumers, policy changes, user and permission changes) as JSON or human-readable logs to disk or stdout.
+
+<Callout kind="info">
+
+Audit logging is commercial-only — not available in open-source RabbitMQ.
+
+</Callout>
+
+<Steps>
+  <Step title="Enable the event exchange plugin" icon="toggle-right">
+
+The audit-logger reads from RabbitMQ's event exchange plugin — enable it on the broker first.
+
+  </Step>
+  <Step title="Install the audit-logger package" icon="download">
+
+Install alongside the operator bundle, providing the same `imagePullSecret` used for the operators. The audit-logger creates its own RBAC (Role/RoleBinding) scoped to the namespaces it watches.
+
+  </Step>
+  <Step title="Retrieve logs" icon="file-text">
+
+```bash
+kubectl logs <audit-logger-pod-name> -n rabbitmq-system
+```
+
+  </Step>
+</Steps>
+
+See [Warm Standby Replication](/docs/features/warm-standby-replication) and [Delayed Queues](/docs/features/delayed-queues) for the other commercial-only features available on this stream.

@@ -1,0 +1,20 @@
+---
+title: Kubernetes 3.13 Troubleshooting
+description: Common issues and fixes when running Tanzu RabbitMQ on Kubernetes 3.13.
+---
+
+Same image-pull and cluster-formation troubleshooting as [Kubernetes 4.3 → Troubleshooting](/docs/kubernetes/4.3/troubleshooting) — check [Access Troubleshooting](/support/access-troubleshooting) first for any pull failure.
+
+## Messaging Topology Operator webhook failures
+
+If the Topology Operator's webhook is failing (certificate errors, webhook timeouts), confirm `cert-manager` is actually running and has issued a certificate for the webhook service — this is the most common cause on 3.13, since cert-manager is an explicit install step here rather than always bundled. See [Install → Decide on cert-manager](/docs/kubernetes/3.13/install).
+
+## Audit-logger pod not receiving events
+
+Confirm the `rabbitmq_event_exchange` plugin is enabled on the broker — the audit-logger has nothing to consume without it. See [Configuration → Audit logging](/docs/kubernetes/3.13/configuration).
+
+<Callout kind="warning">
+
+Do not deploy new quorum queues on 3.13 without checking current guidance first — a known leader-election deadlock risk has been reported on this stream. See [Known Issues](/docs/kubernetes/3.13/known-issues).
+
+</Callout>

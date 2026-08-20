@@ -1,20 +1,75 @@
 ---
 title: Install Kubernetes 3.13
-description: Installing Tanzu RabbitMQ on Kubernetes 3.13.
+description: Installing Tanzu RabbitMQ on Kubernetes 3.13, via Helm or Carvel.
 ---
 
-Same installation pattern as [Kubernetes 4.3](/docs/kubernetes/4.3/install) — install the `tanzu-rabbitmq-operators` chart, then deploy a `RabbitmqCluster` resource:
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+3.13 supports both Helm and Carvel installation, unlike later streams which lead with Helm. If your organization already has a Carvel/kapp-controller workflow for other Tanzu products, 3.13 is where that consistency still applies cleanly to RabbitMQ.
+
+</Callout>
+
+<Steps>
+  <Step title="Pull the chart" icon="download">
+
+See [Get the Kubernetes Package](/packages/kubernetes) for the `acemq.jfrog.io` login and pull commands.
+
+  </Step>
+  <Step title="Decide on cert-manager" icon="shield">
+
+The Messaging Topology Operator's webhooks need certificates from `cert-manager`. You have three options:
+
+- Already running cert-manager — leave `useCertManager: true` (default) and point at it.
+- No cert-manager, cluster has internet access — install it from its upstream GitHub release before installing the operator bundle.
+- Don't need the Messaging Topology Operator — set `msgTopologyOperator.enabled: false` and `useCertManager: false`, and only the Cluster Operator installs.
+
+<Callout kind="info">
+
+Installing the Messaging Topology Operator is recommended if you're building GitOps-managed topology (see [Kubernetes 4.3 → Install](/docs/kubernetes/4.3/install) for why). Skip it only if you're deliberately managing queues, exchanges, and bindings outside Kubernetes.
+
+</Callout>
+
+  </Step>
+  <Step title="(Optional) Enable FIPS on the operators" icon="lock">
+
+Set `GODEBUG: fips140=on` as an extra environment variable on both `clusterOperator` and `msgTopologyOperator` in your values file, before installing — see [FIPS](/support/fips) for the exact snippet.
+
+  </Step>
+  <Step title="Install the operator bundle" icon="rocket">
 
 ```bash
 helm install rabbitmq-operators \
   oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators \
   --version 3.13.18 \
-  --namespace rabbitmq-system --create-namespace
+  --namespace rabbitmq-system --create-namespace \
+  --values values.yaml
 ```
 
-```yaml
-spec:
-  image: acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:3.13.18
+This installs the Cluster Operator and, unless disabled, the Messaging Topology Operator.
+
+  </Step>
+  <Step title="Verify" icon="check">
+
+```bash
+kubectl get all -n rabbitmq-system
 ```
 
-See [Get the Kubernetes Package](/packages/kubernetes) for the full pull sequence.
+Expect a running deployment/replicaset/pod for `rabbitmq-cluster-operator`, and for `messaging-topology-operator` plus its webhook service if installed.
+
+  </Step>
+  <Step title="Deploy a cluster" icon="server">
+
+Same `RabbitmqCluster` resource shape as [Kubernetes 4.3](/docs/kubernetes/4.3/install), pointed at the 3.13.18 image tag.
+
+  </Step>
+</Steps>
+
+## Uninstalling
+
+```bash
+helm uninstall rabbitmq-operators --namespace rabbitmq-system
+```
+
+See [Configuration](/docs/kubernetes/3.13/configuration) for audit-logger setup and other post-install options.

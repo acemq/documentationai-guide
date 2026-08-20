@@ -9,4 +9,40 @@ Moving from 3.13 to 4.x is a bigger step than a normal minor upgrade — it typi
 
 </Callout>
 
-A licensed Tanzu build supports jump upgrades, so moving straight from 3.13 to 4.3 (skipping 4.0/4.1) is possible — confirm the specifics with AceMQ support before starting, given the scope of change involved.
+## Upgrade order
+
+<Steps>
+  <Step title="Pause reconciliation if you need controlled timing" icon="pause">
+
+Upgrading the Cluster Operator triggers a rolling update of every RabbitMQ cluster it manages. If you need to control exactly when a given cluster updates, pause reconciliation on it before upgrading the operator, and resume once it's safe.
+
+  </Step>
+  <Step title="Upgrade the operators" icon="refresh-cw">
+
+```bash
+helm upgrade rabbitmq-operators \
+  oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators \
+  --version <target-version> \
+  --namespace rabbitmq-system
+```
+
+  </Step>
+  <Step title="Upgrade the RabbitMQ instances" icon="server">
+
+This restarts RabbitMQ pods one at a time (rolling). Before you start:
+
+1. Check all feature flags are enabled on the cluster you're upgrading — turn on any that aren't.
+2. Resume reconciliation if you paused it in step 1.
+3. Update `spec.image` on the `RabbitmqCluster` resource to the target version and apply.
+4. After the rollout completes, turn on any newly-available stable feature flags.
+
+  </Step>
+</Steps>
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+A licensed Tanzu build supports jump upgrades — skipping intermediate versions — so moving straight from 3.13 to 4.3 (skipping 4.0/4.1) is possible. Confirm the specifics with AceMQ support before starting, given the scope of change involved (classic-to-quorum migration, Mnesia-to-Khepri).
+
+</Callout>
