@@ -34,6 +34,12 @@ nerdctl login acemq.jfrog.io
 
 Need a token? See [Generate a Token](/access/generate-token).
 
+<Callout kind="warning">
+
+Your client stores these credentials in its standard config file — `~/.docker/config.json`, or `$XDG_RUNTIME_DIR/containers/auth.json` for Podman — as a **base64-encoded auth header. That is encoding, not encryption.** Anyone who can read the file can read your token. Protect it with file permissions, and on shared or CI hosts prefer a credential helper or a short-lived token.
+
+</Callout>
+
   </Step>
   <Step title="Pull a pinned version" icon="download">
 

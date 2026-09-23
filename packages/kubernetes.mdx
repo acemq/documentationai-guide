@@ -17,6 +17,37 @@ Do not pin these operator images independently — install them as the bundle th
 
 </Callout>
 
+## Create the pull secret
+
+`acemq.jfrog.io` is a private registry, so Kubernetes needs an `imagePullSecret` before any pod can pull from it.
+
+```bash
+kubectl create secret docker-registry acemq-jfrog-pull \
+  --namespace rabbitmq-system \
+  --docker-server=acemq.jfrog.io \
+  --docker-username=<jfrog-username> \
+  --docker-password='<access-token>' \
+  --docker-email=<your-email>
+```
+
+<Callout kind="warning">
+
+**A pull secret is namespace-scoped.** Create it in *every* namespace that runs RabbitMQ workloads — a secret in `rabbitmq-system` does nothing for a pod in another namespace. A missing or wrong-namespace pull secret is the most common cause of `ErrImagePull` / `ImagePullBackOff`.
+
+</Callout>
+
+Reference it from a Pod, Deployment, or `RabbitmqCluster` resource:
+
+```yaml
+spec:
+  imagePullSecrets:
+    - name: acemq-jfrog-pull
+  containers:
+    - name: rabbitmq
+      image: acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.2.6
+      imagePullPolicy: IfNotPresent
+```
+
 ## Pull the chart
 
 <Steps>
@@ -59,5 +90,30 @@ Once the operators are running, deploy a `RabbitmqCluster` custom resource point
 <Callout kind="info">
 
 RKE2 is fully supported for Tanzu RabbitMQ, even though some Broadcom documentation lists only OpenShift and VKS.
+
+</Callout>
+
+## Helm values override
+
+If you install via Helm and need to point the broker image at the AceMQ cache explicitly, override the image and pull-secret values:
+
+```yaml
+rabbitmqImage:
+  registry: acemq.jfrog.io
+  repository: rabbitmq-docker-remote/vmware-tanzu-rabbitmq
+  tag: 4.2.6
+  pullSecrets:
+    - acemq-jfrog-pull
+```
+
+## Mirroring the full control plane
+
+Tanzu RabbitMQ for Kubernetes ships supporting components alongside the broker — the cluster operator, messaging-topology operator, credential updater, audit-logger, and cert-manager. Each has its own image.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+The `tanzu-rabbitmq-operators` chart pulls the operator images from AceMQ automatically. But if any part of your installation still resolves an image from upstream, that component won't be served from the AceMQ cache — which matters in air-gapped or egress-restricted environments where only `acemq.jfrog.io` is allowlisted. Contact AceMQ support to confirm what's in scope for your subscription before assuming the entire control plane is mirrored. See [Air-Gapped Environments](/packages/air-gapped).
 
 </Callout>
