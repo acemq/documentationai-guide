@@ -1,0 +1,54 @@
+---
+title: OCI 4.0 Overview & Run
+description: The Tanzu RabbitMQ 4.0 container image — sunsetting 30 September 2026. Component versions, run command, and known issues.
+---
+
+<Callout kind="warning">
+
+**4.0 commercial support ends 30 September 2026.** If that date has passed, this stream is unsupported. See [Version Support Matrix](/start-here/version-support-matrix) and move to [4.2](/docs/oci/4.2/overview) — see [Version Upgrades](/migrations/version-upgrades).
+
+</Callout>
+
+## What ships in 4.0.24
+
+| Component | Version |
+|---|---|
+| Tanzu RabbitMQ | 4.0.24 (based on open-source RabbitMQ 4.0.24) |
+| Erlang | 27.3.4.16 |
+
+<Callout kind="warning">
+
+**Erlang 26 reached end of life partway through this stream.** Starting with the RabbitMQ 4.0.23 patch, the minimum supported Erlang version is 27.0 — nodes fail to start on older Erlang releases. If you're running an older 4.0.x patch on Erlang 26, upgrading the broker patch requires upgrading Erlang first.
+
+</Callout>
+
+## Run
+
+Same run pattern as [OCI 4.3 → Run](/docs/oci/4.3/run) — substitute the `4.0.24` tag:
+
+```bash
+docker run -d --name rabbitmq \
+  -p 4369:4369 -p 5672:5672 -p 15672:15672 -p 25672:25672 \
+  -v /data/rabbitmq/data:/var/lib/rabbitmq/ \
+  -e RABBITMQ_ERLANG_COOKIE=<your-cookie> \
+  -h rmq1 \
+  acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.0.24
+```
+
+## Recent security fixes
+
+| Patch | Released | GHSA IDs fixed |
+|---|---|---|
+| 4.0.24 | — | GHSA-42pc-678q-v8qj (Federation Plugin) |
+| 4.0.23 | Jul 21, 2026 | GHSA-qw3h-qqm9-jrw8 (OAuth 2), GHSA-w9hf-476r-443x (Core), GHSA-chxf-3hfg-j8f7 (JMS Topic Exchange), GHSA-q44f-9vc5-grh7 (Shovel), GHSA-q46v-hrvq-hp24 (Core/MQTT), GHSA-4r6f-9cpw-f6g6 (MQTT/Web MQTT), GHSA-xm9p-57xv-vxwc (Stream Management), GHSA-9x7r-g78c-5835 (LDAP) |
+| 4.0.22 | Jun 16, 2026 | GHSA-q7x8-97rh-cr24 (Management), GHSA-34c7-r8w9-5wv8 (Core) |
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+4.0.18 alone carried over 35 CVEs, several Critical. If you're on a 4.0.x patch older than 4.0.20, treat a patch upgrade as urgent, not routine — ask AceMQ support for a full CVE diff against your current version.
+
+</Callout>
+
+See [Get the OCI / Container Package](/packages/oci) to pull the current patch, and [Discover Versions](/access/discover-versions) to confirm what's current before you commit to an unsupported patch.

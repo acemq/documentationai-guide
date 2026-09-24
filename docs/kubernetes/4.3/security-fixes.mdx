@@ -3,7 +3,29 @@ title: Kubernetes 4.3 Security Fixes
 description: Security fixes shipped in Tanzu RabbitMQ for Kubernetes 4.3 patch releases.
 ---
 
-Security fixes are shipped per patch release within the 4.3.x stream. For the current list of CVEs addressed in the patch you're running, check the [Release Notes](/docs/kubernetes/4.3/release-notes) for that specific version, or ask AceMQ support for a CVE summary against your running version — see [Getting Help](/support/getting-help).
+Security fixes are shipped per patch release within the 4.3.x stream. The broker CVE list below applies across every format — Kubernetes, OCI, OVA, and RPM all ship the same underlying broker version.
+
+## GHSA IDs fixed by patch
+
+| Patch | GHSA IDs | Component |
+|---|---|---|
+| 4.3.3 | GHSA-8mpg-qw9r-m5cr | Shovel / Shovel Management Plugin |
+| 4.3.3 | GHSA-2hm4-4438-49q8 | Stream Management Plugin |
+| 4.3.3 | GHSA-qw3h-qqm9-jrw8 | OAuth 2 Plugin |
+| 4.3.3 | GHSA-w9hf-476r-443x | Core |
+| 4.3.3 | GHSA-chxf-3hfg-j8f7 | JMS Topic Exchange Plugin |
+| 4.3.3 | GHSA-42pc-678q-v8qj | Federation Plugin |
+| 4.3.3 | GHSA-f9f2-q3jf-wfj3 | Management Plugin (OAuth 2 UI) |
+| 4.3.3 | GHSA-q44f-9vc5-grh7 | Shovel Plugin |
+| 4.3.3 | GHSA-q46v-hrvq-hp24 | Core / MQTT Plugin |
+| 4.3.3 | GHSA-4r6f-9cpw-f6g6 | MQTT / Web MQTT Plugin |
+| 4.3.3 | GHSA-xm9p-57xv-vxwc | Stream Management Plugin |
+| 4.3.3 | GHSA-rrj4-g94f-rqj9 | OAuth 2 Plugin |
+| 4.3.3 | GHSA-9x7r-g78c-5835 | LDAP Plugin |
+| 4.3.3 | GHSA-rg2g-289m-xhhw | Core |
+| 4.3.1 | GHSA-q7x8-97rh-cr24 | Management Plugin |
+
+For CVEs addressed after this snapshot, or a formal report for a compliance review, ask AceMQ support for a CVE summary against your running version — see [Getting Help](/support/getting-help).
 
 <Callout kind="alert">
 

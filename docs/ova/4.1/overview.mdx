@@ -1,0 +1,33 @@
+---
+title: OVA 4.1 Overview & Import
+description: The Tanzu RabbitMQ 4.1 OVA appliance — component versions, import, and known issues.
+---
+
+<Callout kind="info">
+
+4.1 is supported through **30 April 2027**. For new deployments AceMQ recommends [4.2](/docs/ova/4.2/overview), which runs to June 2030.
+
+</Callout>
+
+## What ships in 4.1.14
+
+| Component | Version |
+|---|---|
+| Tanzu RabbitMQ | 4.1.14 (based on open-source RabbitMQ 4.1.14) |
+| Erlang | 27.3.4.14 |
+
+## Import and first boot
+
+Same procedure as [OVA 4.3](/docs/ova/4.3/import) — Photon OS base, VMXNET3 adapter, `bitnami`/`bitnami` default credentials (change immediately).
+
+## Known issues on this stream
+
+| Issue | Found in | Notes |
+|---|---|---|
+| Networking set in the import wizard doesn't apply | 4.1.1 | Configure networking manually from the console after boot — see [OVA 3.13](/docs/ova/3.13/overview) for the same workaround. |
+| **OVA import fails: `No support for the virtual hardware device type '35'`** | 4.1.4 and earlier | Same OVF workaround as other streams — remove the `ResourceType 35` item and recompute the SHA. Pull a newer patch instead if possible. |
+| WSR permission-import warnings in downstream logs when using `schema_definition_sync.downstream.locals.users.*` | 3.13.3+ | Safe to ignore; doesn't affect promotion. |
+
+**Resolved:** WSR credentials configured in `rabbitmq.conf` could not be encrypted — a dedicated CLI encoding command is now available (found 3.13.3, resolved 4.1.0); TTY/screen not displaying after boot (found 4.1.11, resolved 4.1.12).
+
+See [Get the OVA Package](/packages/ova) for the download — filename `tanzu-rabbitmq-standalone-4.1.14.ova`.

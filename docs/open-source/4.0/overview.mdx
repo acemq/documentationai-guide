@@ -1,0 +1,44 @@
+---
+title: Open Source RabbitMQ 4.0 Overview & Erlang Requirements
+description: Open Source RabbitMQ 4.0 — sunsetting 30 September 2026. Erlang/OTP compatibility and security fixes.
+---
+
+<Callout kind="warning">
+
+**4.0 commercial support ends 30 September 2026.** See [Version Support Matrix](/start-here/version-support-matrix). If you're on this stream and that date has passed, contact [AceMQ support](/support/getting-help).
+
+</Callout>
+
+## Erlang/OTP compatibility
+
+<Callout kind="warning">
+
+**Erlang 26 reached end of life partway through this stream.** Starting with the 4.0.23 patch, the minimum supported Erlang version is 27.0. Nodes fail to start on older Erlang releases — check your Erlang version before applying a patch upgrade.
+
+</Callout>
+
+| OTP version | Status |
+|---|---|
+| 26 | Supported on patches before 4.0.23; EOL as of 4.0.23 |
+| 27 | Required from 4.0.23 onward |
+
+## Recent security fixes
+
+| Patch | Released | Notable CVEs/GHSAs |
+|---|---|---|
+| 4.0.24 | — | GHSA-42pc-678q-v8qj (Federation) |
+| 4.0.23 | Jul 21, 2026 | 8 GHSA IDs across OAuth 2, Core, JMS Topic Exchange, Shovel, MQTT, Stream Management, LDAP |
+| 4.0.22 | Jun 16, 2026 | GHSA-q7x8-97rh-cr24 (Management), GHSA-34c7-r8w9-5wv8 (Core) |
+| 4.0.20 | Apr 23, 2026 | 23 CVEs, several High severity |
+| 4.0.19 | — | 5 CVEs including CVE-2026-0861 (High) |
+| 4.0.18 | — | 35+ CVEs, several Critical (CVE-2025-6965, CVE-2025-54349, CVE-2025-15467, CVE-2024-3596) |
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Binary artifacts for 4.0.x are only available to customers with a valid commercial support license — the free open-source download ceiling is a different stream entirely. See [What Is Tanzu?](/start-here/what-is-tanzu). If you're on an old 4.0 patch carrying Critical CVEs (4.0.18 and earlier), don't wait for your next planned maintenance window — ask AceMQ support for a CVE report against your version.
+
+</Callout>
+
+See [Get Open Source RabbitMQ](/packages/open-source) to download.

@@ -1,0 +1,131 @@
+---
+title: Helm Chart Values Reference
+description: Key configurable values in the tanzu-rabbitmq-operators Helm chart — image settings, security context, resources, and network policy.
+---
+
+The `tanzu-rabbitmq-operators` chart has a large `values.yaml` — this page covers the parameters customers actually need to touch. For the full generated reference, run `helm show values oci://acemq.jfrog.io/helm-remote/tanzu-rabbitmq-operators` after pulling the chart (see [Get the Kubernetes Package](/packages/kubernetes)).
+
+## Global parameters
+
+```yaml
+global:
+  imageRegistry: ""        # overrides the registry for every image in the chart
+  imagePullSecrets: []     # e.g. [acemq-jfrog-pull]
+  storageClass: ""
+  compatibility:
+    openshift:
+      adaptSecurityContext: auto   # auto | force | disabled
+```
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Setting `global.imageRegistry` and `global.imagePullSecrets` once here is simpler than setting them per-component (`clusterOperator.image.registry`, `msgTopologyOperator.image.registry`, etc.) — use the global fields unless you specifically need one component pointed somewhere else.
+
+</Callout>
+
+## Cluster Operator (`clusterOperator`)
+
+```yaml
+clusterOperator:
+  image:
+    registry: acemq.jfrog.io
+    repository: rabbitmq-operator-docker-remote/cluster-operator
+    pullPolicy: IfNotPresent
+    pullSecrets: [acemq-jfrog-pull]
+  replicaCount: 1
+  watchAllNamespaces: true
+  watchNamespaces: []          # only used if watchAllNamespaces is false
+  resources:
+    requests: { cpu: 200m, memory: 500Mi }
+    limits: { cpu: 200m, memory: 500Mi }
+  extraEnvVars: []              # set GODEBUG here for FIPS — see below
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  containerSecurityContext:
+    enabled: true
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+```
+
+## Messaging Topology Operator (`msgTopologyOperator`)
+
+```yaml
+msgTopologyOperator:
+  image:
+    registry: acemq.jfrog.io
+    repository: rabbitmq-operator-docker-remote/messaging-topology-operator
+    pullSecrets: [acemq-jfrog-pull]
+  watchAllNamespaces: true
+  containerPorts:
+    metrics: 8080
+  networkPolicy:
+    enabled: false
+    kubeAPIServerPorts: [443, 6443, 8443]
+```
+
+<Callout kind="warning">
+
+Disabling the Messaging Topology Operator (`msgTopologyOperator.enabled: false`) also requires `useCertManager: false` at the top level — the operator's webhooks are the only thing that needs `cert-manager`. See [Kubernetes → Install](/docs/kubernetes/4.3/install).
+
+</Callout>
+
+## Default User Credential Updater
+
+```yaml
+credentialUpdaterImage:
+  registry: acemq.jfrog.io
+  repository: rabbitmq-operator-docker-remote/default-user-credential-updater
+  pullSecrets: [acemq-jfrog-pull]
+```
+
+## Audit Logger (`auditLogger`, optional)
+
+Disabled by default — only relevant if you're using [audit logging](/docs/kubernetes/3.13/configuration#audit-logging).
+
+```yaml
+auditLogger:
+  enabled: false
+  image:
+    pullSecrets: [acemq-jfrog-pull]
+  configurations:
+    secretName: "audit-logger-config"   # mandatory once enabled
+  auditAllNamespaces: true
+```
+
+## cert-manager
+
+```yaml
+useCertManager: true   # set to false only if msgTopologyOperator.enabled is also false
+```
+
+## FIPS on the operators
+
+```yaml
+clusterOperator:
+  extraEnvVars:
+    - name: GODEBUG
+      value: fips140=on
+
+msgTopologyOperator:
+  extraEnvVars:
+    - name: GODEBUG
+      value: fips140=on
+```
+
+See [FIPS](/support/fips) for the full context — this governs the operators only, not the broker's own FIPS posture.
+
+## Broker image (referenced by your `RabbitmqCluster` resource, not the chart)
+
+The chart installs the operators. The broker image is set on the `RabbitmqCluster` custom resource directly, not in Helm values — see [Kubernetes → Install](/docs/kubernetes/4.3/install) and [Get the Kubernetes Package](/packages/kubernetes) for that path.
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+Almost every support question about the Helm chart traces back to one of three things: `pullSecrets` missing on a component whose image comes from `rabbitmq-operator-docker-remote`, `watchNamespaces` set without `watchAllNamespaces: false`, or trying to set the broker image here instead of on the `RabbitmqCluster` resource. Check those three before anything else.
+
+</Callout>

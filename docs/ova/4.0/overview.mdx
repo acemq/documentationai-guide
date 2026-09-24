@@ -1,0 +1,40 @@
+---
+title: OVA 4.0 Overview & Import
+description: The Tanzu RabbitMQ 4.0 OVA appliance — sunsetting 30 September 2026. Component versions, import, and known issues.
+---
+
+<Callout kind="warning">
+
+**4.0 commercial support ends 30 September 2026.** If that date has passed, this stream is unsupported. See [Version Support Matrix](/start-here/version-support-matrix) and move to [4.2](/docs/ova/4.2/overview).
+
+</Callout>
+
+## What ships in 4.0.24
+
+| Component | Version |
+|---|---|
+| Tanzu RabbitMQ | 4.0.24 (based on open-source RabbitMQ 4.0.24) |
+| Erlang | 27.3.4.16 |
+
+## Import and first boot
+
+Same procedure as [OVA 4.3](/docs/ova/4.3/import) — Photon OS base, VMXNET3 adapter, `bitnami`/`bitnami` default credentials (change immediately), manual network configuration after boot.
+
+## Known issues on this stream
+
+| Issue | Found in | Notes |
+|---|---|---|
+| **OVA import fails: `No support for the virtual hardware device type '35'`** | 4.0.15 and earlier | Untar the OVA, remove the `ResourceType 35` item (lines ~66–75 of the `.ovf`), recompute the SHA and update the `.mf` file. See [OVA 3.13](/docs/ova/3.13/overview) for the full workaround — identical fix. |
+| WSR credentials in `rabbitmq.conf` stored in plaintext | 3.13.3+ | Secret-store support planned. |
+
+**Resolved:** commands failing due to missing OTP binaries in `PATH` (found 3.13.3, resolved 4.0.4); TTY/screen not displaying after boot — press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F3</kbd> (found 4.0.20, resolved 4.0.21).
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+The hardware-device-type-35 import bug recurs across every OVA stream on older patches (3.13, 4.0, and 4.1 all hit it below a certain patch level). Pull the current patch before importing rather than reaching for the OVF workaround — see [Discover Versions](/access/discover-versions).
+
+</Callout>
+
+See [Get the OVA Package](/packages/ova) for the download — filename `tanzu-rabbitmq-standalone-4.0.24.ova`.

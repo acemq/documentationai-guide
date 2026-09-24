@@ -3,4 +3,18 @@ title: Kubernetes 3.13 Release Notes
 description: Summary of the Tanzu RabbitMQ for Kubernetes 3.13.x release series.
 ---
 
-The 3.13.x series has continued receiving patches well past its original release, most recently through at least 3.13.19 at the time of writing. Each patch carries bug and security fixes; see [Discover Versions](/access/discover-versions) for the current patch, and ask AceMQ support for a CVE summary if needed.
+The 3.13.x series has continued receiving patches well past its original release, most recently through at least 3.13.19 at the time of writing — a direct result of the long commercial support window (through 31 December 2029; see [Version Support Matrix](/start-here/version-support-matrix)).
+
+## Recent security fixes
+
+The broker CVE list below applies across every format — Kubernetes, OCI, OVA, and RPM all ship the same underlying broker version for a given patch.
+
+| Patch | GHSA IDs fixed | Component |
+|---|---|---|
+| 3.13.18 | GHSA-qw3h-qqm9-jrw8 | OAuth 2 Plugin |
+| 3.13.18 | GHSA-42pc-678q-v8qj | Federation Plugin |
+| 3.13.18 | GHSA-4r6f-9cpw-f6g6 | MQTT / Web MQTT Plugin |
+| 3.13.18 | GHSA-xm9p-57xv-vxwc | Stream Management Plugin |
+| 3.13.18 | GHSA-9x7r-g78c-5835 | LDAP Plugin |
+
+See [Discover Versions](/access/discover-versions) for the current patch, and ask AceMQ support for a CVE summary if needed.

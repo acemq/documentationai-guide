@@ -1,0 +1,41 @@
+---
+title: OCI 4.1 Overview & Run
+description: The Tanzu RabbitMQ 4.1 container image — component versions, run command, and security fixes.
+---
+
+<Callout kind="info">
+
+4.1 is supported through **30 April 2027**. For new deployments AceMQ recommends [4.2](/docs/oci/4.2/overview), which runs to June 2030. See [Version Support Matrix](/start-here/version-support-matrix).
+
+</Callout>
+
+## What ships in 4.1.14
+
+| Component | Version |
+|---|---|
+| Tanzu RabbitMQ | 4.1.14 (based on open-source RabbitMQ 4.1.14) |
+| Erlang | 27.3.4.14 |
+
+## Run
+
+Same run pattern as [OCI 4.3 → Run](/docs/oci/4.3/run) — substitute the `4.1.14` tag:
+
+```bash
+docker run -d --name rabbitmq \
+  -p 4369:4369 -p 5672:5672 -p 15672:15672 -p 25672:25672 \
+  -v /data/rabbitmq/data:/var/lib/rabbitmq/ \
+  -e RABBITMQ_ERLANG_COOKIE=<your-cookie> \
+  -h rmq1 \
+  acemq.jfrog.io/rabbitmq-docker-remote/vmware-tanzu-rabbitmq:4.1.14
+```
+
+## Recent security fixes
+
+| Patch | Released | GHSA IDs fixed |
+|---|---|---|
+| 4.1.14 | Jul 21, 2026 | GHSA-qw3h-qqm9-jrw8 (OAuth 2), GHSA-w9hf-476r-443x (Core), GHSA-chxf-3hfg-j8f7 (JMS Topic Exchange), GHSA-42pc-678q-v8qj (Federation), GHSA-q44f-9vc5-grh7 (Shovel), GHSA-q46v-hrvq-hp24 (Core/MQTT), GHSA-4r6f-9cpw-f6g6 (MQTT/Web MQTT), GHSA-xm9p-57xv-vxwc (Stream Management), GHSA-9x7r-g78c-5835 (LDAP), GHSA-q7x8-97rh-cr24 (Management), GHSA-34c7-r8w9-5wv8 (Core) |
+| 4.1.13 | Jun 16, 2026 | — |
+| 4.1.12 | May 19, 2026 | GO-2026-5026, GO-2026-5038, CVE-2026-42504 (cluster-operator, default-user-updater, topology-operator, audit-logger) |
+| 4.1.11 | — | CVE-2026-33814, CVE-2026-39820, CVE-2026-42499, CVE-2026-33811, CVE-2026-39836, CVE-2026-42501 |
+
+See [Get the OCI / Container Package](/packages/oci) to pull the current patch.

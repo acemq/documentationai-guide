@@ -11,6 +11,21 @@ description: Summary of the Tanzu RabbitMQ for Kubernetes 4.2.x release series.
 - OAuth 2.0 forward proxy support
 - LDAP runtime configuration changes
 
-## Subsequent patches
+## Subsequent patches and security fixes
 
-The 4.2.x series has continued receiving security and bug fixes through at least 4.2.9. See [Discover Versions](/access/discover-versions) for how to find the current patch, and ask AceMQ support for a CVE summary against your running version if needed for compliance.
+The broker CVE list below applies across every format — Kubernetes, OCI, OVA, and RPM all ship the same underlying broker version for a given patch.
+
+| Patch | Released | GHSA IDs fixed |
+|---|---|---|
+| 4.2.9 | Jul 21, 2026 | GHSA-8mpg-qw9r-m5cr (Shovel), GHSA-2hm4-4438-49q8 (Stream Mgmt), GHSA-qw3h-qqm9-jrw8 (OAuth 2), GHSA-w9hf-476r-443x (Core), GHSA-chxf-3hfg-j8f7 (JMS Topic Exchange), GHSA-42pc-678q-v8qj (Federation), GHSA-f9f2-q3jf-wfj3 (Mgmt/OAuth 2 UI), GHSA-q44f-9vc5-grh7 (Shovel), GHSA-q46v-hrvq-hp24 (Core/MQTT), GHSA-4r6f-9cpw-f6g6 (MQTT/Web MQTT), GHSA-xm9p-57xv-vxwc (Stream Mgmt), GHSA-rrj4-g94f-rqj9 (OAuth 2), GHSA-9x7r-g78c-5835 (LDAP), GHSA-rg2g-289m-xhhw (Core) |
+| 4.2.7 | — | GHSA-34c7-r8w9-5wv8 (Core), GHSA-q7x8-97rh-cr24 (Management) |
+
+<Callout kind="alert">
+
+**AceMQ Insight**
+
+4.2.9 alone fixed 14 GHSA advisories. This is the LTS stream most customers are on — if you're not on 4.2.9 or later, treat catching up as a priority, not routine maintenance.
+
+</Callout>
+
+See [Discover Versions](/access/discover-versions) for how to find the current patch, and ask AceMQ support for a CVE summary against your running version if needed for compliance.

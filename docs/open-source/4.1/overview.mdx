@@ -1,0 +1,42 @@
+---
+title: Open Source RabbitMQ 4.1 Overview & Erlang Requirements
+description: Open Source RabbitMQ 4.1 — Erlang/OTP compatibility and security fixes.
+---
+
+<Callout kind="info">
+
+4.1 is supported through **30 April 2027**. For new deployments AceMQ recommends [4.2](/docs/open-source/4.2/overview).
+
+</Callout>
+
+## Erlang/OTP compatibility
+
+<Callout kind="warning">
+
+Starting with the 4.1.14 patch, the minimum supported Erlang version is 27.0 — Erlang/OTP 26 has reached end of life. Nodes fail to start on older Erlang releases.
+
+</Callout>
+
+| OTP version | Status |
+|---|---|
+| 26 | Supported on patches before 4.1.14; EOL as of 4.1.14 |
+| 27 | Required from 4.1.14 onward |
+
+## Recent security fixes
+
+| Patch | Released | Notable GHSAs |
+|---|---|---|
+| 4.1.14 | Jul 21, 2026 | 11 GHSA IDs across OAuth 2, Core, JMS Topic Exchange, Federation, Shovel, MQTT, Stream Management, LDAP, Management |
+| 4.1.11 | — | GHSA-2hm4-4438-49q8 (Stream Management) |
+
+## What changed in 4.1.14
+
+Core server fixes worth knowing about if you're upgrading:
+
+- Classic queue index directory paths could accumulate slashes, eventually failing with an `enametoolong` filesystem error — fixed
+- A race between concurrent queue/vhost deletion and Ra cluster shutdown could log a spurious exception — fixed
+- Password salts are now generated with a cryptographically secure PRNG
+- `rabbitmq-queues` and `rabbitmq-streams` gained `transfer_leadership` commands for individual queues and streams
+- The maximum number of super-stream partitions is now limited to 1,000 by default (`stream.max_super_stream_partitions` to raise it)
+
+See [Get Open Source RabbitMQ](/packages/open-source) to download.
