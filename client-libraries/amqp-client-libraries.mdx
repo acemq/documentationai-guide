@@ -1,0 +1,2445 @@
+---
+title: "AMQP 1.0 Client Libraries"
+---
+
+This page documents the usage of [AMQP 1.0](/oss/next/amqp) client libraries for **RabbitMQ 4.0 or more**.
+
+The RabbitMQ team supports the following libraries:
+
+* [RabbitMQ AMQP 1.0 **Java** client](https://github.com/rabbitmq/rabbitmq-amqp-java-client)
+* [RabbitMQ AMQP 1.0 **.NET** client](https://github.com/rabbitmq/rabbitmq-amqp-dotnet-client)
+* [RabbitMQ AMQP 1.0 **Go** client](https://github.com/rabbitmq/rabbitmq-amqp-go-client)
+* [RabbitMQ AMQP 1.0 **Python** client](https://github.com/rabbitmq/rabbitmq-amqp-python-client)
+* [RabbitMQ AMQP 1.0 **JavaScript** client](https://github.com/coders51/rabbitmq-amqp-js-client)
+
+Application developers will find here how to use the libraries for the most common use cases.
+For other information like licensing, downloading, dependency management, advanced and specific usage and configuration, please see the README page in the repository of the respective libraries.
+
+## Overview
+
+The RabbitMQ team maintains a set of AMQP 1.0 client libraries [designed and optimized](/blog/2024/08/05/native-amqp#rabbitmq-amqp-10-clients) for RabbitMQ.
+They offer a simple and safe, yet powerful API on top of AMQP 1.0.
+Applications can publish and consume messages with these libraries, as well as manage the server topology in a consistent way across programming languages.
+The libraries also offer advanced features like automatic connection and topology recovery, and connection affinity with queues.
+
+<Callout kind="info">
+
+RabbitMQ is compatible with any AMQP-1.0-compliant client library.
+It is not mandatory to use the RabbitMQ AMQP 1.0 client libraries with RabbitMQ, but applications are strongly encouraged to do so for the best experience.
+
+</Callout>
+
+## Safety
+
+RabbitMQ AMQP 1.0 client libraries are safe by default, they always create [durable entities](/oss/next/queues#durability) and always publish persistent messages.
+
+## Guarantees
+
+RabbitMQ AMQP 1.0 client libraries provide at-least-once guarantees.
+
+The broker always [confirms](#publishing) the proper handling of published messages.
+Publishers achieve this by using the `unsettled` [sender settle mode](https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-transport-v1.0-os.html#type-sender-settle-mode) and the `first` [receiver settle mode](https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-transport-v1.0-os.html#type-receiver-settle-mode) when they get created.
+
+Consumers must always [signal](#message-processing-result-outcome) the result of message processing to the broker.
+Consumers use the same settings as publishers when they get created (`first` [receiver settle mode](https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-transport-v1.0-os.html#type-receiver-settle-mode) and `unsettled` [sender settle mode](https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-transport-v1.0-os.html#type-sender-settle-mode)).
+
+## Client API
+
+This section covers how to use the RabbitMQ AMQP 1.0 client libraries to connect to a cluster, and publish and consume messages.
+
+### Connecting
+
+Libraries provide an entry point to a node or a cluster of nodes.
+Its name is the "environment".
+The environment allows creating connections.
+It can contain infrastucture-related configuration settings shared between connections (e.g. pools of threads for Java).
+Here is how to create the environment:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Creating the environment"
+import com.rabbitmq.client.amqp.*;
+import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder;
+
+// ...
+
+// create the environment instance
+Environment environment = new AmqpEnvironmentBuilder()
+    .build();
+// ...
+// close the environment when the application stops
+environment.close();
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Creating the environment"
+using RabbitMQ.AMQP.Client;
+using RabbitMQ.AMQP.Client.Impl;
+
+// ...
+
+// create the environment instance
+IEnvironment environment = await AmqpEnvironment.CreateAsync(
+    ConnectionSettingBuilder.Create().Build());
+// ...
+// close the environment when the application stops
+await environment.CloseAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Creating the environment"
+from rabbitmq_amqp_python_client import Environment
+
+# ...
+
+# create the environment instance
+environment = Environment("amqp://guest:guest@localhost:5672/")
+# ...
+# close the environment when the application stops
+environment.close()
+```
+</Tab>
+
+<Tab title="Go">
+
+```go title="Creating the environment"
+import (
+    rmq "github.com/rabbitmq/rabbitmq-amqp-go-client/pkg/rabbitmqamqp"
+)
+// ...
+// create the environment instance for a single node
+env := rmq.NewEnvironment("amqp://guest:guest@localhost:5672/", nil)
+// in case you have multiple endpoints you can use the following:
+// clusterEnv := rmq.NewClusterEnvironment([]rmq.Endpoint{
+//      {Address: "amqp://server1", Options: &rmq.AmqpConnOptions{}},
+//      {Address: "amqp://server2", Options: &rmq.AmqpConnOptions{}},
+//     })
+
+// ...
+// close the connections
+env.CloseConnections(context.Background())
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Creating the environment"
+const rabbit = require("rabbitmq-amqp-js-client");
+
+// create the environment instance for a single node
+const environment = rabbit.createEnvironment({
+  host: "localhost",
+  port: 5672,
+  username: rabbitUser,
+  password: rabbitPassword,
+});
+
+// close the environment when the application stops
+await environment.close();
+```
+
+</Tab>
+
+</Tabs>
+
+There is usually one environment instance for an application process.
+The application must close the environment to release its resources when it exits.
+
+Applications open connections from the environment.
+They must specify appropriate settings to connect to the cluster nodes (URI, credentials).
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Opening a connection"
+// open a connection from the environment
+Connection connection = environment.connectionBuilder()
+    .uri("amqp://admin:admin@localhost:5672/%2f")
+    .build();
+// ...
+// close the connection when it is no longer necessary
+connection.close();
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Opening a connection"
+// open a connection from the environment setting
+IConnection connection = await environment.CreateConnectionAsync();
+
+//open a connection from the environment with different settings
+ConnectionSettingBuilder otherSettingBuilder = ConnectionSettingBuilder.Create()
+    .ContainerId("my_containerId")
+    .Host("localhost");
+IConnection connection = await environment.CreateConnectionAsync(otherSettingBuilder.Build());
+// ...
+// close the connection when it is no longer necessary
+await connection.CloseAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Opening a connection"
+# open a connection from the environment setting
+connection = environment.connection()
+
+# close the connection when it is no longer necessary
+connection.close()
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Opening a connection"
+// open a connection from the environment setting
+connection, err := env.NewConnection(context.Background())
+
+// close the connection when it is no longer necessary
+connection.close()
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Opening a connection"
+// open a connection from the environment setting
+const connection = await environment.createConnection();
+
+// close the connection when it is no longer necessary
+await connection.close();
+```
+
+</Tab>
+
+</Tabs>
+
+Libraries use the `ANONYMOUS` [SASL authentication mechanism](/oss/next/access-control#mechanisms) by default.
+Connections are expected to be long-lived objects, applications should avoid connection churn.
+They must be closed when they are no longer needed.
+
+### Publishing
+
+A publisher must be created to publish messages.
+The target a publisher will publish messages to is usually set on creation, but it also possible to set on a per-message basis.
+
+Here is how to declare a publisher with the target set at creation time:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Creating a publisher"
+Publisher publisher = connection.publisherBuilder()
+    .exchange("foo").key("bar")
+    .build();
+// ...
+// close the publisher when it is no longer necessary
+publisher.close();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Creating a publisher"
+// The publisher can use exchange (optionally with a key) or queue to publish messages.
+IPublisher publisher = await connection.PublisherBuilder().Exchange("foo").Key("bar")
+    .BuildAsync();
+
+// ...
+// close the publisher when it is no longer necessary
+await publisher.CloseAsync();
+publisher.Dispose();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Creating a publisher"
+# The publisher can use exchange (optionally with a key) or queue to publish messages.
+# You can use the AddressHelper utility class to get the addr from the exchange name and the key
+exchange_address = AddressHelper.exchange_address("foo", "bar")
+publisher = connection.publisher(addr)
+# close the publisher when it is no longer necessary
+publisher.close()
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Creating a publisher"
+// you can use ExchangeAddress and QueueAddress to publish to the queue
+publisher, err := amqpConnection.NewPublisher(context.Background(), &rmq.ExchangeAddress{
+        Exchange: "foo",
+        Key:      "bar",
+    }, nil)
+
+// close the publisher when it is no longer necessary
+publisher.close()
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Creating a publisher"
+// The publisher can use exchange (optionally with a key) or queue to publish messages.
+const publisher = await connection.createPublisher({
+  exchange: { name: "exchange", routingKey: "key" },
+});
+
+// close the publisher when it is no longer necessary
+publisher.close();
+```
+
+</Tab>
+</Tabs>
+
+In the previous example, every message published with the publisher will go to the `foo` exchange with the `bar` routing key.
+
+<Callout kind="info">
+
+RabbitMQ uses the [AMQ 0.9.1 model](/tutorials/amqp-concepts) comprising exchanges, queues, and bindings.
+
+</Callout>
+
+Messages are created from the publisher instance.
+They follow the [AMQP 1.0 message format](https://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#section-message-format).
+It is possible to define the body (as an array of bytes), standard properties, and application properties.
+
+When a message is published, the broker indicates how it dealt with it in an asynchronous callback.
+The client application take appropriate measures depending on the status (["outcome" in AMQP terms](/oss/next/amqp#outcomes)) the broker returned for the message (e.g. store the message in another place if the message has not been `accepted`).
+
+The following snippet shows how to create a message, publish it, and deal with the response from the broker:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Publishing a message"
+// create the message
+Message message = publisher
+    .message("hello".getBytes(StandardCharsets.UTF_8))
+    .messageId(1L);
+
+// publish the message and deal with broker feedback
+publisher.publish(message, context -> {
+    // asynchronous feedback from the broker
+    if (context.status() == Publisher.Status.ACCEPTED) {
+        // the broker accepted (confirmed) the message
+    } else {
+        // deal with possible failure
+    }
+});
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Publishing a message"
+// create the message
+var message = new AmqpMessage("Hello");
+// publish the message and deal with broker feedback
+// The result is synchronous, use a `List<Task<PublishResult>>` to increase the performances
+PublishResult pr = await publisher.PublishAsync(message);
+  switch (pr.Outcome.State)
+    {
+        case OutcomeState.Accepted:
+            // the broker accepted (confirmed) the message
+            break;
+        case OutcomeState.Released:
+            // the broker could not route the message anywhere
+            break;
+        case OutcomeState.Rejected:
+            // at least one queue rejected the message
+            break;
+    }
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Publishing a message"
+# create the message
+# body is a byte array. You can use the Converter utility class
+message = Message(body=Converter.string_to_bytes("Hello"))
+# publish the message and deal with broker feedback
+# The result is synchronous
+status = publisher.publish(Message(message)
+match status.remote_state:
+    case OutcomeState.ACCEPTED:
+        # the broker accepted (confirmed) the message
+    case OutcomeState.RELEASED:
+        # the broker could not route the message anywhere
+    case OutcomeState.REJECTED:
+        # at least one queue rejected the message
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Publishing a message"
+// create the message
+message =  rmq.NewMessage([]byte("Hello")
+// publish the message and deal with broker feedback
+publishResult, err := publisher.Publish(context.Background(),message)
+if err != nil {
+    // there is an error
+}
+    switch publishResult.Outcome.(type) {
+        case *rmq.StateAccepted:
+            // the broker accepted (confirmed) the message
+            break
+        case *rmq.StateReleased:
+           // the broker could not route the message anywhere
+            break
+        case *rmq.StateRejected:
+            // at least one queue rejected the message
+            stateType := publishResult.Outcome.(*rmq.StateRejected)
+            if stateType.Error != nil {
+                // in case there is error
+            }
+            break
+        default:
+            // these status are not supported. Leave it for AMQP 1.0 compatibility
+            // see: https://www.rabbitmq.com/docs/next/amqp#outcomes
+        }
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Publishing a message"
+// create the message
+const message = rabbit.createAmqpMessage({ body: "Hello" });
+
+// publish the message and deal with broker feedback
+const publishResult = await publisher.publish(message);
+
+switch (publishResult.outcome) {
+  case rabbit.OutcomeState.ACCEPTED:
+    // the broker accepted (confirmed) the message
+    break;
+  case rabbit.OutcomeState.RELEASED:
+    // the broker could not route the message anywhere
+    break;
+  case rabbit.OutcomeState.REJECTED:
+    // at least one queue rejected the message
+    break;
+  default:
+    break;
+}
+```
+
+</Tab>
+
+</Tabs>
+
+The publisher example above send messages to a given exchange with a given routing key, but this is not the only supported target for a publisher.
+Here are the supported non-null targets for a publisher:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Creating publishers with different targets"
+// publish to an exchange with a routing key
+Publisher publisher1 = connection.publisherBuilder()
+    .exchange("foo").key("bar") // /exchanges/foo/bar
+    .build();
+
+// publish to an exchange without a routing key
+Publisher publisher2 = connection.publisherBuilder()
+    .exchange("foo") // /exchanges/foo
+    .build();
+
+// publish to a queue
+Publisher publisher3 = connection.publisherBuilder()
+    .queue("some-queue") // /queues/some-queue
+    .build();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Creating publishers with different targets"
+// publish to an exchange with a routing key
+Publisher publisher = await connection.PublisherBuilder()
+    .Exchange("foo")
+    .Key("bar")
+    .BuildAsync();
+
+// publish to an exchange without a routing key
+Publisher publisher = await connection.PublisherBuilder()
+    .Exchange("foo") // /exchanges/foo
+    .BuildAsync();
+
+// publish to a queue
+  IPublisher publisher = await _connection.PublisherBuilder()
+  .Queue("some-queue")// /queues/some-queue
+  .BuildAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Creating publishers with different targets"
+# publish to an exchange with a routing key
+# You can use the AddressHelper utility class to get the addr from the exchange name and the key
+exchange_address = AddressHelper.exchange_address("foo", "bar")
+publisher = connection.publisher(addr)
+
+# publish to an exchange without a routing key
+exchange_address = AddressHelper.exchange_address("foo")
+publisher = connection.publisher(addr)
+
+# publish to a queue
+queue_address = AddressHelper.queue_address("some-queue")
+publisher = connection.publisher(queue_address)
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title="Creating publishers with different targets"
+// publish to an exchange with a routing key
+publisher, err := connection.NewPublisher(context.Background(), &ExchangeAddress{
+            Exchange: "foo",
+            Key:      "bar",
+        }, nil)
+
+// publish to an exchange without a routing key
+publisher, err := connection.NewPublisher(context.Background(), &ExchangeAddress{
+            Exchange: "foo",
+        }, nil)
+
+// publish to a queue
+publisher, err := connection.NewPublisher(context.Background(), &QueueAddress{
+    Queue: "some-queue"},
+    nil)
+
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Publishing a message"
+// publish to an exchange with a routing key
+const publisher = await connection.createPublisher({
+  exchange: { name: "foo", routingKey: "bar" },
+});
+
+// publish to an exchange without a routing key
+const publisher = await connection.createPublisher({
+  exchange: { name: "foo" },
+});
+
+// publish to a queue
+const publisher = await connection.createPublisher({
+  queue: { name: "some-queue" },
+});
+```
+
+</Tab>
+
+</Tabs>
+
+<Callout kind="info">
+
+Libraries translate the API calls into the [address format v2](/oss/next/amqp#address-v2).
+
+</Callout>
+
+It is also possible to define the target on a per-message basis.
+The publisher must be defined without any target and each message define its target in the `to` field of the properties section.
+Libraries provide helpers in the message creation API to define the message target, which avoids dealing with the  [address format](/oss/next/amqp#address-v2).
+
+The following snippet shows how to create a publisher without a target and define messages with different target types:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Setting the target in messages"
+// no target defined on publisher creation
+Publisher publisher = connection.publisherBuilder()
+    .build();
+
+// publish to an exchange with a routing key
+Message message1 = publisher.message()
+    .toAddress().exchange("foo").key("bar")
+    .message();
+
+// publish to an exchange without a routing key
+Message message2 = publisher.message()
+    .toAddress().exchange("foo")
+    .message();
+
+// publish to a queue
+Message message3 = publisher.message()
+    .toAddress().queue("my-queue")
+    .message();
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Setting the target in messages"
+// no target defined on publisher creation
+IPublisher publisher = await connection.PublisherBuilder()
+                       .BuildAsync();
+
+// publish to an exchange with a routing key
+IMessage message = new AmqpMessage("Hello!").ToAddress()
+    .Exchange("foo")
+    .Key("bar")
+    .Build()
+
+await aPublisher.PublishAsync(message);
+
+// publish to a queue
+IMessage message = new AmqpMessage("Hello!").ToAddress()
+    .Queue("foo")
+    .Build()
+
+await aPublisher.PublishAsync(message);
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Setting the target in messages"
+
+# no target defined on publisher creation
+publisher = connection.publisher()
+
+# publish to an exchange with a routing key
+# You can use the AddressHelper.message_to_address_helper
+# utility class to set the destination in the message
+message = Message(body="Hello!")
+exchange_address = AddressHelper.exchange_address("foo", "bar")
+message = AddressHelper.message_to_address_helper(message, exchange_address)
+publisher.publish(message)
+
+# publish to a queue
+message = Message(body="Hello!")
+queue_address = AddressHelper.queue_address("some-queue")
+message = AddressHelper.message_to_address_helper(message, queue_address)
+publisher = publisher.publish(message)
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Setting the target in messages"
+// // no target defined on publisher creation (nil)
+publisher, err := connection.NewPublisher(context.Background(), nil,
+                 nil)
+
+// create message with an exchange with a routing key
+msg, err = NewMessageWithAddress([]byte("hello"), &ExchangeAddress{
+            Exchange: "foo",
+            Key:      "bar",
+        })
+
+// create a message with a queue
+msg, err = NewMessageWithAddress([]byte("hello"), &QueueAddress{
+    Queue: "some-queue"})
+
+// use the publish
+publishResult, err = publisher.Publish(context.Background(), msg)
+// ...
+
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Setting the target in messages"
+// no target defined on publisher creation
+const publisher = await connection.createPublisher();
+
+// create message with an exchange with a routing key
+const message = rabbit.createAmqpMessage({
+  body: "Hello",
+  destination: { exchange: { name: "exchange", routingKey: "key" } },
+});
+
+// create a message with a queue
+const message = rabbit.createAmqpMessage({
+  body: "Hello",
+  destination: { queue: { name: "queue" } },
+});
+
+// use the publish
+const publishResult = await publisher.publish(message);
+//...
+```
+
+</Tab>
+
+</Tabs>
+
+#### Support for Streams
+
+If a message is meant to go to a [stream](/oss/next/streams), it is possible to set its [filter value](/oss/next/stream-filtering) with the `x-stream-filter-value` message annotation:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Setting the stream filter value in a message annotation"
+Message message = publisher.message(body)
+    .annotation("x-stream-filter-value", "invoices"); // set filter value
+publisher.publish(message, context -> {
+  // confirm callback
+});
+```
+</Tab>
+<Tab title="C#">
+
+```csharp title="Setting the stream filter value in a message annotation"
+var message = new AmqpMessage(body);
+message.Annotation("x-stream-filter-value", "invoices");// set filter value
+PublishResult pr = await publisher.PublishAsync(message);
+
+```
+</Tab>
+
+<Tab title="Python">
+```python title="Setting the stream filter value in a message annotation"
+publisher.publish(
+            Message(
+                Converter.string_to_bytes(body="myBody"),
+                annotations={"x-stream-filter-value": "invoices"},# set filter value
+            )
+
+```
+</Tab>
+
+<Tab title="Go">
+```go title="Setting the stream filter value in a message annotation"
+    message := amqp.NewMessage(body)
+    message.Annotations = amqp.Annotations{
+        "x-stream-filter-value": "invoices",// set filter value
+    }
+    publishResult, err := publisher.Publish(context.Background(), message)
+
+````
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Setting the stream filter value in a message annotation"
+const message = rabbit.createAmqpMessage({
+  body: "Hello",
+  annotations: { "x-stream-filter-value": "invoices" },
+})
+
+const publishResult = await publisher.publish(message);
+//...
+```
+
+</Tab>
+
+</Tabs>
+
+### Consuming
+
+#### Consumer Creation
+
+Creating a consumer consists in specifying the queue to consume from and the callback to process messages:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Creating a consumer"
+Consumer consumer = connection.consumerBuilder()
+    .queue("some-queue")
+    .messageHandler((context, message) -> {
+        byte[] body = message.body();
+        // ...
+        context.accept(); // settle the message
+    })
+    .build(); // do not forget to build the instance!
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Creating a consumer"
+IConsumer consumer = await connection.ConsumerBuilder()
+    .Queue("some-queue")
+    .MessageHandler(async (context, message) =>
+    {
+        // deal with the message
+        await context.AcceptAsync();// settle the message
+    }
+).BuildAndStartAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Creating a consumer"
+
+class MyMessageHandler(AMQPMessagingHandler):
+
+    def __init__(self):
+        super().__init__()
+
+    def on_message(self, event: Event):
+        # ...
+        # event.message.body is a byte array. If you have string
+        # you can use Converter utility class, like:
+        # my_body_string=Converter.bytes_to_string(event.message.body)
+
+        self.delivery_context.accept(event)# settle the message
+
+queue_address = AddressHelper.queue_address("some-queue")
+consumer = connection.consumer(queue_address, message_handler=MyMessageHandler())
+consumer.run()
+```
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Creating a consumer"
+// create the consumer
+consumer, err := connection.NewConsumer(context.Background(), "some-queue", nil)
+// receive the message
+deliveryContext, err := consumer.Receive(context.Background())
+// ....
+deliveryContext.Accept(context.Background()) // settle the message
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Creating a consumer"
+// create the consumer
+const consumer = await connection.createConsumer({
+  queue: { name: "some-queue" },
+  messageHandler: (context, msg) => {
+    console.log(`MessageId: ${msg.message_id}; Payload: ${msg.body}`);
+    context.accept(); // settle the message
+  },
+});
+consumer.start();
+```
+
+</Tab>
+
+</Tabs>
+
+Once the application is done processing a message, it must _settle_ it.
+This indicates to the broker the result of the processing and what it should do with the message (e.g. deleting the message).
+Applications must settle messages or they will run out of [credits](/blog/2024/09/02/amqp-flow-control) and the broker will stop dispatching messages to them.
+
+The next section covers the semantics of message settlement.
+
+#### Message Processing Result (Outcome)
+
+Libraries allows applications to settle messages in different ways.
+They use terms as explicit as possible in the context of messaging applications.
+Each term maps to a [given _outcome_](/oss/next/amqp#outcomes) in the AMQP specification.
+
+* `accept`: the application successfully processed the message and it can be deleted from the queue (`accepted` outcome)
+* `discard`: the application cannot process the message because it is invalid, the broker can drop it or [dead-letter](/oss/next/dlx) it if it is configured (`rejected` outcome)
+* `requeue`: the application did not process the message, the broker can requeue it and deliver it to the same or a different consumer (`released` outcome)
+
+`discard` and `requeue` have an optional message annotation argument to combine with the existing ones held in the message header section.
+Such message annotations can be used to provide details on the `discard` or `requeue` reason.
+Application-specific annotation keys must start with the `x-opt-` prefix whereas annotation keys the broker understands start only with `x-`.
+Both `discard` and `requeue` use the `modified` outcome with the message annotation parameter.
+
+__Only quorum queues__ support the [modification of message annotations](/oss/next/amqp#modified-outcome) with the `modified` outcome.
+
+#### Consumer Graceful Shutdown
+
+A consumer _settles_ a message by accepting it, discarding it, or requeuing it.
+
+Unsettled messages are requeued when a consumer get closed.
+This can lead to duplicate processing of messages.
+
+Here is an example:
+
+* A consumer executes a database operation for a given message.
+* The consumer gets closed before it accepts (settles) the message.
+* The message is requeued.
+* Another consumer gets the message and executes the database operation again.
+
+It is difficult to completely avoid duplicate messages, this is why processing should be idempotent.
+The consumer API provides a way to avoid duplicate messages when a consumer gets closed.
+It consists in pausing the delivery of messages, getting the number of unsettled messages to make sure it reaches 0 at some point, and then closing the consumer.
+This ensures the consumer has finally quiesced and all the received messages have been processed.
+
+Here is an example of a consumer graceful shutdown:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Closing a consumer gracefully"
+// pause the delivery of messages
+consumer.pause();
+// ensure the number of unsettled messages reaches 0
+long unsettledMessageCount = consumer.unsettledMessageCount();
+// close the consumer
+consumer.close();
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Closing a consumer gracefully"
+// pause the delivery of messages
+consumer.pause();
+// ensure the number of unsettled messages reaches 0
+long unsettledMessageCount = consumer.UnsettledMessageCount();
+// close the consumer
+consumer.close();
+```
+
+</Tab>
+
+<Tab title="Python">
+```python title="Closing a consumer gracefully"
+# CURRENTLY NOT IMPLEMENTED
+```
+</Tab>
+
+<Tab title="Go">
+```Go title="Closing a consumer gracefully"
+// CURRENTLY NOT IMPLEMENTED
+```
+</Tab>
+
+<Tab title="JavaScript">
+```javascript title="Closing a consumer gracefully"
+// CURRENTLY NOT IMPLEMENTED
+```
+</Tab>
+
+</Tabs>
+
+An application can still close a consumer without pausing it, at the risk of processing the same messages several times.
+
+#### Support for Streams
+
+Libraries have out-of-the-box support for [streams](/oss/next/streams) in consumer configuration.
+
+It is possible to set where to attach to when [consuming](/oss/next/streams#consuming) from a stream:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Attaching to the beginning of a stream"
+Consumer consumer = connection.consumerBuilder()
+    .queue("some-stream")
+    .stream()
+        .offset(ConsumerBuilder.StreamOffsetSpecification.FIRST)
+    .builder()
+    .messageHandler((context, message) -> {
+        // message processing
+    })
+    .build();
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Attaching to the beginning of a stream"
+IConsumer consumer = await connection.ConsumerBuilder()
+    .Queue("some-stream")
+    .Stream()
+    .Offset(StreamOffsetSpecification.First)
+    .Builder()
+    .MessageHandler( async (context, message) => {
+            // message processing
+    })
+    .BuildAndStartAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Attaching to the beginning of a stream"
+class MyMessageHandler(AMQPMessagingHandler):
+
+    def __init__(self):
+        super().__init__()
+
+    def on_message(self, event: Event):
+        # accepting
+        self.delivery_context.accept(event)
+        # deal with the message
+
+stream_address = AddressHelper.queue_address("some-stream")
+consumer = consumer_connection.consumer(
+    stream_address,
+    message_handler=MyMessageHandler(),
+    # can be first, last, next or an offset long
+    # you can also specify stream filters with methods: apply_filters and filter_match_unfiltered
+    stream_filter_options=StreamOptions(offset_specification=OffsetSpecification.first),
+)
+```
+
+</Tab>
+
+<Tab title="Go">
+```Go title="Attaching to the beginning of a stream"
+consumer, err := connection.NewConsumer(context.Background(), qName,
+    &StreamConsumerOptions{
+            Offset: &OffsetFirst{},
+        })
+```
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Attaching to the beginning of a stream"
+const consumer = await connection.createConsumer({
+  stream: {
+    name: "some-stream",
+    offset: Offset.first(),
+  },
+  messageHandler: (context, message) => {
+    // message processing
+  },
+});
+```
+
+</Tab>
+
+</Tabs>
+
+There is also support for [stream filtering](/oss/next/stream-filtering) configuration:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Configuring stream filtering"
+Consumer consumer = connection.consumerBuilder()
+    .queue("some-stream")
+    .stream()
+        .filterValues("invoices", "orders")
+        .filterMatchUnfiltered(true)
+    .builder()
+    .messageHandler((ctx, msg) -> {
+        String filterValue = (String) msg.annotation("x-stream-filter-value");
+        // there must be some client-side filter logic
+        if ("invoices".equals(filterValue) || "orders".equals(filterValue)) {
+            // message processing
+        }
+        ctx.accept();
+    })
+    .build();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Configuring stream filtering"
+IConsumer consumer = await connection.ConsumerBuilder()
+    .Queue("some-stream")
+    .Stream()
+    .FilterValues(["invoices", "orders"])
+    .FilterMatchUnfiltered(true)
+    .Builder()
+    .MessageHandler(async (context, message) => {
+        string filterValue = (string)message.Annotation("x-stream-filter-value");
+        if (filterValue.Equals("invoices")|| filterValue.Equals("orders"))
+        {
+            // message processing
+        }
+        context.Accept();
+
+        }
+).BuildAndStartAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Configuring stream filtering
+class MyMessageHandler(AMQPMessagingHandler):
+
+    def __init__(self):
+        super().__init__()
+
+    def on_message(self, event: Event):
+        filterValue = event.message.annotations["x-stream-filter-value"]
+        if filterValue == "invoices" or filterValue == "orders":
+            ### message processing
+
+        self.delivery_context.accept(event)
+
+stream_address = AddressHelper.queue_address("some-stream")
+consumer = consumer_connection.consumer(
+    stream_address,
+    message_handler=MyMessageHandler(),
+    stream_filter_options=StreamOptions(stream_filters=["invoices", "orders"], match_unfiltered=True),
+)
+```
+
+</Tab>
+
+<Tab title="Go">
+```Go title="Configuring stream filtering"
+consumer, err := connection.NewConsumer(context.Background(), qName, &
+        StreamConsumerOptions{
+            Offset:           &OffsetFirst{},
+            Filters:          []string{"invoices", "orders"},
+        })
+deliveryContext, err := consumer.Receive(context.Background())
+// ..
+var filterValue string
+filterValue = deliveryContext.Message().Annotations["x-stream-filter-value"].(string)
+if filterValue == "orders" || filterValue == "invoices"  {
+ //
+}
+err = deliveryContext.Accept(context.Background())
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Configuring stream filtering"
+const consumer = await connection.createConsumer({
+  stream: {
+    name: "some-stream",
+    offset: Offset.first(),
+    matchUnfiltered: true,
+    filterValues: ["invoices", "orders"],
+  },
+  messageHandler: (context, message) => {
+    const annotations = message.message_annotations;
+    if (
+      annotations &&
+      ["invoices", "orders"].includes(annotations["x-stream-filter-value"])
+    ) {
+      // message processing
+    }
+    context.accept();
+  },
+});
+consumer.start();
+```
+
+</Tab>
+
+</Tabs>
+
+Consider also using the [native stream protocol](/oss/next/stream) with the stream client library for your preferred programming language when working with streams.
+
+#### AMQP 1.0 over WebSocket
+
+AMQP 1.0 over WebSocket is supported in VMware Tanzu RabbitMQ. Documentation is available [here.](/blog/2025/04/16/amqp-websocket)
+
+<Callout kind="info">
+
+Tested with RabbitMQ VMware Tanzu RabbitMQ 4.1 with `rabbitmq_web_amqp` plugin enabled.
+[See here](/blog/2025/04/16/amqp-websocket) for more details.
+
+</Callout>
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Configuring ws connection"
+// Not public yet
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Configuring ws connection"
+// Create a ws in rabbitmq in the virtual host ws and user rabbit with password rabbit
+
+const string amqpConnectionString = "ws://rabbit:rabbit@127.0.0.1:15678/ws";
+var cs = new ConnectionSettings(new Uri(amqpConnectionString));
+IEnvironment environment = AmqpEnvironment.Create(cs);
+
+// then use stardard way to send and receive messages
+
+```
+Full example [here](https://github.com/rabbitmq/rabbitmq-amqp-dotnet-client/blob/main/docs/Examples/WebSockets/Program.cs)
+</Tab>
+
+<Tab title="Python">
+    
+```python title="Configuring ws connection"
+
+# Not implemented yet
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title="Configuring ws connection"
+
+    const amqpConnectionString = "ws://127.0.0.1:15678/ws"
+    rmq.Info("[Example]", "Starting web socket connection to", amqpConnectionString)
+    // for anonymous connection use:
+    // env := rmq.NewEnvironment(amqpConnectionString, &rmq.AmqpConnOptions{
+    //  SASLType: amqp.SASLTypeAnonymous(),
+    // })
+    env := rmq.NewEnvironment(amqpConnectionString, &rmq.AmqpConnOptions{
+        SASLType: amqp.SASLTypePlain("rabbit", "rabbit"),
+    })
+
+```
+Full example [here](https://github.com/rabbitmq/rabbitmq-amqp-go-client/blob/main/docs/examples/web_sockets/web_sockets.go)
+
+</Tab>
+
+<Tab title="Javascript">
+
+```javascript title="Configuring ws connection"
+ const environment = RabbitmqAmqpClient.createEnvironment({
+        host: "localhost",
+        port: 15678,
+        username: "rabbit",
+        password: "rabbit",
+        webSocket: { implementation: WebSocket },
+      })
+```
+Full example [here](https://github.com/coders51/rabbitmq-amqp-js-client/blob/main/examples/websocket_example.html)
+</Tab>
+
+</Tabs>
+
+## Topology Management
+
+Applications can manage the RabbitMQ's [AMQ 0.9.1 model](/tutorials/amqp-concepts): declaring and deleting exchanges, queues, and bindings.
+
+To do so, they need to get the management API from a connection:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Getting the management object from the environment"
+Management management = connection.management();
+// ...
+// close the management instance when it is no longer needed
+management.close();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Getting the management object from the environment"
+IManagement management = connection.Management();
+// ...
+// close the management instance when it is no longer needed
+await management.CloseAsync()
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Getting the management object from the environment"
+management = connection.management()
+ # ...
+ # close the management instance when it is no longer needed
+management.close()
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Getting the management object from the connection"
+management = connection.management()
+  // ...
+  // close the management instance when it is no longer needed
+management.close()
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Getting the management object from the connection"
+const management = connection.management();
+// ...
+// close the management instance when it is no longer needed
+management.close();
+```
+
+</Tab>
+
+</Tabs>
+
+The management API should be closed as soon as it is no longer needed.
+An application usually creates the topology it needs when it starts, so the management object can be closed after this step.
+
+### Exchanges
+
+Here is how to create an [exchange](/tutorials/amqp-concepts#exchanges) of a built-in type:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Creating an exchange of a built-in type"
+management.exchange()
+    .name("my-exchange")
+    .type(Management.ExchangeType.FANOUT) // enum for built-in type
+    .declare();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Creating an exchange of a built-in type"
+IExchangeSpecification exchangeSpec = management
+        .Exchange(exchangeName)
+        .Type(ExchangeType.TOPIC);
+await exchangeSpec.DeclareAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Creating an exchange of a built-in type"
+exchange_name = "my-exchange"
+management.declare_exchange(ExchangeSpecification(name=exchange_name, exchange_type=ExchangeType.topic))
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Creating an exchange of a built-in type"
+// there are structs for Fanout, Direct, etc..
+exchange_name = "my-exchange"
+exchangeInfo, err := management.DeclareExchange(context.TODO(), &TopicExchangeSpecification{
+            Name: exchangeName,
+        })
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Creating an exchange of a built-in type"
+const exchange = await management.declareExchange("my-exchange", {
+  type: "topic",
+});
+```
+
+</Tab>
+
+</Tabs>
+
+It is also possible to specify the exchange type as a string (for non-built-in type exchanges):
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Creating an exchange of a non-built-in type"
+management.exchange()
+    .name("my-exchange")
+    .type("x-delayed-message") // non-built-in type
+    .autoDelete(false)
+    .argument("x-delayed-type", "direct")
+    .declare();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Creating an exchange of a non-built-in type"
+await _management.Exchange("myExchange")
+    .Type("x-delayed-message")
+    .Argument("x-delayed-type", "direct")
+    .DeclareAsync();
+
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Creating an exchange of a non-built-in type"
+    exchange_arguments = {}
+    exchange_arguments["x-delayed-type"] = "direct"
+
+    exchange_info = management.declare_exchange(
+        ExchangeCustomSpecification(
+            name="myExchange",
+            exchange_type="x-delayed-message",
+            arguments=exchange_arguments,
+        )
+    )
+
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title="Creating an exchange of a non-built-in type"
+_, err := management.DeclareExchange(context.TODO(), &CustomExchangeSpecification{
+        Name:             "myExchange",
+        ExchangeTypeName: "x-delayed-message",
+            Arguments: map[string]any{
+                "x-delayed-type": "direct",
+            },
+        })
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Creating an exchange of a non-built-in type"
+const exchange = await management.declareExchange("my-exchange", {
+  type: "x-delayed-message",
+  auto_delete: true,
+  durable: false,
+  arguments: {
+    "x-delayed-type": "direct",
+  },
+});
+```
+
+</Tab>
+
+</Tabs>
+
+Here is how to delete an exchange:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Deleting an exchange"
+management.exchangeDelete("my-exchange");
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Deleting an exchange"
+await management.Exchange("my-exchange").DeleteAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```csharp title="Deleting an exchange"
+exchange_name = "my-exchange"
+management.delete_exchange(exchange_name)
+```
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Deleting an exchange"
+exchange_name = "my-exchange"
+management.DeleteExchange(context.TODO(),exchange_name)
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Deleting an exchange"
+const result = await management.deleteExchange("my-exchange");
+```
+
+</Tab>
+
+</Tabs>
+
+### Queues
+
+Here is how to create a [queue](/tutorials/amqp-concepts#queues) with [the default queue type](/oss/next/vhosts#default-queue-type):
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Creating a classic queue"
+management.queue()
+    .name("my-queue")
+    .exclusive(true)
+    .autoDelete(false)
+    .declare();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Creating a classic queue"
+IQueueSpecification queueSpec = management
+    .Queue("myqueue")
+    .Exclusive(true)
+    .AutoDelete(false)
+await queueSpec.DeclareAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```csharp title="Creating a classic queue"
+queue_name = "myqueue"
+management.declare_queue(ClassicQueueSpecification(name=queue_name))
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Creating a classic queue"
+queue_name = "myqueue"
+queueInfo, err := management.DeclareQueue(context.TODO(), &ClassicQueueSpecification{
+            Name: queueName})
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Creating a classic queue"
+const queue = await management.declareQueue("myqueue", {
+  exclusive: true,
+  autoDelete: false,
+});
+```
+
+</Tab>
+
+</Tabs>
+
+The management API supports [queue arguments](/oss/next/queues#optional-arguments) explicitly:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Creating a queue with arguments"
+management.queue()
+    .name("my-queue")
+    .type(Management.QueueType.CLASSIC)
+    .messageTtl(Duration.ofMinutes(10))
+    .maxLengthBytes(ByteCapacity.MB(100))
+    .declare();
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Creating a queue with arguments"
+IQueueSpecification queueSpec = management
+    .Queue("my-queue")
+    .Type(QueueType.CLASSIC)
+    .MessageTtl(TimeSpan.FromMinutes(10))
+    .MaxLengthBytes(ByteCapacity.Mb(100));
+await queueSpec.DeclareAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Creating a queue with arguments"
+management.declare_queue(ClassicQueueSpecification(name="my-queue", message_ttl=timedelta(minutes=10), max_len_bytes=100000000))
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Creating a queue with arguments"
+queueInfo, err := management.DeclareQueue(context.TODO(), &ClassicQueueSpecification{
+            Name:           "my-queue",
+            MaxPriority:    32,
+            MaxLengthBytes: CapacityGB(1),
+            IsAutoDelete:   false,
+    })
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Creating a queue with arguments"
+const queue = await management.declareQueue("myqueue", {
+  type: "classic",
+  arguments: {
+    // for a list, see: https://www.rabbitmq.com/docs/queues#optional-arguments
+    "x-max-priority": 10,
+    "message-ttl": 60 * 1000,
+  },
+});
+```
+
+</Tab>
+
+</Tabs>
+
+The management API makes also the distinction between arguments shared by all queue types and arguments valid only for a given type.
+Here is an example with the creation of a [quorum queue](/oss/next/quorum-queues):
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Creating a quorum queue"
+management
+    .queue()
+    .name("my-quorum-queue")
+    .quorum() // set queue type to 'quorum'
+        .quorumInitialGroupSize(3) // specific to quorum queues
+        .deliveryLimit(3) // specific to quorum queues
+    .queue()
+    .declare();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Creating a quorum queue"
+IQueueSpecification queueSpec = management
+    .Queue("my-quorum-queue")
+    .Quorum() // set queue type to 'quorum'
+        .QuorumInitialGroupSize(3) // specific to quorum queues
+        .DeliveryLimit(3) // specific to quorum queues
+    .Queue();
+await queueSpec.DeclareAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Creating a quorum queue"
+queue_name = "my-quorum-queue"
+management.declare_queue(QuorumQueueSpecification(name=queue_name, quorum_initial_group_size=3, deliver_limit=3))
+
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Creating a quorum queue"
+queueInfo, err := management.DeclareQueue(context.TODO(), &QuorumQueueSpecification{
+            Name: "my-quorum-queue",
+            QuorumInitialGroupSize = 3,
+            DeliveryLimit: 3,
+        })
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Creating a quorum queue"
+const queue = await management.declareQueue("myqueue", {
+  type: "quorum",
+  deliveryLimit: 3,
+  initialGroupSize: 3,
+});
+```
+
+</Tab>
+
+</Tabs>
+
+It is possible to query information about a queue:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Getting queue information"
+Management.QueueInfo info = management.queueInfo("my-queue");
+long messageCount = info.messageCount();
+int consumerCount = info.consumerCount();
+String leaderNode = info.leader();
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Getting queue information"
+IQueueInfo queueInfo = await management.GetQueueInfoAsync("my-queue");
+ulong messageCount = queueInfo.MessageCount();
+uint consumerCount = queueInfo.ConsumerCount();
+string leader = queueInfo.Leader();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Getting queue information"
+queue_name = "my-queue"
+queue_info = management.queue_info(name=queue_name)
+message_count = queue_info.message_count
+consumer_count = queue_info.consumer_count
+leader = queue_info.leader
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```Go title="Getting queue information"
+queueInfo, err := management.QueueInfo(context.TODO(), "my-queue")
+
+messageCount := queueInfo.MessageCount();
+consumerCount := queueInfo.ConsumerCount();
+leader := queueInfo.Leader();
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Getting queue information"
+const result = await management.getQueueInfo("my-queue");
+
+const messages = result.getInfo.messageCount;
+const consumers = result.getInfo.consumerCount;
+const leader = result.getInfo.leader;
+```
+
+</Tab>
+
+</Tabs>
+
+This API can also be used to check whether a queue exists or not.
+
+And here is how to delete a queue:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Deleting a queue"
+management.queueDelete("my-queue");
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Deleting a queue"
+await management.Queue("myqueue").DeleteAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```csharp title="Deleting a queue"
+management.delete_queue(name="myqueue")
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title="Deleting a queue"
+management.DeleteExchange(context.TODO(),"myqueue")
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Deleting a queue"
+const result = await management.deleteQueue(queueName);
+```
+
+</Tab>
+
+</Tabs>
+
+### Bindings
+
+The management API supports [binding](/tutorials/amqp-concepts#bindings) a queue to an exchange:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Binding a queue to an exchange"
+management.binding()
+    .sourceExchange("my-exchange")
+    .destinationQueue("my-queue")
+    .key("foo")
+    .bind();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Binding a queue to an exchange"
+IBindingSpecification bindingSpec = management.Binding()
+    .SourceExchange("my-exchange")
+    .DestinationQueue("my-queue")
+    .Key("foo");
+await bindingSpec.BindAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Binding a queue to an exchange"
+bind_name = management.bind(
+    BindingSpecification(
+        source_exchange="my-exchange",
+        destination_queue="my-queue",
+        binding_key="foo",
+    )
+)
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title="Binding a queue to an exchange"
+// ExchangeToQueueBindingSpecification implements BindingSpecification interface
+bindingPath, err := management.Bind(context.TODO(), &rmq.ExchangeToQueueBindingSpecification{
+        SourceExchange:   "my-exchange",
+        DestinationQueue: "my-queue",
+        BindingKey:       "foo",
+    })
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Binding a queue to an exchange"
+const queue = await management.declareQueue("my-queue");
+const exchange = await management.declareExchange("my-exchange");
+
+await management.bind(routingKey, { source: exchange, destination: queue });
+```
+
+</Tab>
+
+</Tabs>
+
+There is also support for [exchange-to-exchange binding](/oss/next/e2e):
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Binding an exchange to another exchange"
+management.binding()
+    .sourceExchange("my-exchange")
+    .destinationExchange("my-other-exchange")
+    .key("foo")
+    .bind();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Binding an exchange to another exchange"
+IBindingSpecification bindingSpec = management.Binding()
+    .SourceExchange("my-exchange")
+    .DestinationExchange("my-other-exchange")
+    .Key("foo");
+await bindingSpec.BindAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Binding an exchange to another exchange"
+
+binding_exchange_queue_path = management.bind(
+    ExchangeToExchangeBindingSpecification(
+        source_exchange="my-exchange",
+        destination_exchange="my-other-exchange",
+     )
+)
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title="Binding a exchange to an exchange"
+// ExchangeToExchangeBindingSpecification implements BindingSpecification interface
+bindingPath, err := management.Bind(context.TODO(), &rmq.ExchangeToExchangeBindingSpecification{
+        SourceExchange:   "my-exchange",
+        DestinationExchange: "my-other-exchange",
+    })
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Binding a exchange to an exchange"
+const exchange1 = await management.declareExchange("my-exchange");
+const exchange2 = await management.declareExchange("my-other-exchange");
+
+await management.bind(bindingKey, {
+  source: exchange1,
+  destination: exchange2,
+});
+```
+
+</Tab>
+
+</Tabs>
+
+It is also possible to unbind entities:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Deleting the binding between an exchange and a queue"
+management.unbind()
+    .sourceExchange("my-exchange")
+    .destinationQueue("my-queue")
+    .key("foo")
+    .unbind();
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Deleting the binding between an exchange and a queue"
+IBindingSpecification bindingSpec = management.Binding()
+    .SourceExchange("my-exchange")
+    .DestinationQueue("my-queue")
+    .Key("foo");
+await bindingSpec.UnbindAsync();
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Deleting the binding between an exchange and a queue"
+management.unbind(BindingSpecification(
+    source_exchange="my-exchange",
+    destination_queue="my-queue",
+))
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title="Deleting the binding between an exchange and a queue"
+// bindingPath is the bind result
+err = management.Unbind(context.TODO(), bindingPath)
+
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Deleting the binding between an exchange and a queue"
+await management.unbind(bindingKey, { source: exchange, destination: queue });
+```
+
+</Tab>
+
+</Tabs>
+
+## Advanced Usage
+
+### Lifecycle Listeners
+
+Applications can react to state changes of some API components by adding listeners.
+An application can add a listener to a connection to stop publishing messages when the connection is recovering after a connection.
+The application can then resume publishing when the connection has recovered and is open again.
+
+Here is how to set a listener on a connection:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Setting a listener on a connection"
+Connection connection = environment.connectionBuilder()
+    .listeners(context -> { // set one or several listeners
+        context.previousState(); // the previous state
+        context.currentState(); // the current (new) state
+        context.failureCause(); // the cause of the failure (in case of failure)
+        context.resource(); // the connection
+    }).build();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Attach an event to the ChangeState"
+connection.ChangeState += (
+     sender, // the sender instance ( in this case the connection)
+     fromState, // the previous state
+     toState, // the current (new) state
+     e // the cause of the failure (in case of failure)
+     ) =>
+{
+
+};
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Attach an event to the ChangeState"
+# CURRENTLY NOT IMPLEMENTED
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title="Register a channel to the StateChanged"
+stateChanged := make(chan *rmq.StateChanged, 1)
+go func(ch chan *rmq.StateChanged) {
+        for statusChanged := range ch {
+            // statusChanged.From from status
+            // statusChanged.To to status
+            // StateClosed has the func GetError() in case of error
+
+        }
+    }(stateChanged)
+
+connection.NotifyStatusChange(stateChanged)
+
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Attach an event to the ChangeState"
+// CURRENTLY NOT IMPLEMENTED
+```
+
+</Tab>
+
+</Tabs>
+
+It is also possible to set listeners on publisher instances:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Setting a listener on a publisher"
+Publisher publisher = connection.publisherBuilder()
+    .listeners(context -> {
+        // ...
+    })
+    .exchange("foo").key("bar")
+    .build();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Attach an event to the ChangeState"
+publisher.ChangeState += (sender, fromState, toState, e) =>
+{
+}
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Attach an event to the ChangeState"
+
+# CURRENTLY NOT IMPLEMENTED FOR PYTHON
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title=" "
+
+# CURRENTLY NOT IMPLEMENTED Due Of https://github.com/Azure/go-amqp/issues/99
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Attach an event to the ChangeState"
+// CURRENTLY NOT IMPLEMENTED
+```
+
+</Tab>
+
+</Tabs>
+
+And on consumer instances as well:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Setting a listener on a consumer"
+Consumer consumer = connection.consumerBuilder()
+    .listeners(context -> {
+        // ...
+    })
+    .queue("my-queue")
+    .build();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Attach an event to the ChangeState"
+consumer.ChangeState += (sender, fromState, toState, e) =>
+{
+}
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title="Attach an event to the ChangeState"
+# CURRENTLY NOT IMPLEMENTED FOR PYTHON
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title=" "
+
+# CURRENTLY NOT IMPLEMENTED Due to https://github.com/Azure/go-amqp/issues/99
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Attach an event to the ChangeState"
+// CURRENTLY NOT IMPLEMENTED
+```
+
+</Tab>
+
+</Tabs>
+
+### Automatic Connection Recovery
+
+Automatic connection recovery is activated by default: client libraries will automatically restore a connection after an unexpected closing (e.g. network glitch, node restart, etc).
+Automatic topology recovery is also activated as soon as connection recovery is: client libraries will recreate AMQP entities, as well as publishers and consumers for the recovering connection.
+Developers have less to worry about network stability and node restart, as client libraries will take care of it.
+
+The client tries to reconnect every 5 seconds until it succeeds. It is possible to change this behavior by customizing the back-off delay policy:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Setting a back-off policy for connection recovery"
+Connection connection = environment.connectionBuilder()
+    .recovery()
+    .backOffDelayPolicy(BackOffDelayPolicy.fixed(Duration.ofSeconds(2)))
+    .connectionBuilder().build();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Setting a back-off policy for connection recovery"
+class MyBackOffDelay : IBackOffDelayPolicy {
+    ...
+}
+
+await AmqpConnection.CreateAsync(
+    ConnectionSettingBuilder.Create().RecoveryConfiguration(
+    RecoveryConfiguration.Create()
+    .BackOffDelayPolicy(new MyBackOffDelay())).Build());
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title=" "
+    environment = Environment(
+        "amqp://guest:guest@localhost:5672/",
+        recovery_configuration=RecoveryConfiguration(back_off_reconnect_interval=timedelta(seconds=2)),
+    )
+```
+</Tab>
+
+<Tab title="Go">
+
+```go title=" "
+    // to the BackOffReconnectInterval the client adds a random 500 ms
+    env := NewEnvironment("amqp://", &AmqpConnOptions{
+            RecoveryConfiguration: &RecoveryConfiguration{
+                ActiveRecovery:           true,
+                BackOffReconnectInterval: 5 * time.Second,
+                MaxReconnectAttempts:     5,
+            },
+        })
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Setting a back-off policy for connection recovery"
+// arguments are passed directly to RHEA library
+// https://github.com/amqp/rhea?tab=readme-ov-file#container
+//
+// TOPOLOGY RECOVERY IS NOT TESTED
+await environment.createConnection({
+  reconnect: 2000,
+  initialReconnectDelay: 2000,
+  reconnectLimit: 10,
+});
+```
+
+</Tab>
+
+</Tabs>
+
+It is also possible to deactivate topology recovery if it is not appropriate for a given application.
+The application would usually register a connection [lifecycle listener](#lifecycle-listeners) to know when the connection is recovered and recover its own state accordingly.
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Deactivating topology recovery"
+Connection connection = environment.connectionBuilder()
+    .recovery()
+    .topology(false) // deactivate topology recovery
+    .connectionBuilder()
+    .listeners(context -> {
+        // set listener that restores application state when connection is recovered
+    })
+    .build();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Deactivating topology recovery"
+await AmqpConnection.CreateAsync(
+    ConnectionSettingBuilder.Create().RecoveryConfiguration(
+    RecoveryConfiguration.Create()
+    .Topology(false)) // deactivate topology recovery
+    .Build());
+
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title=" "
+     # CURRENTLY NOT IMPLEMENTED
+```
+
+</Tab>
+
+<Tab title="Go">
+
+```go title=" "
+     // CURRENTLY NOT IMPLEMENTED
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Deactivating topology recovery"
+// CURRENTLY NOT IMPLEMENTED
+```
+
+</Tab>
+
+</Tabs>
+
+It is also possible to deactivate recovery altogether:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Deactivating recovery"
+Connection connection = environment.connectionBuilder()
+    .recovery()
+    .activated(false) // deactivate recovery
+    .connectionBuilder().build();
+```
+
+</Tab>
+
+<Tab title="C#">
+
+```csharp title="Deactivating recovery"
+await AmqpConnection.CreateAsync(
+        ConnectionSettingBuilder.Create().RecoveryConfiguration(
+        RecoveryConfiguration.Create().
+        Activated(false)).// deactivate recovery
+        Build());
+```
+
+</Tab>
+
+<Tab title="Python">
+
+```python title=" "
+    environment = Environment(
+        "amqp://guest:guest@localhost:5672/",
+        recovery_configuration=RecoveryConfiguration(active_recovery=False),
+    )
+```
+</Tab>
+
+<Tab title="Go">
+
+```go title="Deactivating recovery"
+     env := NewEnvironment("amqp://", &AmqpConnOptions{
+            RecoveryConfiguration: &RecoveryConfiguration{
+                ActiveRecovery:           false,
+            },
+        })
+```
+
+</Tab>
+
+<Tab title="JavaScript">
+
+```javascript title="Deactivating recovery"
+await environment.createConnection({ reconnect: false });
+```
+
+</Tab>
+
+</Tabs>
+
+### Queue Affinity
+
+Applications can declare queue affinity rules when opening a connection.
+The client library will do its best to connect to an appropriate node to enforce these rules.
+This can result in lower intra-cluster traffic, reducing latency and increasing throughput.
+
+In the following example we declare "publish" affinity on a given connection.
+The library will connect to a node that hosts the queue leader.
+It will also reuse a connection with the same affinity if the environment has already created one.
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Configuring publish affinity on a connection"
+Connection connection = environment.connectionBuilder()
+        .affinity()
+            .queue("my-queue")
+            .operation(PUBLISH)
+            .reuse(true)
+        .connection()
+        .build();
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Configuring publish affinity on a connection"
+ConnectionSettings defaultSettings = ConnectionSettingsBuilder.Create().Uris([
+    new Uri("amqp://localhost:5672"),
+    // ....
+]).Build();
+// creates a copy from default settings and overrides the Affinity settings
+
+IConnection connection = await environment.CreateConnectionAsync(
+    ConnectionSettingsBuilder.From(defaultSettings)
+        .Affinity(new DefaultAffinity("my-queue", Operation.Publish))
+        .Build()).ConfigureAwait(false);
+```
+
+</Tab>
+
+</Tabs>
+
+Here is another example with the "consume" operation, where the library will favor a node that hosts a queue replica:
+
+<Tabs>
+<Tab title="Java">
+
+```java title="Configuring consume affinity on a connection"
+Connection connection = environment.connectionBuilder()
+        .affinity()
+            .queue("my-queue")
+            .operation(CONSUME)
+        .connection()
+        .build();
+```
+
+</Tab>
+<Tab title="C#">
+
+```csharp title="Configuring consume affinity on a connection"
+IEnvironment environment = AmqpEnvironment.Create(defaultSettings);
+ConnectionSettings defaultSettings = ConnectionSettingsBuilder.Create().Uris([
+    new Uri("amqp://localhost:5672"),
+    // ....
+]).Build();
+
+// creates a copy from default settings and overrides the Affinity settings
+IConnection connection = await environment.CreateConnectionAsync(
+    ConnectionSettingsBuilder.From(defaultSettings)
+        .Affinity(new DefaultAffinity("my-queue", Operation.Consume))
+        .Build()).ConfigureAwait(false);
+```
+
+</Tab>
+
+</Tabs>
